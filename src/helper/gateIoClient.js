@@ -4,8 +4,8 @@ const  {REACT_APP_CRYPTO_API_URL} = process.env;
 
 export const request = (options) => {
   let url = options.params
-    ? `${"http://localhost:4000/"}${options.path}?`
-    : `${"http://localhost:4000/"}${options.path}`;
+    ? `${"https://data.gateapi.io/api2/1/ticker/"}${options.path}?`
+    : `${"https://data.gateapi.io/api2/1/ticker/"}${options.path}`;
   if (options.params && options.params.length) {
     options.params.map((par, index) => {
       return (url += par + "=" + options.values[index] + "&");

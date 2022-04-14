@@ -10,13 +10,14 @@ const WatchList = () => {
 
   const { containerStyle, textStyle } = styles;
   useEffect(() => {
-    getCurrencies("top10").then(res => {
+    getCurrencies("top100").then(res => {
       let data = res.data;
       let currencies = data.map((item) => {
         console.log(item.name,item.symbol)
         return {
           name : item.name,
-          symbol: item.symbol.toLowerCase()
+          symbol: item.symbol.toLowerCase(),
+          price: item.quote.USD.price
         }
       })
       setCoins(currencies)
