@@ -15,16 +15,17 @@ import portfolio_outline from "../../assets/bottom/portfolio-outline.png";
 
 import settings from "../../assets/bottom/settings.png";
 import settings_outline from "../../assets/bottom/settings-outline.png";
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 
-import ListCoinsScreen from "./screens/ListCoinsScreen";
+import WatchList from "./screens/WatchList";
 import PortfolioScreen from "./screens/PortfolioScreen";
 import AlertScreen from "./screens/AlertScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 
 const Tab = createBottomTabNavigator();
 
-const allCoins_screen = "All Coins";
+const watchList_screen = "Watch List";
 const portfolio_screen = "My Portfolio";
 const alert_screen = "Create Alarm";
 const settings_screen = "Preferences";
@@ -33,40 +34,46 @@ const MainContainer = () => {
   return (
     <NavigationContainer>
       <Tab.Navigator
-        initialRouteName={allCoins_screen}
+        initialRouteName={watchList_screen}
         screenOptions={({ route }) => ({
           tabBarShowLabel: false,
           headerShown: false,
           tabBarStyle: {
-          paddingVertical: Platform.OS === 'ios' ? 20 : 1,
-            labelStyle: { paddingBottom: 5, fontSize: 0,paddingTop: 4, height: 100 },
-            style: { padding: 20, height: 100}
+              position:'relative',
+              bottom:0,
+              left:0,
+              right:0,
+              elevation:0,
+              backgroundColor:'#191a19',
+              height:70,
+              paddingBottom:15,
         },
+
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
             let rn = route.name;
 
-            if (rn === allCoins_screen) {
-              iconName = focused ? coins : coins_outline;
+            if (rn === watchList_screen) {
+              iconName = focused ? 'star' : 'star';
 
             } else if (rn === portfolio_screen) {
-              iconName = focused ? portfolio : portfolio_outline;
+              iconName = focused ? 'wallet' : 'wallet-outline';
 
             } else if (rn === alert_screen) {
-              iconName = focused ? alert : alert_outline;
+              iconName = focused ?  'alarm' : 'alarm-outline';
 
             } else if (rn === settings_screen) {
-              iconName = focused ? settings : settings_outline;
+              iconName = focused ?  'settings' : 'settings-outline';
             }
 
             // You can return any component that you like here!
-            return <Image source={iconName} size={""}
-                          color={color} style={{width :30, height: 30} } />;
+            return <Ionicons name={iconName} size={size} color={color} />;
+
           },
         })}
 
         >
-        <Tab.Screen component={ListCoinsScreen} name={allCoins_screen} />
+        <Tab.Screen component={WatchList} name={watchList_screen}/>
         <Tab.Screen component={PortfolioScreen} name={portfolio_screen} />
         <Tab.Screen component={AlertScreen} name={alert_screen} />
         <Tab.Screen component={SettingsScreen} name={settings_screen} />
