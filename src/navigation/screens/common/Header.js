@@ -1,6 +1,6 @@
 import React from 'react'
 import {Text,View} from 'react-native'
-
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const Header = (props) => {
   const {textStyle,viewStyle} = styles;
@@ -23,7 +23,7 @@ const styles = {
     fontWeight:'bold'
   },
   viewStyle:{
-    backgroundColor: "#35333c",
+    backgroundColor: "#5b5866",
     height:60,
     justifyContent: 'flex-start', // flex-end, flex-start
     //alignItems: flex-end , center, flex-start

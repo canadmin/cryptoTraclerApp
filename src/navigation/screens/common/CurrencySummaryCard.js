@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import Colors from "../../../Colors";
 import AssetExample from '../common/AssetExample';
 import { getCurrenciesFromExtarnalApi, getImage } from "../../../reducers/CryptoApiService";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const CurrencySummaryCard = (props) => {
+ // eğer getRealTimeData true ise websocket bağlantısı yapılacak.
+  const {addCurrencyToFavorite,item,
+    favorites,getRealTimeData,
+    deleteCurrencyFromFavorite,
+  index} = props;
   const round = (value) => {
     if (value > 1) {
       return Number(Math.round(value + "e" + 2) + "e-" + 2);
@@ -13,39 +18,51 @@ const CurrencySummaryCard = (props) => {
       return Number(Math.round(value + "e" + 8) + "e-" + 8);
     }
   };
-  const { containerStyle, textStyle, upPriceStyle, downPriceStyle } = styles;
-  const [price, setPrice] = useState(round(props.item.price));
+  const { containerStyle, textStyle, upPriceStyle, downPriceStyle, coinImage } = styles;
+  const [price, setPrice] = useState(round(item.price));
   const [isUp, setIsUp] = useState(true);
   const [image,setImage] = useState({img:"https://s2.coinmarketcap.com/static/img/coins/64x64/1.png"});
-
+  const [isFavoriteCoin,setIsFavoriteCoin] = useState(false);
 
   useEffect(() => {
+    console.log(favorites)
+    const isFound = favorites.some(element => {
+      if (element.symbol === item.symbol) {
+        setIsFavoriteCoin(true)
+      }
+    });
 
-    this._interval = setInterval(() => {
-      getCurrenciesFromExtarnalApi(props.item.symbol).then(response => {
+    let interval = null;
+    if(index < 100){
+     interval = setInterval(() => {
+      getCurrenciesFromExtarnalApi(item.symbol).then(response => {
         let externalData = response.data;
         if(externalData.last && externalData.last > 0 ){
           setPrice(round(externalData.last))
         }
       });
       }, 10000);
-    getImage(props.item.symbol)
+    }
+    getImage(item.symbol)
       .then(response => {
-        console.log("asdasd",response.data.img)
         setImage({img:response.data.img})
       })
 
-    try{
-      let wss = new WebSocket("wss://stream.binance.com:9443/ws/" + props.item.symbol + "usdt@kline_1m");
-      wssConnection(wss);
-      return () => {
-        wss.close();
-        clearInterval(this._interval);
-      };
-    }catch (err){
-      console.log(err)
+    if(getRealTimeData) {
+      try{
+        let wss = new WebSocket("wss://stream.binance.com:9443/ws/" + item.symbol + "usdt@kline_1m");
+        wssConnection(wss);
+        return () => {
+          wss.close();
+          if(index < 100){
+            clearInterval(interval);
+          }
+        };
+      }catch (err){
+        console.log(err)
+      }
     }
-  }, [props.items]);
+  }, [item]);
 
   const wssConnection = (wss) => {
     wss.onmessage = (msg) => {
@@ -56,35 +73,43 @@ const CurrencySummaryCard = (props) => {
         setPrice(newPrice);
       }
     };
-
   };
+
+  const addFavorite = (coin) => {
+    if(isFavoriteCoin){
+      setIsFavoriteCoin(false);
+      deleteCurrencyFromFavorite(coin)
+    }else {
+      setIsFavoriteCoin(true);
+      addCurrencyToFavorite(coin)
+    }
+
+  }
 
   return (
     <View>
       <View style={containerStyle}>
         <View style={{flex:1}}>
-          <Image           style={{  flex: 1, marginTop:10, marginRight:10, marginBottom: 10, justifyContent:'flex-start',height: undefined, width: undefined, resizeMode: 'contain' }}
-                           source={{uri:image.img}}></Image>
+          <Image style={coinImage} source={{uri:"https://s2.coinmarketcap.com/static/img/coins/64x64/"+item.id+".png"}}/>
         </View>
         <View style={{ flex: 1 }}>
           <Text style={textStyle}>
-            {props.item.name}
+            {item.name}
           </Text>
           <Text style={textStyle}>
-            {props.item.symbol.toUpperCase()}
+            {item.symbol.toUpperCase()}
           </Text>
         </View>
-        <View style={{flex:1}}>
-          <AssetExample />
-
-        </View>
-        <View style={{ flex: 2 }}>
+        <View style={{ flex: 1 }}>
           <Text style={isUp ? upPriceStyle : downPriceStyle}>
             {price}$
           </Text>
         </View>
-        <View style={{flex:1,alignItems:'flex-end' }}>
-          <Ionicons name={"star"} size={40} color={'blue'} />
+        <View style={{alignItems:'flex-end' ,marginLeft:10}}>
+          <TouchableOpacity onPress={() => addFavorite({ symbol: item.symbol,
+          name: item.name})}>
+            <Ionicons name={isFavoriteCoin ? "star" : "star-outline"} size={30} color={'#a3bea3'} />
+          </TouchableOpacity>
         </View>
       </View>
       <View
@@ -92,8 +117,8 @@ const CurrencySummaryCard = (props) => {
           borderWidth: 0.4,
           opacity: 0.1,
           borderColor: "white",
-          marginLeft: 10,
-          marginRight: 10,
+          marginLeft: 25,
+          marginRight: 25,
         }}
       />
     </View>);
@@ -104,7 +129,7 @@ const styles = {
     flexDirection: "row",
     alignItems: "center",
     marginLeft: 0,
-    marginRight: 0,
+    marginRight: 25,
     height: 60,
     borderRadius: 1,
   },
@@ -123,8 +148,12 @@ const styles = {
     fontWeight: "bold",
     color: Colors.darkLowPrice,
     fontSize: 16,
-    textAlign: "right",
+    textAlign: "center",
   },
+  coinImage : {
+    flex: 1, marginTop:10, marginRight:10, marginBottom: 10,
+    justifyContent:'flex-start',height: undefined, width: undefined, resizeMode: 'contain'
+  }
 };
 
 export default CurrencySummaryCard;

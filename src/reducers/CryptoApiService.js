@@ -1,4 +1,4 @@
-import { request,externalApirequest } from "../helper/apiClient";
+import { request,externalApirequest,getOhlcHistoryRequest } from "../helper/apiClient";
 
 // top 10 falan
 export const getCurrencies = (listType) => {
@@ -21,8 +21,7 @@ export const getImage = (symbol) => {
   return request(options);
 }
 
-// sadece bitoin
-
+// sadece bitoin veya eth,shib
 export const getCryptoInfo = (symbol) => {
   const options = {
     method: "get",
@@ -44,12 +43,22 @@ export const getCurrencyPrice = (symbol) => {
   return request(options);
 }
 
+export const getOhlcData = (currency_name_id,days) => {
+  const options = {
+    method: "get",
+    params: ["days","vs_currency"],
+    values:[days,"usd"],
+    currency_name_id:currency_name_id
+
+  };
+  return request(options);
+}
+
 export const getCurrenciesFromExtarnalApi = (symbol) => {
   const options = {
     method: "get",
     path: symbol.toLowerCase()+"_usdt",
   };
-
   return externalApirequest(options);
 }
 
@@ -57,5 +66,5 @@ export const getCurrenciesFromExtarnalApi = (symbol) => {
 
 
 export default {
-  getCurrencies,getCurrenciesFromExtarnalApi
+  getCurrencies,getCurrenciesFromExtarnalApi,getCryptoInfo,getImage
 };
