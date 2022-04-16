@@ -19,7 +19,7 @@ const MainContainer = () => {
   return (
     <NavigationContainer>
       <Tab.Navigator
-        initialRouteName={portfolio_screen}
+        initialRouteName={watchList_screen}
         screenOptions={({ route }) => ({
           tabBarShowLabel: false,
           headerShown: false,

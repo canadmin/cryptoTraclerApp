@@ -9,16 +9,18 @@ const PortfolioScreen = () => {
 
   return (
     <View style={containerStyle}>
+      <Header headerText={"My Portfolio"}></Header>
             <LineChart
-            line_chart_data={[{month:'jan', value:300},
-              {month:'Jan', value:300},
-              {month:'Fen', value:400},
-              {month:'Mar', value:200},
-              {month:'Apr', value:304},
-              {month:'May', value:234},
-              {month:'June', value:423},]}
+            line_chart_data={[{month:'jan', value:102},
+              {month:'Jan', value:120},
+              {month:'Fen', value:140},
+              {month:'Mar', value:122},
+              {month:'Apr', value:160},
+              {month:'May', value:170},
+              {month:'June', value:123},]}
             circleColor={"#daa520"}
             axisColor={"#9dd"}
+            axisLabelFontSize={9}
             />
   </View>)
 };
