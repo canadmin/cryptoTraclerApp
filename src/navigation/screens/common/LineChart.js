@@ -87,6 +87,9 @@ const LineChart = ({
   )).current;
 
 
+  const animated_field_opacity = useRef(new Animated.Value(
+    0
+  )).current;
 
   const gapBetweenYAxisValues = (y_max_value - y_min_value ) / (line_chart_data.length -2)
 
@@ -128,6 +131,12 @@ const LineChart = ({
         useNativeDriver:true,
         easing:Easing.ease
 
+      }).start();
+      Animated.timing(animated_field_opacity,{
+        toValue: 1,
+        duration: 1500,
+        useNativeDriver:true,
+        easing:Easing.ease
       }).start();
   },[pathLength])
 
@@ -385,7 +394,8 @@ const LineChart = ({
             <Stop offset="100%" stopColor="transparent" />
           </LinearGradient>
         </Defs>
-        <Path d={getDpathGradient()}
+        <AnimatedPath d={getDpathGradient()}
+              opacity={animated_field_opacity}
               fill={"url(#gradient)"}
               stroke={"transparent"}/>
         {render_x_y_axis()}
