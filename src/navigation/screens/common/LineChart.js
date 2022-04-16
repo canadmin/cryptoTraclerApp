@@ -1,8 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { View, Dimensions, Animated, Text,Easing,Alert } from "react-native";
-import Svg, { G, Line, Circle, Text as SvgText, Path, Rect } from "react-native-svg";
+import Svg, { G, Line, Circle, Text as SvgText, Path, Rect, Defs, LinearGradient, Stop } from "react-native-svg";
 import { styles } from "./styles";
-
 const window_width = Dimensions.get("window").width;
 
 
@@ -89,7 +88,7 @@ const LineChart = ({
 
 
 
-  const gapBetweenYAxisValues = (y_max_value - y_min_value ) / (line_chart_data.length - 1)
+  const gapBetweenYAxisValues = (y_max_value - y_min_value ) / (line_chart_data.length -2)
 
   const y_axis_actual_height = y_axis_y2_point - y_axis_y1_point;
 
@@ -228,7 +227,7 @@ const LineChart = ({
             fontSize={axisLabelFontSize}
             textAnchor={"middle"}
           >
-            {item.month}
+            {item.time}
           </SvgText>
         </G>
       );
@@ -284,18 +283,42 @@ const LineChart = ({
    }
   }
 
+  const getDpathGradient = () => {
+    const maxValueAtYAxis = yAxisLabels[yAxisLabels.length - 1 ];
+
+    if(maxValueAtYAxis){
+      let dPath = '';
+      line_chart_data.map((item,index) => {
+        let x_point = x_axis_x1_point + gap_between_x_axis_ticks * index;
+        let y_point = (maxValueAtYAxis - item.value) * (gap_between_y_axis_ticks / gapBetweenYAxisValues)
+          + padding_from_screenBorder;
+        if(index === 0){
+          dPath += `M${x_point} ${y_point}`
+        }else {
+          dPath += `L${x_point} ${y_point}`
+        }
+      })
+      console.log(dPath)
+      return dPath +` L ${x_axis_actual_width + 60} ${y_axis_actual_height + 20} L 50 ${y_axis_actual_height + 20}` ;
+    }
+  }
+
+  const cWi = window_width -30;
+  const cHei = containerHeight / 2;
+
   const render_lineChart_path = () => {
     const dPath = getDPath();
     return(
-      <AnimatedPath
-        d={dPath}
-        ref={animated_path_ref}
-        strokeWitdh={lineChartWidth}
-        stroke={lineChartColor}
-        onLayout={() => setPathLength(animated_path_ref?.current.getTotalLength())}
-        strokeDasharray={pathLength}
-        strokeDashoffset={animated_path_length}
-      />
+        <AnimatedPath
+          d={dPath}
+          ref={animated_path_ref}
+          strokeWitdh={lineChartWidth}
+          stroke={lineChartColor}
+          onLayout={() => setPathLength(animated_path_ref?.current.getTotalLength())}
+          strokeDasharray={pathLength}
+          strokeDashoffset={animated_path_length}
+        />
+
     )
   }
 
@@ -330,7 +353,7 @@ const LineChart = ({
                 y={y_point - tooltipHeight - 10}
                 width={tooltipWidth}
                 height={tooltipHeight}
-                onPress={() => Alert.alert(`${item.month}: ${item.value}`)}
+                onPress={() => Alert.alert(`${item.time}: ${item.value}`)}
                 fill={lineChartColor}
               />
               <AnimatedSvgText
@@ -341,24 +364,36 @@ const LineChart = ({
                 fontSize={axisLabelFontSize}
                 fontWeight={'400'}
                 textAnchor={"middle"}
-                fill={"#900"}
+                fill={'black'}
               >{item.value}</AnimatedSvgText>
             </G>
           )
         })
       }
   }
+
   return (
     <View style={[styles.swgWrapper, { height: containerHeight}]}>
       <View>
-        <Text style={{marginTop: 5}}>Total Value : 124,534.34 $ </Text>
-        <Text>Change  : 8.33 % </Text>
+        <Text style={{marginTop: 5, color:"white"}}>Total Value : 124,534.34 $ </Text>
+        <Text style={{marginTop: 5, color:"white"}}>Change  : 8.33 % </Text>
       </View>
       <AnimatedSvg height="100%" width="100%" style={styles.svgStyle}>
+        <Defs>
+          <LinearGradient id="gradient" x1="50%" y1="0%" x2="0%" y2="0%">
+            <Stop offset="0%" stopColor="grey" />
+            <Stop offset="100%" stopColor="transparent" />
+          </LinearGradient>
+        </Defs>
+        <Path d={getDpathGradient()}
+              fill={"url(#gradient)"}
+              stroke={"transparent"}/>
         {render_x_y_axis()}
         {render_x_label_and_ticks()}
         {render_y_label_and_ticks()}
+
         {render_lineChart_path()}
+
         {render_lineChart_circles()}
       </AnimatedSvg>
     </View>

@@ -16,7 +16,7 @@ const styles = {
   containerStyle : {
     flex :1,
     alignItems : 'center',
-    justifyContent: 'center'
+    backgroundColor: '#000',
   },
   textStyle : {
     color: 'red',

@@ -69,7 +69,7 @@ const CurrenciesList = () => {
 const styles = {
   containerStyle: {
     flex: 1,
-    backgroundColor: "#262424",
+    backgroundColor: '#000',
   },
   textStyle: {
     fontWeight: "bold",
