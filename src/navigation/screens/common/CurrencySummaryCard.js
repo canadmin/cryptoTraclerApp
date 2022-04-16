@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import Colors from "../../../Colors";
-import AssetExample from '../common/AssetExample';
 import { getCurrenciesFromExtarnalApi, getImage } from "../../../reducers/CryptoApiService";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
