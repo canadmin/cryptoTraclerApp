@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
-import { View, Dimensions, Animated, Text,Easing,Alert } from "react-native";
+import { View, Dimensions, Animated, Text,Easing,Alert,StyleSheet } from "react-native";
 import Svg, { G, Line, Circle, Text as SvgText, Path, Rect, Defs, LinearGradient, Stop } from "react-native-svg";
+import * as path  from "svg-path-properties";
 import { styles } from "./styles";
 const window_width = Dimensions.get("window").width;
 
@@ -67,6 +68,7 @@ const LineChart = ({
     x_axis_x1_point,
   )).current;
 
+
   const animated_y_axis_width = useRef(new Animated.Value(
     y_axis_y2_point,
   )).current;
@@ -102,6 +104,7 @@ const LineChart = ({
   const animated_path_ref = useRef(null);
   const [pathLength,setPathLength] = useState(0);
 
+
   useEffect(() => {
     const yAxisData = line_chart_data.map((item, index) => {
       if (index === 0) {
@@ -111,10 +114,13 @@ const LineChart = ({
       }
     });
     setYAxisLabels(yAxisData);
+
     start_axis_circle_animation();
     start_x_y_animation();
     start_x_y_ticks_labels_animation();
   }, []);
+
+
 
 
   useEffect(() => {
@@ -381,31 +387,65 @@ const LineChart = ({
       }
   }
 
+  const cursor = useRef(null);
+  const [xx,setXx] = useState(new Animated.Value(0));
+
+  const moveCursor=(value) => {
+    let  lineHeight =path.svgPathProperties(getDPath()).getTotalLength();
+    console.log("value",value)
+    const {x, y} = path.svgPathProperties(getDPath()).getPointAtLength(lineHeight- value);
+    cursor.current?.setNativeProps({top:y, left: x})
+  }
+  useEffect(()=>{
+    xx.addListener(({ value }) =>  moveCursor(value));
+    moveCursor(0 )
+  },[pathLength])
   return (
-    <View style={[styles.swgWrapper, { height: containerHeight}]}>
+    <View style={[styles.swgWrapper, { height: containerHeight}]} >
       <View>
         <Text style={{marginTop: 5, color:"white"}}>Total Value : 124,534.34 $ </Text>
         <Text style={{marginTop: 5, color:"white"}}>Change  : 8.33 % </Text>
       </View>
-      <AnimatedSvg height="100%" width="100%" style={styles.svgStyle}>
-        <Defs>
-          <LinearGradient id="gradient" x1="50%" y1="0%" x2="0%" y2="0%">
-            <Stop offset="0%" stopColor="grey" />
-            <Stop offset="100%" stopColor="transparent" />
-          </LinearGradient>
-        </Defs>
-        <AnimatedPath d={getDpathGradient()}
-              opacity={animated_field_opacity}
-              fill={"url(#gradient)"}
-              stroke={"transparent"}/>
-        {render_x_y_axis()}
-        {render_x_label_and_ticks()}
-        {render_y_label_and_ticks()}
+        <AnimatedSvg height="100%" width="100%" style={styles.svgStyle}>
+          <Defs>
+            <LinearGradient id="gradient" x1="50%" y1="0%" x2="0%" y2="0%">
+              <Stop offset="0%" stopColor="grey" />
+              <Stop offset="100%" stopColor="transparent" />
+            </LinearGradient>
+          </Defs>
+          <AnimatedPath d={getDpathGradient()}
+                        opacity={animated_field_opacity}
+                        fill={"url(#gradient)"}
+                        stroke={"transparent"}/>
 
-        {render_lineChart_path()}
+          {render_x_y_axis()}
+          {render_x_label_and_ticks()}
+          {render_y_label_and_ticks()}
 
-        {render_lineChart_circles()}
-      </AnimatedSvg>
+          {render_lineChart_path()}
+
+          {render_lineChart_circles()}
+          <View style={styles.cursor} ref={cursor}></View>
+        </AnimatedSvg>
+        <Animated.ScrollView
+          style={StyleSheet.absoluteFill}
+          contentContainerStyle={{width: path.svgPathProperties(getDPath()).getTotalLength() * 2}}
+          showsHorizontalScrollIndicator={false}
+          scrollEventThrottle={16}
+          bounces={false}
+          onScroll={Animated.event(
+            [{
+              nativeEvent: {
+                contentOffset : {
+                   x:xx
+                },
+              },
+            },
+            ],
+            {useNativeDriver : true}
+          )}
+          horizontal
+        />
     </View>
   );
 };
