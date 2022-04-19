@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
   cursor: {
     width:20,
     height: 20,
-    borderRadius :10,
+    borderRadius :20,
     borderColor : 'green',
     borderWidth: 2,
     backgroundColor: 'white'

@@ -46,6 +46,8 @@ const WatchList = () => {
       <Header headerText={"Watch List"}></Header>
       {coins.length > 0 &&
       <FlatList data={[...coins,{add:true}]}
+                initialNumToRender={5}
+
                 renderItem={({ item,index }) =>{
                   if(item.add){
                     return     <View>

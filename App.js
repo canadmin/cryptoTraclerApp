@@ -7,7 +7,8 @@ import {
   useColorScheme,
 } from 'react-native';
 
-
+import {Provider} from 'react-redux'
+import {Store as store} from './src/redux/store'
 const STYLES = ['default', 'dark-content', 'light-content'];
 const TRANSITIONS = ['fade', 'slide', 'none'];
 
@@ -40,6 +41,7 @@ const App = () => {
   };
 
   return(
+    <Provider store={store}>
       <SafeAreaView style={{flex:1,backgroundColor:'#5b5866'}}>
         <StatusBar
           animated={true}
@@ -50,7 +52,7 @@ const App = () => {
         />
         <MainContainer style={{backgroundStyle}} />
       </SafeAreaView>
-
+    </Provider>
   )
 };
 

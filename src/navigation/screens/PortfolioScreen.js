@@ -10,13 +10,13 @@ const PortfolioScreen = () => {
   return (
     <View style={containerStyle}>
             <LineChart
-            line_chart_data={[{time:'12 Feb', value:3422},
+            line_chart_data={[{time:'11 Feb', value:3422},
               {time:'12 Feb', value:3035.17},
-              {time:'12 Feb', value:3033.27},
-              {time:'12 Feb', value:2399.27},
-              {time:'12 Feb', value:3033.27},
-              {time:'12 Feb', value:933.27},
-              {time:'12 Feb', value:2222.27},
+              {time:'14 Feb', value:3033.27},
+              {time:'15 Feb', value:2399.27},
+              {time:'16 Feb', value:3033.27},
+              {time:'17 Feb', value:933.27},
+              {time:'18 Feb', value:2222.27},
             ]}
             circleColor={"#daa520"}
             axisColor={"#9dd"}

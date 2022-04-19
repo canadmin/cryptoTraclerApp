@@ -24,7 +24,8 @@ const LineChart = ({
                      lineChartColor = "#daa520",
                      lineChartWidth = 2,
                      tooltipHeight = 20,
-                     tooltipWidth=40
+                     tooltipWidth=40,
+                     cursorRadius= 10
                    }) => {
 
 
@@ -313,7 +314,6 @@ const LineChart = ({
           dPath += `L${x_point} ${y_point}`
         }
       })
-      console.log(dPath)
       return dPath +` L ${x_axis_actual_width + 60} ${y_axis_actual_height + 20} L 50 ${y_axis_actual_height + 20}` ;
     }
   }
@@ -392,9 +392,8 @@ const LineChart = ({
 
   const moveCursor=(value) => {
     let  lineHeight =path.svgPathProperties(getDPath()).getTotalLength();
-    console.log("value",value)
     const {x, y} = path.svgPathProperties(getDPath()).getPointAtLength(lineHeight- value);
-    cursor.current?.setNativeProps({top:y, left: x})
+    cursor.current?.setNativeProps({top:y-cursorRadius, left: x-cursorRadius})
   }
   useEffect(()=>{
     xx.addListener(({ value }) =>  moveCursor(value));

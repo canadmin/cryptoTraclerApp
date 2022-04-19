@@ -4,22 +4,23 @@ import CurrencySummaryCard from "./common/CurrencySummaryCard";
 import Header from "./common/Header";
 import { getCurrencies } from "../../reducers/CryptoApiService";
 import { insertFavorites, deleteFavorites, getAllFavorites, deleteAll } from "../../storage/allSchema";
-import realm from "../../storage/allSchema";
+import { useSelector, useDispatch } from "react-redux";
+import {addWatchList,removeWatchList} from '../../redux/action'
 
 const CurrenciesList = () => {
+  const {watchedCoins} = useSelector(state => state.userReducer)
+  const dispatch = useDispatch();
 
   const [coins, setCoins] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const { containerStyle, textStyle } = styles;
   useEffect(() => {
-
-
     getAllFavorites().then(res => {
       if (res !== null) {
         setFavorites(res);
       }
     }).then(() => {
-      getCurrencies("top10").then(res => {
+      getCurrencies("top100").then(res => {
         let data = res.data;
         let currencies = data.map((item) => {
           return {
@@ -32,21 +33,30 @@ const CurrenciesList = () => {
         setCoins(currencies);
       });
     });
+
+    return () => {
+      setFavorites([]);
+      setCoins([])
+    }
   }, []);
+
+  useEffect( () => {
+    console.log(watchedCoins);
+    return () => {
+
+    }
+  },[watchedCoins])
 
   const addCurrencyToFavorite = (coin) => {
     insertFavorites({ symbol: coin.symbol, name: coin.name }).then((res) => {
-      console.log(res);
     }).then(() => {
-      getAllFavorites().then(res => {
-        console.log(res);
-      });
+      dispatch(addWatchList(coin))
     });
   };
 
   const deleteCurrencyFromFavorite = (coin) => {
     deleteFavorites(coin.symbol).then((res => {
-      console.log(res);
+      dispatch(removeWatchList(coin))
     }));
   };
 
@@ -54,12 +64,14 @@ const CurrenciesList = () => {
     <View style={containerStyle}>
       <Header headerText={"Takip Listesi"}></Header>
       <FlatList data={coins}
+                initialNumToRender={5}
                 renderItem={({ item,index }) =>
                   <CurrencySummaryCard item={item}
                                        index={index}
                                        addCurrencyToFavorite={addCurrencyToFavorite}
                                        deleteCurrencyFromFavorite={deleteCurrencyFromFavorite}
                                        favorites={favorites}
+
                                        getRealTimeData={false} />}
       />
 

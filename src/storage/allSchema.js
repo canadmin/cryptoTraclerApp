@@ -1,11 +1,10 @@
 import Realm from "realm";
-import rejectionTrackingOptions from "react-native/Libraries/promiseRejectionTrackingOptions";
-
 export const WATCHLIST_SCHEMA = "Watchlist";
 export const PORTFOLIO_SCHEMA = "Portfolio";
 
+
 export const WatchListSchema = {
-  name: WATCHLIST_SCHEMA,
+name: WATCHLIST_SCHEMA,
   primaryKey: "symbol",
   properties: {
     symbol: "string",
@@ -33,7 +32,6 @@ export const deleteFavorites = coinId => new Promise((resolve, reject) => {
   Realm.open(dataBaseOptions).then(realm => {
     realm.write(() => {
       let deletingCoin = realm.objectForPrimaryKey(WATCHLIST_SCHEMA, coinId);
-      console.log(deletingCoin);
       realm.delete(deletingCoin);
       resolve();
     });

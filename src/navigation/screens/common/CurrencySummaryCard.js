@@ -24,7 +24,6 @@ const CurrencySummaryCard = (props) => {
   const [isFavoriteCoin,setIsFavoriteCoin] = useState(false);
 
   useEffect(() => {
-    console.log(favorites)
     const isFound = favorites.some(element => {
       if (element.symbol === item.symbol) {
         setIsFavoriteCoin(true)
