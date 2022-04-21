@@ -2,11 +2,9 @@ import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import CurrenciesList from "./screens/CurrenciesList";
 import PortfolioScreen from "./screens/PortfolioScreen";
-import AlertScreen from "./screens/AlertScreen";
 import SettingsScreen from "./screens/SettingsScreen";
-import WatchList from "./screens/WatchList";
+import {WatchListStackNavigator,CurrenciesListStackNavigator} from './../router/homeStacks';
 const Tab = createBottomTabNavigator();
 
 const currenciesList_screen = "Currency List";
@@ -29,7 +27,7 @@ const MainContainer = () => {
             left: 0,
             right: 0,
             elevation: 0,
-            backgroundColor: "#191a19",
+            backgroundColor: "#1C2834",
             height: 70,
             paddingBottom: 15,
           },
@@ -39,18 +37,27 @@ const MainContainer = () => {
             let rn = route.name;
             if (rn === watchList_screen) {
               iconName = focused ? "star" : "star-outline";
+              color = focused ? '#EFB90B' : color;
 
             } else if (rn === currenciesList_screen) {
               iconName = focused ? "list" : "list-outline";
+              color = focused ? '#EFB90B' : color;
+
 
             } else if (rn === portfolio_screen) {
               iconName = focused ? "wallet" : "wallet-outline";
+              color = focused ? '#EFB90B' : color;
+
 
             } else if (rn === alert_screen) {
               iconName = focused ? "alarm" : "alarm-outline";
+              color = focused ? '#EFB90B' : color;
+
 
             } else if (rn === settings_screen) {
               iconName = focused ? "settings" : "settings-outline";
+              color = focused ? '#EFB90B' : color;
+
             }
 
             // You can return any component that you like here!
@@ -60,10 +67,9 @@ const MainContainer = () => {
         })}
 
       >
-        <Tab.Screen component={WatchList} name={watchList_screen} />
-        <Tab.Screen component={CurrenciesList} name={currenciesList_screen} />
+        <Tab.Screen component={WatchListStackNavigator} name={watchList_screen} />
+        <Tab.Screen component={CurrenciesListStackNavigator} name={currenciesList_screen} />
         <Tab.Screen component={PortfolioScreen} name={portfolio_screen} />
-        <Tab.Screen component={AlertScreen} name={alert_screen} />
         <Tab.Screen component={SettingsScreen} name={settings_screen} />
       </Tab.Navigator>
     </NavigationContainer>

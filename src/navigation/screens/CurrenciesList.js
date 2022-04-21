@@ -7,7 +7,7 @@ import { insertFavorites, deleteFavorites, getAllFavorites, deleteAll } from "..
 import { useSelector, useDispatch } from "react-redux";
 import {addWatchList,removeWatchList} from '../../redux/action'
 
-const CurrenciesList = () => {
+const CurrenciesList = ({navigation}) => {
   const {watchedCoins} = useSelector(state => state.userReducer)
   const dispatch = useDispatch();
 
@@ -22,12 +22,13 @@ const CurrenciesList = () => {
     }).then(() => {
       getCurrencies("top100").then(res => {
         let data = res.data;
-        let currencies = data.map((item) => {
+        let currencies = data.map((item,index) => {
           return {
             name: item.name,
             symbol: item.symbol.toLowerCase(),
             price: item.quote.USD.price,
-            id:item.id
+            id:item.id,
+            key:index
           };
         });
         setCoins(currencies);
@@ -62,7 +63,7 @@ const CurrenciesList = () => {
 
   return (
     <View style={containerStyle}>
-      <Header headerText={"Takip Listesi"}></Header>
+      <Header headerText={"All Coins"}></Header>
       <FlatList data={coins}
                 initialNumToRender={5}
                 renderItem={({ item,index }) =>
@@ -71,7 +72,8 @@ const CurrenciesList = () => {
                                        addCurrencyToFavorite={addCurrencyToFavorite}
                                        deleteCurrencyFromFavorite={deleteCurrencyFromFavorite}
                                        favorites={favorites}
-
+                                       navigation={navigation}
+                                       key={index}
                                        getRealTimeData={false} />}
       />
 
@@ -81,7 +83,7 @@ const CurrenciesList = () => {
 const styles = {
   containerStyle: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: "#11161D",
   },
   textStyle: {
     fontWeight: "bold",

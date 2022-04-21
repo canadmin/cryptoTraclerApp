@@ -369,7 +369,7 @@ const LineChart = ({
                 width={tooltipWidth}
                 height={tooltipHeight}
                 onPress={() => Alert.alert(`${item.time}: ${item.value}`)}
-                fill={lineChartColor}
+                fill={'#EFB90B'}
               />
               <AnimatedSvgText
                 key={`tooltip text${index}`}
@@ -407,9 +407,9 @@ const LineChart = ({
       </View>
         <AnimatedSvg height="100%" width="100%" style={styles.svgStyle}>
           <Defs>
-            <LinearGradient id="gradient" x1="50%" y1="0%" x2="0%" y2="0%">
-              <Stop offset="0%" stopColor="grey" />
-              <Stop offset="100%" stopColor="transparent" />
+            <LinearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <Stop offset="0%" stopColor="#70A800" />
+              <Stop offset="100%" stopColor="#11161D" />
             </LinearGradient>
           </Defs>
           <AnimatedPath d={getDpathGradient()}

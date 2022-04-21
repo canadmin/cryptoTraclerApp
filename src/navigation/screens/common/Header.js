@@ -1,38 +1,52 @@
-import React from 'react'
-import {Text,View} from 'react-native'
+import React from "react";
+import { Text, View } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 const Header = (props) => {
-  const {textStyle,viewStyle} = styles;
-  const {headerText} = props;
+  const { textStyle, viewStyle } = styles;
+  const { headerText,isDetailScreen } = props;
   return (
     <View style={viewStyle}>
-      <Text style={textStyle}>
-        {headerText}
-      </Text>
+      <View style={{ flexDirection: "row", paddingLeft:10,paddingRight:10 }}>
+        { isDetailScreen && <View style={{ alignItems: 'flex-start' }}>
+          <Text>
+            <Ionicons name={"arrow-back-outline"} size={30} color={'#EFB90B'} />
+          </Text>
+        </View>}
+        <View style={{ flex: 1, alignItems:'center' }}>
+          <Text style={textStyle}>
+            {headerText}
+          </Text>
+        </View>
+        {isDetailScreen && <View style={{ alignItems: 'flex-start' }}>
+          <Text>
+            <Ionicons name={"md-star-sharp"} size={30} color={'#EFB90B'} />
+          </Text>
+        </View>}
+      </View>
     </View>
-  )
-}
+  );
+};
 
-
+//md-star-outline
 const styles = {
   textStyle: {
-    fontSize:25,
+    fontSize: 22,
     //textAlign:"center",
-    color:"#beafaf",
-    fontWeight:'bold'
+    color: "#EFB90B",
+    fontWeight: "normal",
   },
-  viewStyle:{
-    backgroundColor: "#5b5866",
-    height:60,
-    justifyContent: 'flex-start', // flex-end, flex-start
+  viewStyle: {
+    backgroundColor: "#2C3640",
+    height: 40,
+    justifyContent: "flex-start", // flex-end, flex-start
     //alignItems: flex-end , center, flex-start
-    alignItems:'center',
-    borderBottomLeftRadius:20,
-    borderBottomRightRadius:20,
-    shadowOffset:{width: 0, height: 2},
-    shadowOpacity:1,
-  }
+    alignItems: "center",
+    //borderBottomLeftRadius:20,
+    //borderBottomRightRadius:20,
+    //shadowOffset:{width: 0, height: 2},
+    shadowOpacity: 1,
+  },
 };
 
 export default Header;

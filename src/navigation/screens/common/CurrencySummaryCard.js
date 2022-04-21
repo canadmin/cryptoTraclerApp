@@ -9,6 +9,7 @@ const CurrencySummaryCard = (props) => {
   const {addCurrencyToFavorite,item,
     favorites,getRealTimeData,
     deleteCurrencyFromFavorite,
+    navigation,
   index} = props;
   const round = (value) => {
     if (value > 1) {
@@ -60,6 +61,9 @@ const CurrencySummaryCard = (props) => {
         console.log(err)
       }
     }
+    return () => {
+    setPrice(0)
+    };
   }, [item]);
 
   const wssConnection = (wss) => {
@@ -85,41 +89,44 @@ const CurrencySummaryCard = (props) => {
   }
 
   return (
-    <View>
-      <View style={containerStyle}>
-        <View style={{flex:1}}>
-          <Image style={coinImage} source={{uri:"https://s2.coinmarketcap.com/static/img/coins/64x64/"+item.id+".png"}}/>
+    <TouchableOpacity onPress={() => navigation.navigate("CoinDetailScreen",{name: item.name})}>
+      <View>
+        <View style={containerStyle}>
+          <View style={{flex:1}}>
+            <Image style={coinImage} source={{uri:"https://s2.coinmarketcap.com/static/img/coins/64x64/"+item.id+".png"}}/>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={textStyle}>
+              {item.name}
+            </Text>
+            <Text style={textStyle}>
+              {item.symbol.toUpperCase()}
+            </Text>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={isUp ? upPriceStyle : downPriceStyle}>
+              {price}$
+            </Text>
+          </View>
+          <View style={{alignItems:'flex-end' ,marginLeft:10}}>
+            <TouchableOpacity onPress={() => addFavorite({ symbol: item.symbol,
+              name: item.name})}>
+              <Ionicons name={isFavoriteCoin ? "star" : "star-outline"} size={30} color={'#a3bea3'} />
+            </TouchableOpacity>
+          </View>
         </View>
-        <View style={{ flex: 1 }}>
-          <Text style={textStyle}>
-            {item.name}
-          </Text>
-          <Text style={textStyle}>
-            {item.symbol.toUpperCase()}
-          </Text>
-        </View>
-        <View style={{ flex: 1 }}>
-          <Text style={isUp ? upPriceStyle : downPriceStyle}>
-            {price}$
-          </Text>
-        </View>
-        <View style={{alignItems:'flex-end' ,marginLeft:10}}>
-          <TouchableOpacity onPress={() => addFavorite({ symbol: item.symbol,
-          name: item.name})}>
-            <Ionicons name={isFavoriteCoin ? "star" : "star-outline"} size={30} color={'#a3bea3'} />
-          </TouchableOpacity>
-        </View>
+        <View
+          style={{
+            borderWidth: 0.4,
+            opacity: 0.1,
+            borderColor: "white",
+            marginLeft: 25,
+            marginRight: 25,
+          }}
+        />
       </View>
-      <View
-        style={{
-          borderWidth: 0.4,
-          opacity: 0.1,
-          borderColor: "white",
-          marginLeft: 25,
-          marginRight: 25,
-        }}
-      />
-    </View>);
+    </TouchableOpacity>
+    );
 };
 
 const styles = {

@@ -42,10 +42,10 @@ const App = () => {
 
   return(
     <Provider store={store}>
-      <SafeAreaView style={{flex:1,backgroundColor:'#5b5866'}}>
+      <SafeAreaView style={{flex:1,backgroundColor:'#2C3640'}}>
         <StatusBar
           animated={true}
-          backgroundColor="#5b5866"
+          backgroundColor="#1C2834"
           barStyle={statusBarStyle}
           showHideTransition={statusBarTransition}
           hidden={false}

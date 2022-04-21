@@ -9,6 +9,7 @@ const PortfolioScreen = () => {
 
   return (
     <View style={containerStyle}>
+      <Header headerText={"My Portfolio"}></Header>
             <LineChart
             line_chart_data={[{time:'11 Feb', value:3422},
               {time:'12 Feb', value:3035.17},
@@ -28,7 +29,7 @@ const PortfolioScreen = () => {
 const styles = {
   containerStyle : {
     flex :1,
-    backgroundColor: "#000",
+    backgroundColor: "#11161D",
 
   },
   portfolioHeader:{
