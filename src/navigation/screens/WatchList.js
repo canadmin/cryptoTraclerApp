@@ -31,11 +31,18 @@ const WatchList = ({navigation}) => {
           let data = res.data;
           let currencies = data.map((item,index) => {
             return {
-              name: item.name,
+              ...item,
               symbol: item.symbol.toLowerCase(),
               price: item.quote.USD.price,
-              id: item.id,
-              key:index
+              key:index,
+              percent_change_1h:item.quote.USD.percent_change_24h,
+              percent_change_24h:item.quote.USD.percent_change_24h,
+              percent_change_7d:item.quote.USD.percent_change_7d,
+              percent_change_30d:item.quote.USD.percent_change_30d,
+              percent_change_60d:item.quote.USD.percent_change_60d,
+              percent_change_90d:item.quote.USD.percent_change_90d,
+              market_cap:item.quote.USD.market_cap,
+
             };
           });
           setCoins(currencies);
@@ -67,7 +74,8 @@ const WatchList = ({navigation}) => {
 
                 renderItem={({ item, index }) => {
                   if (item.add) {
-                    return(                    <TouchableOpacity onPress={() => Alert.alert(`Coin Arama ve Ekleme modalı açılacak`)}>
+                    return(
+                      <TouchableOpacity onPress={() => Alert.alert(`Coin Arama ve Ekleme modalı açılacak`)}>
                         <View style={addWatchListButton}>
                           <Ionicons name={"add-sharp"} size={30} color={'#EFB90B'} />
                           <Text style={{ color: "white" }}>

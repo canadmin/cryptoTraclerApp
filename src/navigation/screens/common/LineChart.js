@@ -211,7 +211,7 @@ const LineChart = ({
                       x2={animated_x_axis_width}
                       y2={x_axis_y2_point}
                       stroke={axisColor}
-                      strokeWidth={1} />
+                      strokeWidth={0} />
 
         <AnimatedLine key="y-axis"
                       x1={y_axis_x1_point}
@@ -219,7 +219,7 @@ const LineChart = ({
                       x2={y_axis_x2_point}
                       y2={y_axis_y2_point}
                       stroke={axisColor}
-                      strokeWidth={1} />
+                      strokeWidth={0} />
       </G>);
   };
 
@@ -450,6 +450,27 @@ const LineChart = ({
           )}
           horizontal
         />
+
+        <View style={styles.periodArea}>
+          <View style={styles.period}>
+            <Text style={styles.periodText}>1d</Text>
+          </View>
+          <View style={styles.period}>
+            <Text style={styles.periodText}>7d</Text>
+          </View>
+          <View style={styles.period}>
+            <Text style={styles.periodText}>1m</Text>
+          </View>
+          <View style={styles.period}>
+            <Text style={styles.periodText}>3m</Text>
+          </View>
+          <View style={styles.period}>
+            <Text style={styles.periodText}>6m</Text>
+          </View>
+          <View style={styles.period}>
+            <Text style={styles.periodText}>1y</Text>
+          </View>
+        </View>
     </View>
   );
 };

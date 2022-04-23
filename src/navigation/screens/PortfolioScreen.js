@@ -26,6 +26,7 @@ const PortfolioScreen = () => {
             circleColor={"#daa520"}
             axisColor={"#9dd"}
             axisLabelFontSize={9}
+            renderCircleAndRect={false}
             showGradient={true}
             />
   </View>)

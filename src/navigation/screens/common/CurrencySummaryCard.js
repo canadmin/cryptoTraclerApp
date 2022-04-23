@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity } from "react-native";
 import Colors from "../../../Colors";
 import { getCurrenciesFromExtarnalApi, getImage } from "../../../reducers/CryptoApiService";
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {round} from "../../../helper/Utils";
 
 const CurrencySummaryCard = (props) => {
  // eğer getRealTimeData true ise websocket bağlantısı yapılacak.
@@ -12,13 +13,7 @@ const CurrencySummaryCard = (props) => {
     navigateAndAddPageHistory,
     navigation,
   index} = props;
-  const round = (value) => {
-    if (value > 1) {
-      return Number(Math.round(value + "e" + 2) + "e-" + 2);
-    }else{
-      return Number(Math.round(value + "e" + 8) + "e-" + 8);
-    }
-  };
+
   const { containerStyle, textStyle, upPriceStyle, downPriceStyle, coinImage } = styles;
   const [price, setPrice] = useState(round(item.price));
   const [isUp, setIsUp] = useState(true);
@@ -53,6 +48,7 @@ const CurrencySummaryCard = (props) => {
         let wss = new WebSocket("wss://stream.binance.com:9443/ws/" + item.symbol + "usdt@kline_1m");
         wssConnection(wss);
         return () => {
+          setPrice(null)
           wss.close();
           if(index < 100){
             clearInterval(interval);
@@ -91,7 +87,7 @@ const CurrencySummaryCard = (props) => {
 
 
   return (
-    <TouchableOpacity onPress={() => navigateAndAddPageHistory("CoinDetailScreen",{name: item.name},"Watchlist")}>
+    <TouchableOpacity onPress={() => navigateAndAddPageHistory("CoinDetailScreen",{name: item.name,coin:item},"Watchlist")}>
       <View>
         <View style={containerStyle}>
           <View style={{flex:1}}>

@@ -24,11 +24,17 @@ const CurrenciesList = ({navigation}) => {
         let data = res.data;
         let currencies = data.map((item,index) => {
           return {
-            name: item.name,
+            ...item,
             symbol: item.symbol.toLowerCase(),
             price: item.quote.USD.price,
-            id:item.id,
-            key:index
+            key:index,
+            percent_change_1h:item.quote.USD.percent_change_24h,
+            percent_change_24h:item.quote.USD.percent_change_24h,
+            percent_change_7d:item.quote.USD.percent_change_7d,
+            percent_change_30d:item.quote.USD.percent_change_30d,
+            percent_change_60d:item.quote.USD.percent_change_60d,
+            percent_change_90d:item.quote.USD.percent_change_90d,
+            market_cap:item.quote.USD.market_cap,
           };
         });
         setCoins(currencies);
@@ -64,23 +70,24 @@ const CurrenciesList = ({navigation}) => {
     navigation.navigate(route,param);
     dispatch(addPageHistory("CurrenciesList"))
   }
-
+  const renderItem = ({ item,index}) => (
+    <CurrencySummaryCard item={item}
+                         index={index}
+                         addCurrencyToFavorite={addCurrencyToFavorite}
+                         deleteCurrencyFromFavorite={deleteCurrencyFromFavorite}
+                         favorites={favorites}
+                         navigation={navigation}
+                         key={index}
+                         navigateAndAddPageHistory={navigateAndAddPageHistory}
+                         getRealTimeData={true} />
+  );
 
   return (
     <View style={containerStyle}>
       <Header headerText={"All Coins"} />
       <FlatList data={coins}
                 initialNumToRender={5}
-                renderItem={({ item,index }) =>
-                  <CurrencySummaryCard item={item}
-                                       index={index}
-                                       addCurrencyToFavorite={addCurrencyToFavorite}
-                                       deleteCurrencyFromFavorite={deleteCurrencyFromFavorite}
-                                       favorites={favorites}
-                                       navigation={navigation}
-                                       key={index}
-                                       navigateAndAddPageHistory={navigateAndAddPageHistory}
-                                       getRealTimeData={false} />}
+                renderItem={renderItem}
       />
 
     </View>);
