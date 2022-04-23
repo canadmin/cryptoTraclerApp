@@ -3,6 +3,7 @@ import { View, Dimensions, Animated, Text,Easing,Alert,StyleSheet } from "react-
 import Svg, { G, Line, Circle, Text as SvgText, Path, Rect, Defs, LinearGradient, Stop } from "react-native-svg";
 import * as path  from "svg-path-properties";
 import { styles } from "./styles";
+import TimePeriod from "./TimePeriod";
 const window_width = Dimensions.get("window").width;
 
 
@@ -43,6 +44,9 @@ const LineChart = ({
       return Number(Math.round(value + "e" + 8) + "e-" + 8);
     }
   };
+
+
+
   const x_axis_x1_point = marginFor_x_fromLeft;
   const x_axis_y1_point = containerHeight - marginFor_y_fromBottom;
   const x_axis_x2_point = window_width - padding_from_screenBorder;
@@ -179,6 +183,8 @@ const LineChart = ({
       useNativeDriver: true,
     }).start();
   };
+
+
 
 
   const render_x_y_axis = () => {
@@ -450,27 +456,7 @@ const LineChart = ({
           )}
           horizontal
         />
-
-        <View style={styles.periodArea}>
-          <View style={styles.period}>
-            <Text style={styles.periodText}>1d</Text>
-          </View>
-          <View style={styles.period}>
-            <Text style={styles.periodText}>7d</Text>
-          </View>
-          <View style={styles.period}>
-            <Text style={styles.periodText}>1m</Text>
-          </View>
-          <View style={styles.period}>
-            <Text style={styles.periodText}>3m</Text>
-          </View>
-          <View style={styles.period}>
-            <Text style={styles.periodText}>6m</Text>
-          </View>
-          <View style={styles.period}>
-            <Text style={styles.periodText}>1y</Text>
-          </View>
-        </View>
+      <TimePeriod/>
     </View>
   );
 };

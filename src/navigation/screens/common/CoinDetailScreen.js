@@ -43,7 +43,6 @@ const CoinDetailScreen = ({navigation,route}) => {
     };
   };
   useEffect(() => {
-
     let wss = new WebSocket("wss://stream.binance.com:9443/ws/" + coin.symbol + "usdt@kline_1m");
     wssConnection(wss);
 
@@ -90,6 +89,7 @@ const CoinDetailScreen = ({navigation,route}) => {
         lineChartColor={'#70A800'}
         renderCircleAndRect={false}
       />
+
       <TouchableOpacity onPress={() => Alert.alert(`Portfolio ekleme modalı açılacak`)}>
         <View style={addToPortfolioButton}>
           <Ionicons name={"add-sharp"} size={30} color={'#EFB90B'} />
