@@ -10,6 +10,10 @@ const PortfolioScreen = () => {
   return (
     <View style={containerStyle}>
       <Header headerText={"My Portfolio"}></Header>
+      <View>
+        <Text style={{marginTop: 5, color:"white"}}>Total Value : 124,534.34 $ </Text>
+        <Text style={{marginTop: 5, color:"white"}}>Change  : 8.33 % </Text>
+      </View>
             <LineChart
             line_chart_data={[{time:'11 Feb', value:3422},
               {time:'12 Feb', value:3035.17},
@@ -22,6 +26,7 @@ const PortfolioScreen = () => {
             circleColor={"#daa520"}
             axisColor={"#9dd"}
             axisLabelFontSize={9}
+            showGradient={true}
             />
   </View>)
 };

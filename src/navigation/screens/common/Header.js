@@ -1,18 +1,31 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { Text, View,TouchableOpacity } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 const Header = (props) => {
+  const { headerText,isDetailScreen, handleHeaderBackOnPress } = props;
   const { textStyle, viewStyle } = styles;
-  const { headerText,isDetailScreen } = props;
+
+  const back = () => {
+    console.log("back")
+    console.log(props)
+    handleHeaderBackOnPress()
+  }
+
   return (
     <View style={viewStyle}>
       <View style={{ flexDirection: "row", paddingLeft:10,paddingRight:10 }}>
-        { isDetailScreen && <View style={{ alignItems: 'flex-start' }}>
-          <Text>
-            <Ionicons name={"arrow-back-outline"} size={30} color={'#EFB90B'} />
-          </Text>
-        </View>}
+        { isDetailScreen &&
+        <TouchableOpacity onPress={() => back("pageHistory")}>
+
+        <View style={{ alignItems: 'flex-start' }}>
+            <Text>
+              <Ionicons name={"arrow-back-outline"} size={30} color={'#EFB90B'} />
+            </Text>
+
+        </View>
+        </TouchableOpacity>
+        }
         <View style={{ flex: 1, alignItems:'center' }}>
           <Text style={textStyle}>
             {headerText}

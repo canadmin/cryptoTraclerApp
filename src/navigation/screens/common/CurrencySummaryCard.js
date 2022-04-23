@@ -9,6 +9,7 @@ const CurrencySummaryCard = (props) => {
   const {addCurrencyToFavorite,item,
     favorites,getRealTimeData,
     deleteCurrencyFromFavorite,
+    navigateAndAddPageHistory,
     navigation,
   index} = props;
   const round = (value) => {
@@ -88,8 +89,9 @@ const CurrencySummaryCard = (props) => {
 
   }
 
+
   return (
-    <TouchableOpacity onPress={() => navigation.navigate("CoinDetailScreen",{name: item.name})}>
+    <TouchableOpacity onPress={() => navigateAndAddPageHistory("CoinDetailScreen",{name: item.name},"Watchlist")}>
       <View>
         <View style={containerStyle}>
           <View style={{flex:1}}>

@@ -25,7 +25,9 @@ const LineChart = ({
                      lineChartWidth = 2,
                      tooltipHeight = 20,
                      tooltipWidth=40,
-                     cursorRadius= 10
+                     cursorRadius= 10,
+                     showGradient = true,
+                     renderCircleAndRect=true
                    }) => {
 
 
@@ -209,7 +211,7 @@ const LineChart = ({
                       x2={animated_x_axis_width}
                       y2={x_axis_y2_point}
                       stroke={axisColor}
-                      strokeWidth={0} />
+                      strokeWidth={1} />
 
         <AnimatedLine key="y-axis"
                       x1={y_axis_x1_point}
@@ -217,7 +219,7 @@ const LineChart = ({
                       x2={y_axis_x2_point}
                       y2={y_axis_y2_point}
                       stroke={axisColor}
-                      strokeWidth={0} />
+                      strokeWidth={1} />
       </G>);
   };
 
@@ -399,23 +401,26 @@ const LineChart = ({
     xx.addListener(({ value }) =>  moveCursor(value));
     moveCursor(0 )
   },[pathLength])
+
+
   return (
     <View style={[styles.swgWrapper, { height: containerHeight}]} >
-      <View>
-        <Text style={{marginTop: 5, color:"white"}}>Total Value : 124,534.34 $ </Text>
-        <Text style={{marginTop: 5, color:"white"}}>Change  : 8.33 % </Text>
-      </View>
         <AnimatedSvg height="100%" width="100%" style={styles.svgStyle}>
-          <Defs>
-            <LinearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <Stop offset="0%" stopColor="#70A800" />
-              <Stop offset="100%" stopColor="#11161D" />
-            </LinearGradient>
-          </Defs>
-          <AnimatedPath d={getDpathGradient()}
-                        opacity={animated_field_opacity}
-                        fill={"url(#gradient)"}
-                        stroke={"transparent"}/>
+          {showGradient &&
+            <>
+              <Defs>
+                <LinearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <Stop offset="0%" stopColor="#70A800" />
+                  <Stop offset="100%" stopColor="#11161D" />
+                </LinearGradient>
+              </Defs>
+              <AnimatedPath d={getDpathGradient()}
+                            opacity={animated_field_opacity}
+                            fill={"url(#gradient)"}
+                            stroke={"transparent"}/>
+            </>
+      }
+
 
           {render_x_y_axis()}
           {render_x_label_and_ticks()}
@@ -423,7 +428,7 @@ const LineChart = ({
 
           {render_lineChart_path()}
 
-          {render_lineChart_circles()}
+          {renderCircleAndRect && render_lineChart_circles()}
           <View style={styles.cursor} ref={cursor}></View>
         </AnimatedSvg>
         <Animated.ScrollView

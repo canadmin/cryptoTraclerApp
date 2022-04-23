@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList,Alert } from "react-native";
+import { View, Text, FlatList,Alert,TouchableOpacity } from "react-native";
 import CurrencySummaryCard from "./common/CurrencySummaryCard";
 import Header from "./common/Header";
 import { getCryptoInfo } from "../../reducers/CryptoApiService";
 import { deleteFavorites, getAllFavorites } from "../../storage/allSchema";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { useDispatch } from "react-redux";
+import { addPageHistory } from "../../redux/action";
 
 const WatchList = ({navigation}) => {
+
+  const dispatch = useDispatch();
+
   const { containerStyle, textStyle, addWatchListButton } = styles;
   const [coins, setCoins] = useState([]);
   const [favorites, setFavorites] = useState([]);
@@ -40,13 +44,23 @@ const WatchList = ({navigation}) => {
       });
     });
   }, []);
+
+
   const deleteCurrencyFromFavorite = (coin) => {
     deleteFavorites(coin.symbol).then(() => {
     });
   };
+
+
+  const navigateAndAddPageHistory = (route,param) => {
+    navigation.navigate(route,param);
+    dispatch(addPageHistory("WatchList"))
+  }
+
+
   return (
     <View style={containerStyle}>
-      <Header headerText={"Watch List"}></Header>
+      <Header headerText={"Watch List"} />
       {coins.length > 0 &&
       <FlatList data={[...coins, { add: true }]}
                 initialNumToRender={5}
@@ -68,6 +82,7 @@ const WatchList = ({navigation}) => {
                                                 favorites={favorites}
                                                 deleteCurrencyFromFavorite={deleteCurrencyFromFavorite}
                                                 navigation={navigation}
+                                                navigateAndAddPageHistory={navigateAndAddPageHistory}
                                                 getRealTimeData={true} />;
                   }
                 }
