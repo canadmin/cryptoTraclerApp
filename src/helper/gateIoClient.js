@@ -20,7 +20,5 @@ export const request = (options) => {
   })
     .then((response) => {
     })
-    .catch((error) => {
-      console.log(error.response);
-    });
+
 };

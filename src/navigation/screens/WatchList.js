@@ -46,9 +46,7 @@ const WatchList = ({navigation}) => {
             };
           });
           setCoins(currencies);
-        }).catch((er) => {
-        console.log(er);
-      });
+        })
     });
   }, []);
 

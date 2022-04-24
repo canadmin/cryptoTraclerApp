@@ -55,7 +55,6 @@ const CurrencySummaryCard = (props) => {
           }
         };
       }catch (err){
-        console.log(err)
       }
     }
     return () => {

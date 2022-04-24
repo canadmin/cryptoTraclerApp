@@ -4,6 +4,7 @@ import CurrenciesList from "../navigation/screens/CurrenciesList";
 import CoinDetailScreen from "../navigation/screens/common/CoinDetailScreen";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
 const Stack = createNativeStackNavigator();
 
 
@@ -13,6 +14,8 @@ export const WatchListStackNavigator = () => {
        screenOptions={({ route }) => ({
           tabBarShowLabel: false,
           headerShown: false,
+          gestureEnabled:true,
+          gestureDirection:'horizontal',
        })}>
         <Stack.Screen name={"WatchList"}
         component={WatchList}/>

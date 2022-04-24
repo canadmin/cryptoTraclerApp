@@ -14,7 +14,7 @@ const TRANSITIONS = ['fade', 'slide', 'none'];
 
 const App = () => {
 
-  const [statusBarStyle, setStatusBarStyle] = useState(STYLES[2]);
+  const [statusBarStyle, setStatusBarStyle] = useState(STYLES[3]);
   const [statusBarTransition, setStatusBarTransition] = useState(TRANSITIONS[0]);
   const changeStatusBarStyle = () => {
     const styleId = STYLES.indexOf(statusBarStyle) + 1;
@@ -45,7 +45,7 @@ const App = () => {
       <SafeAreaView style={{flex:1,backgroundColor:'#2C3640'}}>
         <StatusBar
           animated={true}
-          backgroundColor="#1C2834"
+          backgroundColor="#2C3640"
           barStyle={statusBarStyle}
           showHideTransition={statusBarTransition}
           hidden={false}

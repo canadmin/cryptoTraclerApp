@@ -7,8 +7,6 @@ const Header = (props) => {
   const { textStyle, viewStyle } = styles;
 
   const back = () => {
-    console.log("back")
-    console.log(props)
     handleHeaderBackOnPress()
   }
 

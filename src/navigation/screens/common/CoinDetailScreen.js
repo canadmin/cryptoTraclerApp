@@ -89,15 +89,12 @@ const CoinDetailScreen = ({navigation,route}) => {
         lineChartColor={'#70A800'}
         renderCircleAndRect={false}
       />
-
-      <TouchableOpacity onPress={() => Alert.alert(`Portfolio ekleme modalı açılacak`)}>
-        <View style={addToPortfolioButton}>
+        < TouchableOpacity onPress={() => Alert.alert(`Portfolio ekleme modalı açılacak`)} style={addToPortfolioButton}>
           <Ionicons name={"add-sharp"} size={30} color={'#EFB90B'} />
           <Text style={{ color: "white" }}>
             Add To Portfolio
           </Text>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
       <View style={{marginTop:50,marginRight:30,marginLeft:45}}>
         <View>
           <Text style={styles.priceStyle}>Overview</Text>
