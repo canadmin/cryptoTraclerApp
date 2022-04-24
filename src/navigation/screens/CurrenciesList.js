@@ -48,7 +48,6 @@ const CurrenciesList = ({navigation}) => {
   }, []);
 
   useEffect( () => {
-    console.log(watchedCoins);
     return () => {
 
     }
