@@ -20,6 +20,7 @@ const MainContainer = () => {
         initialRouteName={watchList_screen}
         screenOptions={({ route }) => ({
           tabBarShowLabel: false,
+          unmountOnBlur: true,
           headerShown: false,
           tabBarStyle: {
             position: "relative",

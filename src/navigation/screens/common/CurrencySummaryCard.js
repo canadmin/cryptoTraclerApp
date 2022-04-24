@@ -12,9 +12,11 @@ const CurrencySummaryCard = (props) => {
     deleteCurrencyFromFavorite,
     navigateAndAddPageHistory,
     navigation,
+    searchFromModal,
+    searchFromCurrencyList,
   index} = props;
 
-  const { containerStyle, textStyle, upPriceStyle, downPriceStyle, coinImage } = styles;
+  const { containerStyle, textStyle, upPriceStyle, downPriceStyle, coinImage} = styles;
   const [price, setPrice] = useState(round(item.price));
   const [isUp, setIsUp] = useState(true);
   const [image,setImage] = useState({img:"https://s2.coinmarketcap.com/static/img/coins/64x64/1.png"});
@@ -26,41 +28,45 @@ const CurrencySummaryCard = (props) => {
         setIsFavoriteCoin(true)
       }
     });
-
-    let interval = null;
-    if(index < 100){
-     interval = setInterval(() => {
-      getCurrenciesFromExtarnalApi(item.symbol).then(response => {
-        let externalData = response.data;
-        if(externalData.last && externalData.last > 0 ){
-          setPrice(round(externalData.last))
-        }
-      });
-      }, 10000);
-    }
-    getImage(item.symbol)
-      .then(response => {
-        setImage({img:response.data.img})
-      })
-
-    if(getRealTimeData) {
-      try{
-        let wss = new WebSocket("wss://stream.binance.com:9443/ws/" + item.symbol + "usdt@kline_1m");
-        wssConnection(wss);
-        return () => {
-          setPrice(null)
-          wss.close();
-          if(index < 100){
-            clearInterval(interval);
-          }
-        };
-      }catch (err){
+    if(!searchFromModal){
+      let interval = null;
+      if(index < 100){
+        interval = setInterval(() => {
+          getCurrenciesFromExtarnalApi(item.symbol).then(response => {
+            let externalData = response.data;
+            if(externalData.last && externalData.last > 0 ){
+              setPrice(round(externalData.last))
+            }
+          });
+        }, 10000);
       }
+      getImage(item.symbol)
+        .then(response => {
+          setImage({img:response.data.img})
+        })
+
+      if(getRealTimeData) {
+        try{
+          let wss = new WebSocket("wss://stream.binance.com:9443/ws/" + item.symbol + "usdt@kline_1m");
+          setPrice(round(item.price))
+          wssConnection(wss);
+          return () => {
+            setPrice(null)
+            wss.close();
+            if(index < 100){
+              clearInterval(interval);
+            }
+          };
+        }catch (err){
+        }
+      }
+      return () => {
+        setPrice(0)
+      };
     }
-    return () => {
-    setPrice(0)
-    };
+
   }, [item]);
+
 
   const wssConnection = (wss) => {
     wss.onmessage = (msg) => {
@@ -86,7 +92,7 @@ const CurrencySummaryCard = (props) => {
 
 
   return (
-    <TouchableOpacity onPress={() => navigateAndAddPageHistory("CoinDetailScreen",{name: item.name,coin:item},"Watchlist")}>
+    <TouchableOpacity disabled={searchFromModal} onPress={() => navigateAndAddPageHistory("CoinDetailScreen",{name: item.name,coin:item},"Watchlist")}>
       <View>
         <View style={containerStyle}>
           <View style={{flex:1}}>
@@ -100,15 +106,15 @@ const CurrencySummaryCard = (props) => {
               {item.symbol.toUpperCase()}
             </Text>
           </View>
-          <View style={{ flex: 1 }}>
+          {!searchFromModal && <View style={{ flex: 1 }}>
             <Text style={isUp ? upPriceStyle : downPriceStyle}>
               {price}$
             </Text>
-          </View>
+          </View>}
           <View style={{alignItems:'flex-end' ,marginLeft:10}}>
             <TouchableOpacity onPress={() => addFavorite({ symbol: item.symbol,
               name: item.name})}>
-              <Ionicons name={isFavoriteCoin ? "star" : "star-outline"} size={30} color={'#a3bea3'} />
+              <Ionicons name={isFavoriteCoin ? "md-star-sharp" : "md-star-outline"} size={30} color={'#EFB90B'} />
             </TouchableOpacity>
           </View>
         </View>
@@ -150,7 +156,7 @@ const styles = {
     fontWeight: "bold",
     color: Colors.darkLowPrice,
     fontSize: 16,
-    textAlign: "center",
+    textAlign: "right",
   },
   coinImage : {
     flex: 1, marginTop:10, marginRight:10, marginBottom: 10,

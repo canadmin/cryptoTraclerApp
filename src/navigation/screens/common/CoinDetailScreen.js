@@ -234,7 +234,8 @@ const styles = {
     flex:2
 
   },
-  changePercentAreaUp:{backgroundColor:'#70A800',
+  changePercentAreaUp:{
+    backgroundColor:'#70A800',
     color:'#ffffff',
     alignSelf:'flex-end',
     justifyContent:'center',

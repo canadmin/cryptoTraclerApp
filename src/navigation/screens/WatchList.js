@@ -5,16 +5,20 @@ import Header from "./common/Header";
 import { getCryptoInfo } from "../../reducers/CryptoApiService";
 import { deleteFavorites, getAllFavorites } from "../../storage/allSchema";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { useDispatch } from "react-redux";
-import { addPageHistory } from "../../redux/action";
+import { useDispatch, useSelector, } from "react-redux";
+import { addPageHistory, removeWatchList } from "../../redux/action";
+import AddCoinToFavModal from '../screens/common/AddCoinToFavModal';
 
-const WatchList = ({navigation}) => {
+const WatchList = (props) => {
 
+  const {navigation} = props;
   const dispatch = useDispatch();
+  const watchedCoins = useSelector((state) =>state.userReducer.watchedCoins);
 
   const { containerStyle, textStyle, addWatchListButton } = styles;
-  const [coins, setCoins] = useState([]);
+  const [coins, setCoins] = useState(watchedCoins);
   const [favorites, setFavorites] = useState([]);
+  const [showModal,setShowModal] = useState(false);
 
   useEffect(() => {
     let favorites = "";
@@ -48,11 +52,12 @@ const WatchList = ({navigation}) => {
           setCoins(currencies);
         })
     });
-  }, []);
+  }, [watchedCoins]);
 
 
   const deleteCurrencyFromFavorite = (coin) => {
     deleteFavorites(coin.symbol).then(() => {
+      dispatch(removeWatchList(coin))
     });
   };
 
@@ -61,6 +66,7 @@ const WatchList = ({navigation}) => {
     navigation.navigate(route,param);
     dispatch(addPageHistory("WatchList"))
   }
+
 
 
   return (
@@ -73,7 +79,7 @@ const WatchList = ({navigation}) => {
                 renderItem={({ item, index }) => {
                   if (item.add) {
                     return(
-                      <TouchableOpacity onPress={() => Alert.alert(`Coin Arama ve Ekleme modalı açılacak`)}>
+                      <TouchableOpacity onPress={() => setShowModal(true)}>
                         <View style={addWatchListButton}>
                           <Ionicons name={"add-sharp"} size={30} color={'#EFB90B'} />
                           <Text style={{ color: "white" }}>
@@ -94,7 +100,7 @@ const WatchList = ({navigation}) => {
                 }
                 }
       />}
-
+      {showModal && <AddCoinToFavModal setShowModal={setShowModal} showModal={showModal}/>}
     </View>);
 };
 
@@ -119,5 +125,9 @@ const styles = {
   }
 };
 
+
+
+
 export default WatchList;
+
 

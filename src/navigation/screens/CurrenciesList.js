@@ -47,11 +47,7 @@ const CurrenciesList = ({navigation}) => {
     }
   }, []);
 
-  useEffect( () => {
-    return () => {
 
-    }
-  },[watchedCoins])
 
   const addCurrencyToFavorite = (coin) => {
     insertFavorites({ symbol: coin.symbol, name: coin.name }).then((res) => {
@@ -78,7 +74,7 @@ const CurrenciesList = ({navigation}) => {
                          navigation={navigation}
                          key={index}
                          navigateAndAddPageHistory={navigateAndAddPageHistory}
-                         getRealTimeData={true} />
+                         getRealTimeData={false} />
   );
 
   return (

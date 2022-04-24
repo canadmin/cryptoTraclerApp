@@ -3,17 +3,21 @@ import { Text, View,TouchableOpacity } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 const Header = (props) => {
-  const { headerText,isDetailScreen, handleHeaderBackOnPress } = props;
+  const { headerText,isDetailScreen, handleHeaderBackOnPress ,isModal,setShowModal} = props;
   const { textStyle, viewStyle } = styles;
 
   const back = () => {
-    handleHeaderBackOnPress()
+    if(isModal){
+      setShowModal(false)
+    }else {
+      handleHeaderBackOnPress()
+    }
   }
 
   return (
     <View style={viewStyle}>
       <View style={{ flexDirection: "row", paddingLeft:10,paddingRight:10 }}>
-        { isDetailScreen &&
+        { (isDetailScreen || isModal) &&
         <TouchableOpacity onPress={() => back("pageHistory")}>
 
         <View style={{ alignItems: 'flex-start' }}>
@@ -56,7 +60,6 @@ const styles = {
     //borderBottomLeftRadius:20,
     //borderBottomRightRadius:20,
     //shadowOffset:{width: 0, height: 2},
-    shadowOpacity: 1,
   },
 };
 

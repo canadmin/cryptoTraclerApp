@@ -35,7 +35,7 @@ const TimePeriod = (props) => {
     <View>
       <View style={styles.periodArea}>
       {toggleGroup.map((item,index) => (
-        <TouchableOpacity onPress={() => setToggle(index)}>
+        <TouchableOpacity onPress={() => setToggle(index)} key={index+`-period`}>
           <View style={item.isActive?styles.activePeriod:styles.passivePeriod}>
             <Text style={item.isActive? styles.periodTextActive:
               styles.periodTextPassive}>{item.periodName}</Text>
