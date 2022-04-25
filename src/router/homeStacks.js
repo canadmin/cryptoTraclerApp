@@ -1,21 +1,45 @@
 import React from "react";
+import {Animated,Easing} from 'react-native'
 import WatchList from "../navigation/screens/WatchList";
 import CurrenciesList from "../navigation/screens/CurrenciesList";
 import CoinDetailScreen from "../navigation/screens/common/CoinDetailScreen";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator,CardStyleInterpolators } from '@react-navigation/stack';
 
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator();
 
 
+const config = {
+  animation: 'spring',
+  config: {
+    stiffness: 1000,
+    damping: 50,
+    mass: 3,
+    overshootClamping: false,
+    restDisplacementThreshold: 0.01,
+    restSpeedThreshold: 0.01,
+  }
+}
+
+const closeConfig = {
+  animation: 'timing',
+  config: {
+    duration: 200,
+    easing: Easing.linear,
+  }
+}
 export const WatchListStackNavigator = () => {
    return (
      <Stack.Navigator
        screenOptions={({ route }) => ({
           tabBarShowLabel: false,
           headerShown: false,
-          gestureEnabled:true,
-          gestureDirection:'horizontal',
+         gestureDirection: 'horizontal',
+         transitionSpec: {
+           open: config,
+           close: closeConfig,
+         },
+         cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS,
        })}>
         <Stack.Screen name={"WatchList"}
         component={WatchList}/>
@@ -31,6 +55,12 @@ export const CurrenciesListStackNavigator = () => {
       screenOptions={({ route }) => ({
         tabBarShowLabel: false,
         headerShown: false,
+        gestureDirection: 'horizontal',
+        transitionSpec: {
+          open: config,
+          close: closeConfig,
+        },
+        cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS,
       })}>
       <Stack.Screen name={"CurrenciesList"}
                     component={CurrenciesList}/>
