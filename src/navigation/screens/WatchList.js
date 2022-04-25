@@ -92,6 +92,10 @@ const WatchList = (props) => {
                     return <CurrencySummaryCard item={item}
                                                 index={index}
                                                 favorites={favorites}
+                                                initialNumToRender={10}
+                                                windowSize={5}
+                                                maxToRenderPerBatch={5}
+                                                updateCellsBatchingPeriod={30}
                                                 deleteCurrencyFromFavorite={deleteCurrencyFromFavorite}
                                                 navigation={navigation}
                                                 navigateAndAddPageHistory={navigateAndAddPageHistory}

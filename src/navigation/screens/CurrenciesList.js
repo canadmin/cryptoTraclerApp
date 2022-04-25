@@ -73,6 +73,10 @@ const CurrenciesList = ({navigation}) => {
                          favorites={favorites}
                          navigation={navigation}
                          key={index}
+                         initialNumToRender={10}
+                         windowSize={5}
+                         maxToRenderPerBatch={5}
+                         updateCellsBatchingPeriod={30}
                          navigateAndAddPageHistory={navigateAndAddPageHistory}
                          getRealTimeData={false} />
   );
