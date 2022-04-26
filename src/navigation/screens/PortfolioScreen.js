@@ -9,7 +9,7 @@ const PortfolioScreen = () => {
 
   return (
     <View style={containerStyle}>
-      <Header headerText={"My Portfolio"}></Header>
+      <Header headerText={"My Portfolio"} isPortfolioScreen={true}/>
       <View>
         <Text style={{marginTop: 5, color:"white"}}>Total Value : 124,534.34 $ </Text>
         <Text style={{marginTop: 5, color:"white"}}>Change  : 8.33 % </Text>

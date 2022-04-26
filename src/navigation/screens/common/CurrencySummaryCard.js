@@ -29,6 +29,7 @@ const CurrencySummaryCard = (props) => {
       }
     });
     if(!searchFromModal){
+      let intervalTime = getRealTimeData ? 5000 : 20000;
       let interval = null;
       if(index < 100){
         interval = setInterval(() => {
@@ -38,7 +39,7 @@ const CurrencySummaryCard = (props) => {
               setPrice(round(externalData.last))
             }
           });
-        }, 10000);
+        }, intervalTime);
       }
       getImage(item.symbol)
         .then(response => {

@@ -6,6 +6,7 @@ import { getCurrencies } from "../../reducers/CryptoApiService";
 import { insertFavorites, deleteFavorites, getAllFavorites, deleteAll } from "../../storage/allSchema";
 import { useSelector, useDispatch } from "react-redux";
 import { addPageHistory, addWatchList, removeWatchList } from "../../redux/action";
+import CurrenciesFilter from "./common/CurrenciesFilter";
 
 const CurrenciesList = ({navigation}) => {
   const {watchedCoins} = useSelector(state => state.userReducer)
@@ -84,6 +85,7 @@ const CurrenciesList = ({navigation}) => {
   return (
     <View style={containerStyle}>
       <Header headerText={"All Coins"} />
+      <CurrenciesFilter></CurrenciesFilter>
       <FlatList data={coins}
                 initialNumToRender={5}
                 renderItem={renderItem}
