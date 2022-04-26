@@ -6,10 +6,12 @@ import CurrencySummaryCard from "./CurrencySummaryCard";
 import { deleteFavorites, getAllFavorites, insertFavorites } from "../../../storage/allSchema";
 import { useDispatch, useSelector } from "react-redux";
 import { addWatchList, removeWatchList } from "../../../redux/action";
+import CurrenciesFilter from "./CurrenciesFilter";
 
 const addCoinToFavModal = (props) => {
 
   const { showModal, setShowModal } = props;
+  const [searchInput,onchangeSearchInput] = useState("");
 
 
   const [coins, setCoins] = useState([]);
@@ -75,7 +77,10 @@ const addCoinToFavModal = (props) => {
       }}>
       <SafeAreaView style={{ flex: 1, backgroundColor: "#2C3640" }}>
         <Header isModal={true} headerText={"Search Coin"} setShowModal={setShowModal}> </Header>
+        <CurrenciesFilter searchInput={searchInput} onchangeSearchInput={onchangeSearchInput}></CurrenciesFilter>
+
         <View style={styles.modal}>
+
           <FlatList data={coins} renderItem={renderItem} />
         </View>
       </SafeAreaView>

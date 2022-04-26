@@ -4,15 +4,14 @@ import {Text,View,TextInput} from 'react-native';
 
 const CurrenciesFilter = (props) => {
 
-  const {searchInput,onchangeSearchInput,} = props;
-  const [number, onChangeNumber] = useState("asdas");
+  const {searchInput,onchangeSearchInput} = props;
 
   return (
     <View>
           <TextInput
             style={styles.input}
-            onChangeText={onChangeNumber}
-            value={number}
+            onChangeText={onchangeSearchInput}
+            value={searchInput}
             placeholder="Search Coins"
           />
     </View>
@@ -26,9 +25,11 @@ const styles = {
   input : {
     height: 40,
     margin: 12,
-    borderWidth: 2,
     padding: 10,
-    backgroundColor:'#917d7d',
+    borderRadius:10,
+    fontWeight:'bold',
+    color:'white',
+    backgroundColor:'#353E48',
 
   }
 

@@ -11,6 +11,7 @@ import CurrenciesFilter from "./common/CurrenciesFilter";
 const CurrenciesList = ({navigation}) => {
   const {watchedCoins} = useSelector(state => state.userReducer)
   const dispatch = useDispatch();
+  const [searchInput,onchangeSearchInput] = useState("");
 
   const [coins, setCoins] = useState([]);
   const [favorites, setFavorites] = useState([]);
@@ -84,8 +85,10 @@ const CurrenciesList = ({navigation}) => {
 
   return (
     <View style={containerStyle}>
-      <Header headerText={"All Coins"} />
-      <CurrenciesFilter></CurrenciesFilter>
+      <Header headerText={"All Coins"} ></Header>
+      <View style={{backgroundColor:'#2C3640'}}>
+        <CurrenciesFilter searchInput={searchInput} onchangeSearchInput={onchangeSearchInput}></CurrenciesFilter>
+      </View>
       <FlatList data={coins}
                 initialNumToRender={5}
                 renderItem={renderItem}
