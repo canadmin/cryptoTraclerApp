@@ -35,12 +35,12 @@ android_library(
 
 android_build_config(
     name = "build_config",
-    package = "com.cryptotrackerapp",
+    package = "com.crypto.portfolio.tracker",
 )
 
 android_resource(
     name = "res",
-    package = "com.cryptotrackerapp",
+    package = "com.crypto.portfolio.tracker",
     res = "src/main/res",
 )
 

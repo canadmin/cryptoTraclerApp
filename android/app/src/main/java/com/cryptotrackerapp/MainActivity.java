@@ -1,4 +1,4 @@
-package com.cryptotrackerapp;
+package com.crypto.portfolio.tracker;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

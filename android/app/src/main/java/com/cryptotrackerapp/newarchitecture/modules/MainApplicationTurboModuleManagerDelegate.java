@@ -1,4 +1,4 @@
-package com.cryptotrackerapp.newarchitecture.modules;
+package com.crypto.portfolio.tracker.newarchitecture.modules;
 
 import com.facebook.jni.HybridData;
 import com.facebook.react.ReactPackage;
