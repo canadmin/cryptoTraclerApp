@@ -1,10 +1,10 @@
 import React from "react";
-import { Text, View,TouchableOpacity } from "react-native";
+import { Text, View,TouchableOpacity,StyleSheet } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 const Header = (props) => {
   const { headerText,isDetailScreen, handleHeaderBackOnPress ,isModal,setShowModal,isPortfolioScreen} = props;
-  const { textStyle, viewStyle } = styles;
+  const { textStyle, viewStyle,headerInsideStyle,headerTextStyle,headerRightComponent } = styles;
 
   const back = () => {
     if(isModal){
@@ -16,11 +16,11 @@ const Header = (props) => {
 
   return (
     <View style={viewStyle}>
-      <View style={{ flexDirection: "row", paddingLeft:10,paddingRight:10 }}>
+      <View style={headerInsideStyle}>
         { (isDetailScreen || isModal) &&
         <TouchableOpacity onPress={() => back("pageHistory")}>
 
-        <View style={{ alignItems: 'flex-start' }}>
+        <View style={styles.headerBackButtonStyle}>
             <Text>
               <Ionicons name={"arrow-back-outline"} size={30} color={'#EFB90B'} />
             </Text>
@@ -28,17 +28,17 @@ const Header = (props) => {
         </View>
         </TouchableOpacity>
         }
-        <View style={{ flex: 1, alignItems:'center' }}>
+        <View style={headerTextStyle}>
           <Text style={textStyle}>
             {headerText}
           </Text>
         </View>
-        {isDetailScreen && <View style={{ alignItems: 'flex-start' }}>
+        {isDetailScreen && <View style={headerRightComponent}>
           <Text>
             <Ionicons name={"md-star-sharp"} size={30} color={'#EFB90B'} />
           </Text>
         </View>}
-        {isPortfolioScreen && <View style={{ alignItems: 'flex-start' }}>
+        {isPortfolioScreen && <View style={headerRightComponent}>
           <Text>
             <Ionicons name={"md-add-outline"} size={30} color={'#EFB90B'} />
           </Text>
@@ -49,13 +49,26 @@ const Header = (props) => {
 };
 
 //md-star-outline
-const styles = {
+const styles = StyleSheet.create({
   textStyle: {
     fontSize: 22,
     //textAlign:"center",
     color: "#EFB90B",
     fontWeight: "normal",
   },
+
+  headerInsideStyle : {
+    flexDirection: "row",
+    paddingLeft:10,
+    paddingRight:10
+  },
+  headerTextStyle : {
+ flex: 1, alignItems:'center'
+  },
+  headerBackButtonStyle : {
+    alignItems: 'flex-start'
+  },
+
   viewStyle: {
     backgroundColor: "#2C3640",
     height: 40,
@@ -66,6 +79,10 @@ const styles = {
     //borderBottomRightRadius:20,
     //shadowOffset:{width: 0, height: 2},
   },
-};
+
+  headerRightComponent : {
+ alignItems: 'flex-start'
+  }
+});
 
 export default Header;
