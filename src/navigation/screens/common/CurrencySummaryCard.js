@@ -19,9 +19,17 @@ const CurrencySummaryCard = (props) => {
   const { containerStyle, textStyle, upPriceStyle, downPriceStyle, coinImage} = styles;
   const [price, setPrice] = useState(round(item.price));
   const [isUp, setIsUp] = useState(true);
-  const [image,setImage] = useState({img:"https://s2.coinmarketcap.com/static/img/coins/64x64/1.png"});
   const [isFavoriteCoin,setIsFavoriteCoin] = useState(false);
 
+
+  const getRealTimeDataFromApi = () => {
+    getCurrenciesFromExtarnalApi(item.symbol).then(response => {
+      let externalData = response.data;
+      if(externalData.last && externalData.last > 0 ){
+        setPrice(round(externalData.last))
+      }
+    })
+  }
   useEffect(() => {
     const isFound = favorites.some(element => {
       if (element.symbol === item.symbol) {
@@ -29,23 +37,14 @@ const CurrencySummaryCard = (props) => {
       }
     });
     if(!searchFromModal){
-      let intervalTime = getRealTimeData ? 5000 : 20000;
       let interval = null;
-      if(index < 100){
-        interval = setInterval(() => {
-          getCurrenciesFromExtarnalApi(item.symbol).then(response => {
-            let externalData = response.data;
-            if(externalData.last && externalData.last > 0 ){
-              setPrice(round(externalData.last))
-            }
-          });
-        }, intervalTime);
-      }
-      getImage(item.symbol)
-        .then(response => {
-          setImage({img:response.data.img})
-        })
-
+        if(getRealTimeData){
+          interval = setInterval(() => {
+            getRealTimeDataFromApi();
+          }, 10000);
+        }else {
+            getRealTimeDataFromApi();
+        }
       if(getRealTimeData) {
         try{
           let wss = new WebSocket("wss://stream.binance.com:9443/ws/" + item.symbol + "usdt@kline_1m");
@@ -53,9 +52,12 @@ const CurrencySummaryCard = (props) => {
           wssConnection(wss);
           return () => {
             setPrice(null)
+            console.log("kapandı")
             wss.close();
             if(index < 100){
-              clearInterval(interval);
+              if(interval !== null){
+                clearInterval(interval);
+              }
             }
           };
         }catch (err){
@@ -66,7 +68,7 @@ const CurrencySummaryCard = (props) => {
       };
     }
 
-  }, [item]);
+  }, [favorites]);
 
 
   const wssConnection = (wss) => {

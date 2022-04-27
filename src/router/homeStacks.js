@@ -26,6 +26,7 @@ const closeConfig = {
   config: {
     duration: 200,
     easing: Easing.linear,
+    useNativeDriver:true,
   }
 }
 export const WatchListStackNavigator = () => {

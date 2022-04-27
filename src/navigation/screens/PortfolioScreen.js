@@ -24,6 +24,7 @@ const PortfolioScreen = () => {
               {time:'18 Feb', value:2222.27},
             ]}
             circleColor={"#daa520"}
+            lineChartWidth={3}
             axisColor={"#9dd"}
             axisLabelFontSize={9}
             renderCircleAndRect={false}

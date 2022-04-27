@@ -1,4 +1,4 @@
-import React,{useEffect,useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {View,Text,Image,TouchableOpacity,Alert,ScrollView} from 'react-native';
 import Header from "./Header";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,10 +7,12 @@ import LineChart from "./LineChart";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import {round,floorCalc,negativeRound} from "../../../helper/Utils";
 import { getCurrenciesFromExtarnalApi } from "../../../reducers/CryptoApiService";
+import AddToPortfolioModal from '../../screens/common/AddToPortfolioModal';
 
 const CoinDetailScreen = ({navigation,route}) => {
   const coin = route.params.coin;
 
+  const ws = useRef(null);
 
   const dispatch = useDispatch();
   const {pageHistory} = useSelector(state => state.userReducer)
@@ -19,6 +21,7 @@ const CoinDetailScreen = ({navigation,route}) => {
   //state
   const [price,setPrice] = useState(coin.price)
   const [isUp, setIsUp] = useState(true);
+  const [showModal,setShowModal] = useState(false);
 
   const handleHeaderBackOnPress = () => {
     //burada bağlı olan soketleri kapatacağız.
@@ -42,8 +45,11 @@ const CoinDetailScreen = ({navigation,route}) => {
       }
     };
   };
+
+
   useEffect(() => {
-    let wss = new WebSocket("wss://stream.binance.com:9443/ws/" + coin.symbol + "usdt@kline_1m");
+    ws.current = new WebSocket("wss://stream.binance.com:9443/ws/" + coin.symbol + "usdt@kline_1m");
+    const wss = ws.current;
     wssConnection(wss);
 
     let interval = null;
@@ -57,8 +63,6 @@ const CoinDetailScreen = ({navigation,route}) => {
       }, 5000);
 
     return () => {
-      // clear func
-
       wss.close();
       clearInterval(interval);
       setPrice(null)
@@ -67,7 +71,7 @@ const CoinDetailScreen = ({navigation,route}) => {
   return (
     <ScrollView style={{flex:1,backgroundColor:'#11161D'}}>
       <Header headerText={route.params.name} isDetailScreen={true}  handleHeaderBackOnPress={handleHeaderBackOnPress}></Header>
-      <View style={{flexDirection:'row'}}>
+      <View style={{alignItems:'center'}}>
         <Text style={textStyle}>
           $ {round(price)}
         </Text>
@@ -84,12 +88,12 @@ const CoinDetailScreen = ({navigation,route}) => {
         circleColor={"#70A800"}
         axisColor={"#9dd"}
         axisLabelFontSize={9}
-        showGradient={false}
+        showGradient={true}
         containerHeight={300}
         lineChartColor={'#70A800'}
         renderCircleAndRect={false}
       />
-        < TouchableOpacity onPress={() => Alert.alert(`Portfolio ekleme modalı açılacak`)} style={addToPortfolioButton}>
+        < TouchableOpacity onPress={() => setShowModal(true)} style={addToPortfolioButton}>
           <Ionicons name={"add-sharp"} size={30} color={'#EFB90B'} />
           <Text style={{ color: "white" }}>
             Add To Portfolio
@@ -208,7 +212,10 @@ const CoinDetailScreen = ({navigation,route}) => {
         <View style={styles.parser}/>
 
       </View>
-  </ScrollView>)
+
+      {showModal && <AddToPortfolioModal setShowModal={setShowModal} showModal={showModal}/>}
+
+    </ScrollView>)
 };
 
 const styles = {

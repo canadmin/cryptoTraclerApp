@@ -19,10 +19,21 @@ const WatchList = (props) => {
   const [coins, setCoins] = useState(watchedCoins);
   const [favorites, setFavorites] = useState([]);
   const [showModal,setShowModal] = useState(false);
+  const [refresh,setRefresh] = useState(false);
 
   useEffect(() => {
+    createWatchlist()
+  }, [watchedCoins]);
+
+  const onRefresh = () => {
+
+    setRefresh(true);
+  }
+
+  const createWatchlist = () => {
     let favorites = "";
     getAllFavorites().then(res => {
+      console.log(res)
       setFavorites(res);
       if (res !== undefined) {
         res.forEach(item => {
@@ -46,14 +57,13 @@ const WatchList = (props) => {
               percent_change_60d:item.quote.USD.percent_change_60d,
               percent_change_90d:item.quote.USD.percent_change_90d,
               market_cap:item.quote.USD.market_cap,
-
             };
           });
+          setRefresh(false)
           setCoins(currencies);
         })
     });
-  }, [watchedCoins]);
-
+  }
 
   const deleteCurrencyFromFavorite = (coin) => {
     deleteFavorites(coin.symbol).then(() => {
@@ -72,28 +82,20 @@ const WatchList = (props) => {
   return (
     <View style={containerStyle}>
       <Header headerText={"Watch List"} />
-      {coins.length > 0 &&
-      <FlatList data={[...coins, { add: true }]}
+      {coins.length > 0 && favorites.length > 0 &&
+      <FlatList data={coins}
                 initialNumToRender={5}
+                onRefresh={() => onRefresh()}
+                refreshing={refresh}
 
                 renderItem={({ item, index }) => {
-                  if (item.add) {
-                    return(
-                      <TouchableOpacity onPress={() => setShowModal(true)}>
-                        <View style={addWatchListButton}>
-                          <Ionicons name={"add-sharp"} size={30} color={'#EFB90B'} />
-                          <Text style={{ color: "white" }}>
-                            Add coins to Watchlist
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
-                      ) ;
-                  } else {
+
                     return <CurrencySummaryCard item={item}
                                                 index={index}
                                                 favorites={favorites}
                                                 initialNumToRender={10}
                                                 windowSize={5}
+                                                keyExtractor={item => item.id}
                                                 maxToRenderPerBatch={5}
                                                 updateCellsBatchingPeriod={30}
                                                 deleteCurrencyFromFavorite={deleteCurrencyFromFavorite}
@@ -101,10 +103,18 @@ const WatchList = (props) => {
                                                 navigateAndAddPageHistory={navigateAndAddPageHistory}
                                                 getRealTimeData={true} />;
                   }
-                }
+
                 }
       />}
       {showModal && <AddCoinToFavModal setShowModal={setShowModal} showModal={showModal}/>}
+      <TouchableOpacity onPress={() => setShowModal(true)}>
+        <View style={addWatchListButton}>
+          <Ionicons name={"add-sharp"} size={30} color={'#EFB90B'} />
+          <Text style={{ color: "white" }}>
+            Add coins to Watchlist
+          </Text>
+        </View>
+      </TouchableOpacity>
     </View>);
 };
 

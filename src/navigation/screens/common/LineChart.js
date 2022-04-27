@@ -16,14 +16,14 @@ const AnimatedPath = Animated.createAnimatedComponent(Path);
 const LineChart = ({
                      line_chart_data = [],
                      containerHeight = 250,
-                     circleColor = "#daa520",
+                     circleColor = "#EFB90B",
                      circleRadius = 2,
                      checkPointCircleRadius = 5,
                      axisColor = "#fff",
                      axisWidth = 2,
                      axisLabelFontSize= 9,
-                     lineChartColor = "#daa520",
-                     lineChartWidth = 2,
+                     lineChartColor = "#70A800",
+                     lineChartWidth = 6,
                      tooltipHeight = 20,
                      tooltipWidth=40,
                      cursorRadius= 10,
@@ -32,7 +32,7 @@ const LineChart = ({
                    }) => {
 
 
-  const marginFor_x_fromLeft = 60;
+  const marginFor_x_fromLeft = 10;
   const marginFor_y_fromBottom = 50;
   const padding_from_screenBorder = 20;
 
@@ -275,8 +275,8 @@ const LineChart = ({
             opacity={0.2}
           />
           <AnimatedSvgText key={"y-axis label" + index}
-                   x={marginFor_x_fromLeft - 10}
-                   y={y_point + axisLabelFontSize /  3}
+                   x={marginFor_x_fromLeft + x_axis_actual_width}
+                   y={y_point}
                    textAnchor={"end"}
                    fontSize={axisLabelFontSize}
                    opacity={animated_ticks_labels_opacity}
@@ -313,7 +313,7 @@ const LineChart = ({
     if(maxValueAtYAxis){
       let dPath = '';
       line_chart_data.map((item,index) => {
-        let x_point = x_axis_x1_point + gap_between_x_axis_ticks * index;
+        let x_point = x_axis_x1_point + gap_between_x_axis_ticks * index ;
         let y_point = (maxValueAtYAxis - item.value) * (gap_between_y_axis_ticks / gapBetweenYAxisValues)
           + padding_from_screenBorder;
         if(index === 0){
@@ -322,7 +322,7 @@ const LineChart = ({
           dPath += `L${x_point} ${y_point}`
         }
       })
-      return dPath +` L ${x_axis_actual_width + 60} ${y_axis_actual_height + 20} L 50 ${y_axis_actual_height + 20}` ;
+      return dPath +` L ${x_axis_actual_width +10} ${y_axis_actual_height + 20} L `+x_axis_x1_point +` ${y_axis_actual_height + 20}` ;
     }
   }
 
@@ -416,7 +416,7 @@ const LineChart = ({
             <>
               <Defs>
                 <LinearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <Stop offset="0%" stopColor="#70A800" />
+                  <Stop offset="0%" stopColor="#9dd" />
                   <Stop offset="100%" stopColor="#11161D" />
                 </LinearGradient>
               </Defs>

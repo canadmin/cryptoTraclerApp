@@ -249,7 +249,7 @@ android {
 }
 
 dependencies {
-    implementation fileTr ee(dir: "libs", include: ["*.jar"])
+    implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation platform('com.google.firebase:firebase-bom:29.3.1')
     implementation 'com.google.firebase:firebase-analytics'
     //noinspection GradleDynamicVersion
