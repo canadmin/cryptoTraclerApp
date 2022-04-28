@@ -93,11 +93,8 @@ const WatchList = (props) => {
       {coins.length > 0 && favorites.length > 0 &&
       <FlatList data={coins}
                 initialNumToRender={5}
-                onRefresh={() => onRefresh()}
                 refreshing={refresh}
-
                 renderItem={({ item, index }) => {
-
                     return <CurrencySummaryCard item={item}
                                                 index={index}
                                                 favorites={favorites}
@@ -111,8 +108,7 @@ const WatchList = (props) => {
                                                 navigateAndAddPageHistory={navigateAndAddPageHistory}
                                                 getRealTimeData={true} />;
                   }
-
-                }
+          }
       />}
       {showModal && <AddCoinToFavModal setShowModal={setShowModal} showModal={showModal}/>}
       <TouchableOpacity onPress={() => setShowModal(true)}>

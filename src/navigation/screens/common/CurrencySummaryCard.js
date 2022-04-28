@@ -48,7 +48,7 @@ const CurrencySummaryCard = (props) => {
     findCurrentCurrencyIsFavorite();
     setPrice(round(item.price))
     if (!searchFromModal) {
-      if (getRealTimeData) {
+      if (getRealTimeData && index < 200) {
         //socketConnection(item.symbol);
         interval = setInterval(() => {
           getRealTimeDataFromApi();
