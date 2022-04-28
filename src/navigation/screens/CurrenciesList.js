@@ -67,6 +67,7 @@ const CurrenciesList = ({navigation}) => {
     navigation.navigate(route,param);
     dispatch(addPageHistory("CurrenciesList"))
   }
+
   const renderItem = ({ item,index}) => (
     <CurrencySummaryCard item={item}
                          index={index}
@@ -75,14 +76,12 @@ const CurrenciesList = ({navigation}) => {
                          favorites={favorites}
                          navigation={navigation}
                          key={index}
-                         initialNumToRender={10}
-                         windowSize={5}
-                         maxToRenderPerBatch={5}
-                         updateCellsBatchingPeriod={30}
                          navigateAndAddPageHistory={navigateAndAddPageHistory}
                          getRealTimeData={false} />
   );
-
+  const getItemLayout = (data, index) => (
+    {length: 100, offset: 100 * index, index}
+  );
   return (
     <View style={containerStyle}>
       <Header headerText={"All Coins"} ></Header>
@@ -91,6 +90,11 @@ const CurrenciesList = ({navigation}) => {
       </View>
       <FlatList data={coins}
                 initialNumToRender={5}
+                initialNumToRender={10}
+                windowSize={10}
+                maxToRenderPerBatch={5}
+                getItemLayout={getItemLayout}
+                updateCellsBatchingPeriod={30}
                 renderItem={renderItem}
       />
 
