@@ -25,6 +25,13 @@ const WatchList = (props) => {
     createWatchlist()
   }, [watchedCoins]);
 
+  useEffect(() => {
+    return () => {
+      setFavorites([]);
+      setCoins([]);
+    };
+  }, []);
+
   const onRefresh = () => {
 
     setRefresh(true);
@@ -33,7 +40,6 @@ const WatchList = (props) => {
   const createWatchlist = () => {
     let favorites = "";
     getAllFavorites().then(res => {
-      console.log(res)
       setFavorites(res);
       if (res !== undefined) {
         res.forEach(item => {
@@ -66,6 +72,8 @@ const WatchList = (props) => {
   }
 
   const deleteCurrencyFromFavorite = (coin) => {
+    const filteredData = coins.filter(item => item.symbol !== coin.symbol);
+    setCoins(filteredData)
     deleteFavorites(coin.symbol).then(() => {
       dispatch(removeWatchList(coin))
     });

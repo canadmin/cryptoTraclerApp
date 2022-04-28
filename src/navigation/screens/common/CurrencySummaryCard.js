@@ -1,105 +1,127 @@
-import React, { useEffect, useState,memo, } from "react";
+import React, { useEffect, useState, memo, useRef } from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import Colors from "../../../Colors";
-import { getCurrenciesFromExtarnalApi, getImage } from "../../../reducers/CryptoApiService";
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import {round} from "../../../helper/Utils";
+import { getCurrenciesFromExtarnalApi, getCurrencyPrice } from "../../../reducers/CryptoApiService";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { round } from "../../../helper/Utils";
 
 const CurrencySummaryCard = (props) => {
- // eğer getRealTimeData true ise websocket bağlantısı yapılacak.
-  const {addCurrencyToFavorite,item,
-    favorites,getRealTimeData,
+  const {
+    addCurrencyToFavorite, item,
+    favorites, getRealTimeData,
     deleteCurrencyFromFavorite,
     navigateAndAddPageHistory,
     navigation,
     searchFromModal,
     searchFromCurrencyList,
-  index} = props;
+    index,
+  } = props;
 
-  const { containerStyle, textStyle, upPriceStyle, downPriceStyle, coinImage} = styles;
+  const { containerStyle, textStyle, upPriceStyle, downPriceStyle, coinImage } = styles;
   const [price, setPrice] = useState(round(item.price));
   const [isUp, setIsUp] = useState(true);
-  const [isFavoriteCoin,setIsFavoriteCoin] = useState(false);
+  const [isFavoriteCoin, setIsFavoriteCoin] = useState(false);
+  const ws = useRef(null);
 
 
   const getRealTimeDataFromApi = () => {
     getCurrenciesFromExtarnalApi(item.symbol).then(response => {
       let externalData = response.data;
-      if(externalData.last && externalData.last > 0 ){
-        setPrice(round(externalData.last))
-      }
-    })
-  }
-  useEffect(() => {
-    const isFound = favorites.some(element => {
-      if (element.symbol === item.symbol) {
-        setIsFavoriteCoin(true)
+      if (externalData.last && externalData.last > 0) {
+        setPrice(round(externalData.last));
+      } else {
+        getCurrencyPrice(item.symbol).then(res => {
+          let resData = res.data;
+          if (resData.statusCode === 200) {
+            setPrice(round(resData.value));
+          } else {
+            setPrice(round(item.price));
+          }
+        });
       }
     });
-    if(!searchFromModal){
-      let interval = null;
-        if(getRealTimeData){
-          interval = setInterval(() => {
-            getRealTimeDataFromApi();
-          }, 5000);
-        }else {
-            getRealTimeDataFromApi();
-        }
-      if(getRealTimeData) {
-        try{
-          let wss = new WebSocket("wss://stream.binance.com:9443/ws/" + item.symbol + "usdt@kline_1m");
-          setPrice(round(item.price))
-          wssConnection(wss);
-          return () => {
-            setPrice(null)
-            console.log("kapandı")
-            wss.close();
-            if(index < 100){
-              if(interval !== null){
-                clearInterval(interval);
-              }
-            }
-          };
-        }catch (err){
-        }
+  };
+  useEffect(() => {
+    let interval = null;
+    findCurrentCurrencyIsFavorite();
+    setPrice(round(item.price))
+    if (!searchFromModal) {
+      if (getRealTimeData) {
+        socketConnection(item.symbol);
+        interval = setInterval(() => {
+          getRealTimeDataFromApi();
+        }, 5000);
+      } else {
+        getRealTimeDataFromApi();
       }
-      return () => {
-        setPrice(0)
-      };
     }
 
-  }, [favorites]);
+    return () => {
+      setPrice(0);
+      if(getRealTimeData) {
+        if(ws.current !== null){
+          ws.current.close();
+        }
+      }
+      if (interval !== null) {
+        clearInterval(interval);
+      }
+    };
 
+  }, [item]);
+
+
+
+
+  const findCurrentCurrencyIsFavorite = () =>{
+    favorites.some(element => {
+      if (element.symbol === item.symbol) {
+        setIsFavoriteCoin(true);
+      }
+    });
+  }
 
   const wssConnection = (wss) => {
     wss.onmessage = (msg) => {
       let newPrice = JSON.parse(msg.data).k.c;
       setIsUp(newPrice > price ? true : false);
-       newPrice = round(newPrice);
+      newPrice = round(newPrice);
       if (price !== newPrice) {
         setPrice(newPrice);
       }
     };
   };
 
+  const socketConnection = (symbol) => {
+    ws.current = new WebSocket("wss://stream.binance.com:9443/ws/" + symbol+"usdt@kline_1m");
+    let wss = ws.current
+    wssConnection(wss);
+  };
+
+
+
   const addFavorite = (coin) => {
-    if(isFavoriteCoin){
+    if (isFavoriteCoin) {
       setIsFavoriteCoin(false);
-      deleteCurrencyFromFavorite(coin)
-    }else {
+      deleteCurrencyFromFavorite(coin);
+    } else {
       setIsFavoriteCoin(true);
-      addCurrencyToFavorite(coin)
+      addCurrencyToFavorite(coin);
     }
 
-  }
+  };
 
 
   return (
-    <TouchableOpacity disabled={searchFromModal} onPress={() => navigateAndAddPageHistory("CoinDetailScreen",{name: item.name,coin:item},"Watchlist")}>
+    <TouchableOpacity disabled={searchFromModal} onPress={() => navigateAndAddPageHistory("CoinDetailScreen", {
+      name: item.name,
+      coin: item,
+    }, "Watchlist")}>
       <View>
         <View style={containerStyle}>
-          <View style={{flex:1}}>
-            <Image style={coinImage} source={{uri:"https://s2.coinmarketcap.com/static/img/coins/64x64/"+item.id+".png"}}/>
+          <View style={{ flex: 1 }}>
+            <Image style={coinImage}
+                   source={{ uri: "https://s2.coinmarketcap.com/static/img/coins/64x64/" + item.id + ".png" }} />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={textStyle}>
@@ -114,10 +136,12 @@ const CurrencySummaryCard = (props) => {
               {price}$
             </Text>
           </View>}
-          <View style={{alignItems:'flex-end' ,marginLeft:10}}>
-            <TouchableOpacity onPress={() => addFavorite({ symbol: item.symbol,
-              name: item.name})}>
-              <Ionicons name={isFavoriteCoin ? "md-star-sharp" : "md-star-outline"} size={30} color={'#EFB90B'} />
+          <View style={{ alignItems: "flex-end", marginLeft: 10 }}>
+            <TouchableOpacity onPress={() => addFavorite({
+              symbol: item.symbol,
+              name: item.name,
+            })}>
+              <Ionicons name={isFavoriteCoin ? "md-star-sharp" : "md-star-outline"} size={30} color={"#EFB90B"} />
             </TouchableOpacity>
           </View>
         </View>
@@ -132,7 +156,7 @@ const CurrencySummaryCard = (props) => {
         />
       </View>
     </TouchableOpacity>
-    );
+  );
 };
 
 const styles = {
@@ -161,10 +185,10 @@ const styles = {
     fontSize: 16,
     textAlign: "right",
   },
-  coinImage : {
-    flex: 1, marginTop:10, marginRight:10, marginBottom: 10,
-    justifyContent:'flex-start',height: undefined, width: undefined, resizeMode: 'contain'
-  }
+  coinImage: {
+    flex: 1, marginTop: 10, marginRight: 10, marginBottom: 10,
+    justifyContent: "flex-start", height: undefined, width: undefined, resizeMode: "contain",
+  },
 };
 
 export default memo(CurrencySummaryCard);

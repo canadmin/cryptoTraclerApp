@@ -7,8 +7,8 @@ const TimePeriod = (props) => {
     {id:1,periodName: '1d',isActive:true,days:1},
     {id:2,periodName: '7d',isActive:false,days:7},
     {id:3,periodName: '1m',isActive:false,days:31},
-    {id:4,periodName: '3m',isActive:false,days:90},
-    {id:5,periodName: '6m',isActive:false,days:180},
+    // {id:4,periodName: '3m',isActive:false,days:90},
+    //{id:5,periodName: '6m',isActive:false,days:180},
     {id:6,periodName: '1y',isActive:false,days:365}
   ]);
 
