@@ -6,7 +6,7 @@ import { addPageHistory } from "../../../redux/action";
 import LineChart from "./LineChart";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import {round,floorCalc,negativeRound} from "../../../helper/Utils";
-import { getCurrenciesFromExtarnalApi } from "../../../reducers/CryptoApiService";
+import { getCurrenciesFromExtarnalApi, getCurrencyPrice } from "../../../reducers/CryptoApiService";
 import AddToPortfolioModal from '../../screens/common/AddToPortfolioModal';
 
 const CoinDetailScreen = ({navigation,route}) => {
@@ -35,7 +35,7 @@ const CoinDetailScreen = ({navigation,route}) => {
     return styles.tableValue;
   }
 
-  const wssConnection = (wss) => {
+  /*const wssConnection = (wss) => {
     wss.onmessage = (msg) => {
       let newPrice = JSON.parse(msg.data).k.c;
       setIsUp(newPrice > price ? true : false);
@@ -44,26 +44,38 @@ const CoinDetailScreen = ({navigation,route}) => {
         setPrice(newPrice);
       }
     };
-  };
+  };*/
 
-
-  useEffect(() => {
-    ws.current = new WebSocket("wss://stream.binance.com:9443/ws/" + coin.symbol + "usdt@kline_1m");
-    const wss = ws.current;
-    wssConnection(wss);
-
-    let interval = null;
-      interval = setInterval(() => {
-        getCurrenciesFromExtarnalApi(coin.symbol).then(response => {
-          let externalData = response.data;
-          if(externalData.last && externalData.last > 0 ){
-            setPrice(round(externalData.last))
+  const getRealTimeDataFromApi = () => {
+    getCurrenciesFromExtarnalApi(coin.symbol).then(response => {
+      let externalData = response.data;
+      if (externalData.last && externalData.last > 0) {
+        setPrice(round(externalData.last));
+      } else {
+        getCurrencyPrice(coin.symbol).then(res => {
+          let resData = res.data;
+          if (resData.statusCode === 200) {
+            setPrice(round(resData.value));
+          } else {
+            setPrice(round(item.price));
           }
         });
-      }, 5000);
+      }
+    });
+  };
+  useEffect(() => {
+    /*ws.current = new WebSocket("wss://stream.binance.com:9443/ws/" + coin.symbol + "usdt@kline_1m");
+    const wss = ws.current;
+    wssConnection(wss);
+*/
+    getRealTimeDataFromApi();
+    let interval = null;
+      interval = setInterval(() => {
+        getRealTimeDataFromApi();
+      }, 15000);
 
     return () => {
-      wss.close();
+      //wss.close();
       clearInterval(interval);
       setPrice(null)
     }

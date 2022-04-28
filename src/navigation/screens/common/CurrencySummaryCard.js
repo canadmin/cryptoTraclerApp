@@ -41,16 +41,18 @@ const CurrencySummaryCard = (props) => {
       }
     });
   };
+
   useEffect(() => {
     let interval = null;
+    getRealTimeDataFromApi();
     findCurrentCurrencyIsFavorite();
     setPrice(round(item.price))
     if (!searchFromModal) {
       if (getRealTimeData) {
-        socketConnection(item.symbol);
+        //socketConnection(item.symbol);
         interval = setInterval(() => {
           getRealTimeDataFromApi();
-        }, 5000);
+        }, 15000);
       } else {
         getRealTimeDataFromApi();
       }
@@ -59,9 +61,9 @@ const CurrencySummaryCard = (props) => {
     return () => {
       setPrice(0);
       if(getRealTimeData) {
-        if(ws.current !== null){
+        /*if(ws.current !== null){
           ws.current.close();
-        }
+        }*/
       }
       if (interval !== null) {
         clearInterval(interval);
