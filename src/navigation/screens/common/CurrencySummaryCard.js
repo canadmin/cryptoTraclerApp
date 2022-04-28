@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,memo, } from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import Colors from "../../../Colors";
 import { getCurrenciesFromExtarnalApi, getImage } from "../../../reducers/CryptoApiService";
@@ -41,7 +41,7 @@ const CurrencySummaryCard = (props) => {
         if(getRealTimeData){
           interval = setInterval(() => {
             getRealTimeDataFromApi();
-          }, 10000);
+          }, 5000);
         }else {
             getRealTimeDataFromApi();
         }
@@ -167,4 +167,4 @@ const styles = {
   }
 };
 
-export default CurrencySummaryCard;
+export default memo(CurrencySummaryCard);
