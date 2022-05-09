@@ -22,7 +22,7 @@ const CurrenciesList = ({navigation}) => {
         setFavorites(res);
       }
     }).then(() => {
-      getCurrencies("top10").then(res => {
+      getCurrencies("top100").then(res => {
         let data = res.data;
         let currencies = data.map((item,index) => {
           return {

@@ -1,12 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState,useCallback } from "react";
 import {View,Text,Image,TouchableOpacity,Alert,ScrollView} from 'react-native';
 import Header from "./Header";
 import { useDispatch, useSelector } from "react-redux";
 import { addPageHistory } from "../../../redux/action";
+import TimePeriod from "./TimePeriod";
 import LineChart from "./LineChart";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import {round,floorCalc,negativeRound} from "../../../helper/Utils";
-import { getCurrenciesFromExtarnalApi, getCurrencyPrice } from "../../../reducers/CryptoApiService";
+import { round, floorCalc, negativeRound, getCoinGeckoId } from "../../../helper/Utils";
+import { getCurrenciesFromExtarnalApi, getCurrencyPrice,getChartValue } from "../../../reducers/CryptoApiService";
 import AddToPortfolioModal from '../../screens/common/AddToPortfolioModal';
 
 const CoinDetailScreen = ({navigation,route}) => {
@@ -17,16 +18,22 @@ const CoinDetailScreen = ({navigation,route}) => {
   const dispatch = useDispatch();
   const {pageHistory} = useSelector(state => state.userReducer)
   const {coinImage,coinPriceAndLogoView,textStyle,addToPortfolioButton} = styles;
-
   //state
   const [price,setPrice] = useState(coin.price)
   const [isUp, setIsUp] = useState(true);
   const [showModal,setShowModal] = useState(false);
+  const [showLineChart,setShowLineChart] = useState(false);
+
+  const [period,setPeriod] = useState();
+
+  const [coinData,setCoinData] = useState([])
+  const forceUpdate = useCallback(() => setCoinData([]), []);
 
   const handleHeaderBackOnPress = () => {
     //burada bağlı olan soketleri kapatacağız.
     navigation.navigate(pageHistory)
   }
+
 
   const modifyStyle = (value) => {
     if(value < 0){
@@ -35,7 +42,7 @@ const CoinDetailScreen = ({navigation,route}) => {
     return styles.tableValue;
   }
 
-  /*const wssConnection = (wss) => {
+  const wssConnection = (wss) => {
     wss.onmessage = (msg) => {
       let newPrice = JSON.parse(msg.data).k.c;
       setIsUp(newPrice > price ? true : false);
@@ -44,7 +51,7 @@ const CoinDetailScreen = ({navigation,route}) => {
         setPrice(newPrice);
       }
     };
-  };*/
+  };
 
   const getRealTimeDataFromApi = () => {
     getCurrenciesFromExtarnalApi(coin.symbol).then(response => {
@@ -63,11 +70,27 @@ const CoinDetailScreen = ({navigation,route}) => {
       }
     });
   };
+
+  useEffect(() =>{
+    let data = []
+    getChartValue(getCoinGeckoId(coin.symbol),period).then((res) => {
+      if(res.data && res.data.length > 0){
+        res.data.forEach(item => {
+          let tempOBj = {
+            time : item[0],
+            value: item[2],
+          }
+          data.push(tempOBj);
+        })
+      }
+      setCoinData(data);
+    })
+  },[period])
   useEffect(() => {
-    /*ws.current = new WebSocket("wss://stream.binance.com:9443/ws/" + coin.symbol + "usdt@kline_1m");
+    ws.current = new WebSocket("wss://stream.binance.com:9443/ws/" + coin.symbol + "usdt@kline_1m");
     const wss = ws.current;
     wssConnection(wss);
-*/
+
     getRealTimeDataFromApi();
     let interval = null;
       interval = setInterval(() => {
@@ -78,6 +101,7 @@ const CoinDetailScreen = ({navigation,route}) => {
       //wss.close();
       clearInterval(interval);
       setPrice(null)
+      setIsUp(null)
     }
   },[])
   return (
@@ -89,14 +113,7 @@ const CoinDetailScreen = ({navigation,route}) => {
         </Text>
       </View>
       <LineChart
-        line_chart_data={[{time:'11 Feb', value:3422},
-          {time:'12 Feb', value:3035.17},
-          {time:'14 Feb', value:3033.27},
-          {time:'15 Feb', value:2399.27},
-          {time:'16 Feb', value:3033.27},
-          {time:'17 Feb', value:933.27},
-          {time:'18 Feb', value:2222.27},
-        ]}
+        line_chart_data={coinData}
         circleColor={"#70A800"}
         axisColor={"#9dd"}
         axisLabelFontSize={9}
@@ -104,11 +121,15 @@ const CoinDetailScreen = ({navigation,route}) => {
         containerHeight={300}
         lineChartColor={'#70A800'}
         renderCircleAndRect={false}
+        key={coinData.length < 1 ? 222 : coinData[0].time}
+        setPeriod={setPeriod}
       />
-        < TouchableOpacity onPress={() => setShowModal(true)} style={addToPortfolioButton}>
+      <TimePeriod setPeriod={setPeriod}/>
+
+      < TouchableOpacity onPress={() => setShowModal(true)} style={addToPortfolioButton}>
           <Ionicons name={"add-sharp"} size={30} color={'#EFB90B'} />
           <Text style={{ color: "white" }}>
-            Add To Portfolio
+            Add Transaction
           </Text>
         </TouchableOpacity>
       <View style={{marginTop:50,marginRight:30,marginLeft:45}}>
@@ -225,7 +246,7 @@ const CoinDetailScreen = ({navigation,route}) => {
 
       </View>
 
-      {showModal && <AddToPortfolioModal setShowModal={setShowModal} showModal={showModal}/>}
+      {showModal && <AddToPortfolioModal coin={coin} setShowModal={setShowModal} showModal={showModal}/>}
 
     </ScrollView>)
 };

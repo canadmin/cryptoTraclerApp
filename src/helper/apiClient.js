@@ -37,12 +37,8 @@ export const externalApirequest = (options) => {
 
 //
 export const getOhlcHistoryRequest = (options) => {
-  let url = `${"https://api.coingecko.com/api/v3/coins/"+options.currency_name_id+"/ohlc"}${options.path}?`
-  if (options.params && options.params.length) {
-    options.params.map((par, index) => {
-      return (url += par + "=" + options.values[index] + "&");
-    });
-  }
+  let url = `${"https://api.coingecko.com/api/v3/coins/"+options.currency_name_id+"/ohlc?vs_currency=usd&days="}${options.path}`
+
   return axios({
     method: options.method,
     url: url,

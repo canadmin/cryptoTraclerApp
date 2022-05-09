@@ -63,6 +63,17 @@ export const getCurrenciesFromExtarnalApi = (symbol) => {
 }
 
 
+export const getChartValue = (currency_id,period) => {
+
+  const options = {
+    method: "get",
+    path:period,
+    currency_name_id:currency_id
+  }
+
+  return getOhlcHistoryRequest(options)
+}
+
 
 
 export default {

@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import PortfolioScreen from "./screens/PortfolioScreen";
 import SettingsScreen from "./screens/SettingsScreen";
+import AlertScreen from "./screens/AlertScreen";
 import {WatchListStackNavigator,CurrenciesListStackNavigator} from './../router/homeStacks';
 const Tab = createBottomTabNavigator();
 
@@ -71,6 +72,7 @@ const MainContainer = () => {
         <Tab.Screen component={WatchListStackNavigator} name={watchList_screen} />
         <Tab.Screen component={CurrenciesListStackNavigator} name={currenciesList_screen} />
         <Tab.Screen component={PortfolioScreen} name={portfolio_screen} />
+        <Tab.Screen component={AlertScreen} name={alert_screen} />
         <Tab.Screen component={SettingsScreen} name={settings_screen} />
       </Tab.Navigator>
     </NavigationContainer>

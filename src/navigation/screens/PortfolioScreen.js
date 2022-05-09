@@ -1,36 +1,83 @@
-import * as React from 'react';
-import {View, Text} from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import  React,{useEffect,useState} from 'react';
+import {View, Text,FlatList ,ScrollView} from 'react-native';
 import Header from "./common/Header";
-import ChartCustomThemes from "../../styles/ChartCustomThemes";
-import LineChart from '../screens/common/LineChart'
+import { getAllPortfolio, getAssetsByPortfolio } from "../../storage/allSchema";
+import AssetSummaryCard from "./common/AssetSummaryCard";
+import PieChart from "./common/PieChart";
+import { priceFormat } from "../../helper/Utils";
 const PortfolioScreen = () => {
   const {containerStyle,portfolioHeader,component1,totalValue} = styles;
 
+
+  const [currentPortfolio,setCurrentPortfolio] = useState(null);
+  const [assets,setAssets] = useState([])
+  const [currentTotalValue,setCurrentTotalValue] = useState(0);
+  useEffect(() => {
+    let portfolioId = 1;
+      getAllPortfolio().then(res => {
+      setCurrentPortfolio(res);
+        getAssetsByPortfolio(portfolioId).then(res => {
+          setAssets(res)
+        })
+    })
+
+
+  },[]);
+
+  useEffect(() => {
+    calculateTotalValue(assets)
+  },[assets]);
+
+
+
+  const calculateTotalValue = (res) => {
+    let sum = 0;
+    assets.forEach(item => {
+      sum+= item.price*item.amount;
+    })
+    return sum;
+  }
   return (
-    <View style={containerStyle}>
+    <ScrollView style={containerStyle}>
       <Header headerText={"My Portfolio"} isPortfolioScreen={true}/>
-      <View>
-        <Text style={{marginTop: 5, color:"white"}}>Total Value : 124,534.34 $ </Text>
-        <Text style={{marginTop: 5, color:"white"}}>Change  : 8.33 % </Text>
+      <View style={{alignItems:'center',marginTop:20}}>
+        <Text style={{marginTop: 5, color:"#70A800", fontSize:43, fontWeight:'bold',fontFamily:'Feather'}}>
+          {priceFormat(calculateTotalValue(assets))}</Text>
+        <Text style={{marginTop: 5, color:"#70A800",fontSize:22, fontWeight:'bold',fontFamily:'Feather'}}>Change  : 8.33% </Text>
       </View>
-            <LineChart
-            line_chart_data={[{time:'11 Feb', value:3422},
-              {time:'12 Feb', value:3035.17},
-              {time:'14 Feb', value:3033.27},
-              {time:'15 Feb', value:2399.27},
-              {time:'16 Feb', value:3033.27},
-              {time:'17 Feb', value:933.27},
-              {time:'18 Feb', value:2222.27},
-            ]}
-            circleColor={"#daa520"}
-            lineChartWidth={3}
-            axisColor={"#9dd"}
-            axisLabelFontSize={9}
-            renderCircleAndRect={false}
-            showGradient={true}
-            />
-  </View>)
+
+      <PieChart assets={assets} totalValue={calculateTotalValue(assets)}/>
+      <View style={styles.filter}>
+        <View style={styles.topRow}>
+          <View style={{flex:2}}>
+          </View>
+          <View style={{flex:3}}>
+          </View>
+          <View style={{flex:5}}>
+            <Text style={{color:'#9a9a9a',alignSelf:'flex-end',fontSize:15,fontWeight:'bold',marginRight:5}}>Price</Text>
+          </View>
+          <View style={{flex:6}}>
+            <Text style={{color:'#9a9a9a',alignSelf:'flex-end',fontSize:15,fontWeight:'bold',marginRight:15}}>Total</Text>
+          </View>
+        </View>
+
+      </View>
+
+      {assets.length > 0 && assets.map((item,index) => (
+        <AssetSummaryCard item={item}
+                          index={index}
+                          initialNumToRender={10}
+                          windowSize={5}
+                          key={`asset +${index}`}
+                          keyExtractor={item => item.id}
+                          maxToRenderPerBatch={5}
+                          updateCellsBatchingPeriod={30}
+                          getRealTimeData={true} />
+        ))
+      }
+
+
+  </ScrollView>)
 };
 //trending-up-sharp
 const styles = {
@@ -46,7 +93,22 @@ const styles = {
     fontSize: 35,
     justifyContent: 'flex-start',
   },
-
+  assetCardStyle: {
+    marginTop :30,
+    alignSelf :'center'
+  },
+  filter: {
+    marginLeft: 10,
+    marginRight: 10,
+    marginTop: 60,
+    marginBottom:-15,
+    borderRadius: 5,
+    height:20
+  },
+  topRow:{
+    marginLeft: 5,
+    flexDirection:'row',
+  },
 }
 
 //#041C32

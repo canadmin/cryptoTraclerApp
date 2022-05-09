@@ -3,7 +3,7 @@ import { View, Text, Image, TouchableOpacity } from "react-native";
 import Colors from "../../../Colors";
 import { getCurrenciesFromExtarnalApi, getCurrencyPrice } from "../../../reducers/CryptoApiService";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { round } from "../../../helper/Utils";
+import { priceFormat, round } from "../../../helper/Utils";
 
 const CurrencySummaryCard = (props) => {
   const {
@@ -135,7 +135,7 @@ const CurrencySummaryCard = (props) => {
           </View>
           {!searchFromModal && <View style={{ flex: 1 }}>
             <Text style={isUp ? upPriceStyle : downPriceStyle}>
-              {price}$
+              {priceFormat(price)}$
             </Text>
           </View>}
           <View style={{ alignItems: "flex-end", marginLeft: 10 }}>

@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
     //textAlign:"center",
     color: "#EFB90B",
     fontWeight: "normal",
+    fontFamily:'Feather'
   },
 
   headerInsideStyle : {
@@ -81,7 +82,7 @@ const styles = StyleSheet.create({
   },
 
   headerRightComponent : {
- alignItems: 'flex-start'
+    alignItems: 'flex-start'
   }
 });
 

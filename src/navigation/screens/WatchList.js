@@ -138,6 +138,7 @@ const styles = {
     marginTop:10,
     marginLeft:50,
     marginRight: 50,
+    marginBottom: 50,
     justifyContent:'center',
     alignItems:'center'
   }

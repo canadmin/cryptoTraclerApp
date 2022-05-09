@@ -3,7 +3,7 @@ import { View, Dimensions, Animated, Text,Easing,Alert,StyleSheet } from "react-
 import Svg, { G, Line, Circle, Text as SvgText, Path, Rect, Defs, LinearGradient, Stop } from "react-native-svg";
 import * as path  from "svg-path-properties";
 import { styles } from "./styles";
-import TimePeriod from "./TimePeriod";
+import { scaleLinear } from "d3-scale";
 const window_width = Dimensions.get("window").width;
 
 
@@ -13,24 +13,26 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 const AnimatedSvgText = Animated.createAnimatedComponent(SvgText);
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
-const LineChart = ({
-                     line_chart_data = [],
-                     containerHeight = 250,
-                     circleColor = "#EFB90B",
-                     circleRadius = 2,
-                     checkPointCircleRadius = 5,
-                     axisColor = "#fff",
-                     axisWidth = 2,
-                     axisLabelFontSize= 9,
-                     lineChartColor = "#70A800",
-                     lineChartWidth = 6,
-                     tooltipHeight = 20,
-                     tooltipWidth=40,
-                     cursorRadius= 10,
-                     showGradient = true,
-                     renderCircleAndRect=true
-                   }) => {
+const LineChart = (props) => {
 
+  const {
+    line_chart_data = [],
+    containerHeight = 250,
+    circleColor = "#EFB90B",
+    circleRadius = 2,
+    checkPointCircleRadius = 5,
+    axisColor = "#fff",
+    axisWidth = 2,
+    axisLabelFontSize= 9,
+    lineChartColor = "#70A800",
+    lineChartWidth = 6,
+    tooltipHeight = 20,
+    tooltipWidth=40,
+    cursorRadius= 10,
+    showGradient = true,
+    renderCircleAndRect=true,
+    showXAxisText=false,
+  } = props;
 
   const marginFor_x_fromLeft = 10;
   const marginFor_y_fromBottom = 50;
@@ -71,6 +73,8 @@ const LineChart = ({
     line_chart_data.map((item) => item.value),
   );
 
+  const scaleY= scaleLinear().domain([0,y_max_value]).range([containerHeight,0]);
+
   const animated_x_axis_width = useRef(new Animated.Value(
     x_axis_x1_point,
   )).current;
@@ -100,7 +104,7 @@ const LineChart = ({
     0
   )).current;
 
-  const gapBetweenYAxisValues = (y_max_value - y_min_value ) / (line_chart_data.length -2)
+  const gapBetweenYAxisValues = (y_max_value  ) / (line_chart_data.length -2)
 
   const y_axis_actual_height = y_axis_y2_point - y_axis_y1_point;
 
@@ -217,7 +221,7 @@ const LineChart = ({
                       x2={animated_x_axis_width}
                       y2={x_axis_y2_point}
                       stroke={axisColor}
-                      strokeWidth={0} />
+                      strokeWidth={1} />
 
         <AnimatedLine key="y-axis"
                       x1={y_axis_x1_point}
@@ -234,7 +238,7 @@ const LineChart = ({
       let x_point = x_axis_x1_point + gap_between_x_axis_ticks * index;
       return (
         <G key={"x-axis label and ticks" + index}>
-          <AnimatedLine
+          {showXAxisText &&<AnimatedLine
             key={"x-axis-tick" + index}
             x1={x_axis_x1_point + gap_between_x_axis_ticks * index}
             y1={x_axis_y1_point}
@@ -242,9 +246,8 @@ const LineChart = ({
             y2={x_axis_y2_point + 5}
             opacity={animated_ticks_labels_opacity}
             strokeWidth={axisWidth}
-            stroke={axisColor} />
-
-          <SvgText
+            stroke={axisColor} />}
+          {showXAxisText &&<SvgText
             x={x_point}
             y={x_axis_y1_point + 20}
             fill={axisColor}
@@ -252,7 +255,8 @@ const LineChart = ({
             textAnchor={"middle"}
           >
             {item.time}
-          </SvgText>
+          </SvgText> }
+
         </G>
       );
     });
@@ -264,7 +268,7 @@ const LineChart = ({
       let y_point = y_axis_y2_point - gap_between_y_axis_ticks * index;
       return (
         <G key={"y-axis labels and ticks" + index}>
-          <AnimatedLine
+          {showXAxisText && <AnimatedLine
             key={"y-axis tick" + index}
             x1={marginFor_x_fromLeft}
             y1={y_point}
@@ -273,8 +277,8 @@ const LineChart = ({
             stroke={axisColor}
             strokeWidth={1}
             opacity={0.2}
-          />
-          <AnimatedSvgText key={"y-axis label" + index}
+          />}
+          {showXAxisText && <AnimatedSvgText key={"y-axis label" + index}
                    x={marginFor_x_fromLeft + x_axis_actual_width}
                    y={y_point}
                    textAnchor={"end"}
@@ -282,7 +286,7 @@ const LineChart = ({
                    opacity={animated_ticks_labels_opacity}
                    fill={axisColor}>
             {item}
-          </AnimatedSvgText>
+          </AnimatedSvgText>}
         </G>);
     });
   };
@@ -402,6 +406,7 @@ const LineChart = ({
     let  lineHeight =path.svgPathProperties(getDPath()).getTotalLength();
     const {x, y} = path.svgPathProperties(getDPath()).getPointAtLength(lineHeight- value);
     cursor.current?.setNativeProps({top:y-cursorRadius, left: x-cursorRadius})
+    //console.log(scaleY.invert(y));
   }
   useEffect(()=>{
     xx.addListener(({ value }) =>  moveCursor(value));
@@ -456,7 +461,6 @@ const LineChart = ({
           )}
           horizontal
         />
-      <TimePeriod/>
     </View>
   );
 };

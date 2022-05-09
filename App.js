@@ -1,4 +1,4 @@
-import  React,{useState} from 'react';
+import React, { useEffect, useState } from "react";
 import MainContainer from "./src/navigation/MainContainer";
 import Colors from "./src/Colors";
 import {
@@ -9,6 +9,7 @@ import {
 
 import {Provider} from 'react-redux'
 import {Store as store} from './src/redux/store'
+import { createPortfolio, getAllPortfolio } from "./src/storage/allSchema";
 const STYLES = ['default', 'dark-content', 'light-content'];
 const TRANSITIONS = ['fade', 'slide', 'none'];
 
@@ -40,6 +41,20 @@ const App = () => {
     backgroundColor: isDarkMode ? Colors.darkBackground : Colors.darkPrimaryText,
   };
 
+  useEffect(() => {
+   getAllPortfolio().then(res => {
+     if(res.length < 1){
+       createPortfolio(    {
+           name : 'My Portfolio',
+           color : '#FFF'
+         },
+       ).then((res) => {
+         console.log(res)
+       });
+     }
+
+   })
+  },[])
   return(
     <Provider store={store}>
       <SafeAreaView style={{flex:1,backgroundColor:'#2C3640'}}>
