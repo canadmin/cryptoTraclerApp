@@ -123,8 +123,12 @@ const CurrencySummaryCard = (props) => {
         name: item.name,
         coin: item,
       }, "Watchlist")}>
+
         <View style={containerStyle}>
-          <View style={{ flex: 1 }}>
+          <View>
+            <Text style={{color:"#9a9a9a", fontSize:15,marginLeft:20}}>{index + 1}.</Text>
+          </View>
+          <View style={{ flex: 1,marginLeft:-20 }}>
             <Image style={coinImage}
                    source={{ uri: "https://s2.coinmarketcap.com/static/img/coins/64x64/" + item.id + ".png" }} />
           </View>

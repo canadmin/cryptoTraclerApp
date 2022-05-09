@@ -26,7 +26,7 @@ const addCoinToFavModal = (props) => {
         setFavorites(res);
       }
     }).then((res) => {
-      getCurrencies("top10").then(res => {
+      getCurrencies("all").then(res => {
         let data = res.data;
         let currencies = data.map((item, index) => {
           return {
@@ -39,6 +39,8 @@ const addCoinToFavModal = (props) => {
       });
     });
     return () => {
+
+      setCoins([])
     };
   }, []);
   const addCurrencyToFavorite = (coin) => {
@@ -53,10 +55,7 @@ const addCoinToFavModal = (props) => {
       dispatch(removeWatchList(coin));
     }));
   };
-  // all coins paramını kullanarak tüm coinleri bir flatlistte basıcaz
-  // sonrasında bu coinlere arama çekicez filtreleme yapıcaz
 
-  //filtreleme componenti ortak bir component olacak
   const renderItem = ({ item, index }) => (
     <CurrencySummaryCard item={item}
                          index={index}
