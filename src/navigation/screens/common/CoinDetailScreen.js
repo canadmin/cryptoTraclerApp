@@ -6,7 +6,7 @@ import { addPageHistory } from "../../../redux/action";
 import TimePeriod from "./TimePeriod";
 import LineChart from "./LineChart";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { round, floorCalc, negativeRound, getCoinGeckoId } from "../../../helper/Utils";
+import { round, floorCalc, negativeRound, getCoinGeckoId, priceFormat } from "../../../helper/Utils";
 import { getCurrenciesFromExtarnalApi, getCurrencyPrice,getChartValue } from "../../../reducers/CryptoApiService";
 import AddToPortfolioModal from '../../screens/common/AddToPortfolioModal';
 
@@ -109,7 +109,7 @@ const CoinDetailScreen = ({navigation,route}) => {
       <Header headerText={route.params.name} isDetailScreen={true}  handleHeaderBackOnPress={handleHeaderBackOnPress}></Header>
       <View style={{alignItems:'center'}}>
         <Text style={textStyle}>
-          $ {round(price)}
+          {priceFormat(price)}
         </Text>
       </View>
       <LineChart

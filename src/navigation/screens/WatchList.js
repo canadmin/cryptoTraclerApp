@@ -85,8 +85,6 @@ const WatchList = (props) => {
     dispatch(addPageHistory("WatchList"))
   }
 
-
-
   return (
     <View style={containerStyle}>
       <Header headerText={"Watch List"} />

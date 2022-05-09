@@ -32,16 +32,18 @@ export const validatePriceAndAmount = (priceAndAmount) => {
 
 
 export const priceFormat = (price) => {
- if(price < 1){
-   return new Intl.NumberFormat('en-US', { maximumSignificantDigits: 3 ,
-     style: 'currency',
-     currency: 'USD'}).format(price);
- } else {
-   return (price).toLocaleString('en-US', {
-     style: 'currency',
-     currency: 'USD',
-   });
- }
+ if(price === undefined) return price;
+  if(price < 0.01){
+    return new Intl.NumberFormat('en-US', { maximumSignificantDigits: 3 ,
+      style: 'currency',
+      currency: 'USD'}).format(price);
+  }else {
+    return (price).toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    });
+
+  }
 
 }
 

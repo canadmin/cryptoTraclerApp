@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useEffect } from "react";
 import {View,Text,TouchableOpacity,Image,Dimensions} from "react-native";
-import { priceFormat } from "../../../helper/Utils";
+import { priceFormat, round } from "../../../helper/Utils";
+import { getCurrenciesFromExtarnalApi, getCurrencyPrice } from "../../../reducers/CryptoApiService";
 
 
 const window_width = Dimensions.get("window").width;
 //%100 window_width-120
 const AssetSummaryCard = (props) => {
+
+
 
   const {item,index} = props;
   return (

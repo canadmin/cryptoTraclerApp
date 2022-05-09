@@ -84,10 +84,10 @@ const PieChart = (props) => {
           </View>
 
           <View style={{marginTop:-20}}>
-            <Text style={{textAlign:'center',color:'white',fontWeight:"bold",fontSize:22}}>
+            <Text style={{textAlign:'center',color:coinDetail.assetColor,fontWeight:"bold",fontSize:22}}>
               {(((coinDetail.price*coinDetail.amount).toFixed(0)/totalValue.toFixed(0)) *100).toFixed(0)} %
             </Text>
-            <Text style={{textAlign:'center', color:'#70A800',fontWeight:"bold"}}>
+            <Text style={{textAlign:'center', color:coinDetail.assetColor,fontWeight:"bold"}}>
               {priceFormat(coinDetail.price*coinDetail.amount)}
             </Text>
           </View>
