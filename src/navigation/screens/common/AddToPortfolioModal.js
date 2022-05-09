@@ -4,7 +4,8 @@ import Header from "./Header";
 import DatePicker from "react-native-date-picker";
 import Moment from "moment";
 import { addAssetToPortfolio, getAllPortfolio, getAssetsByPortfolio } from "../../../storage/allSchema";
-import { getRandomColor, round, validatePriceAndAmount } from "../../../helper/Utils";
+import { getCoinGeckoId, getRandomColor, round, validatePriceAndAmount } from "../../../helper/Utils";
+import { getHistoryPrice } from "../../../reducers/CryptoApiService";
 
 const AddToPortfolioModal = (props) => {
   const { showModal, setShowModal, coin } = props;
@@ -29,12 +30,20 @@ const AddToPortfolioModal = (props) => {
   };
 
 
+
+  useEffect(() => {
+    getHistoryPrice(getCoinGeckoId(coin.symbol),textDate).then((res => {
+      setCoinPrice(res.data.market_data ? res.data.market_data.current_price.usd : coin.price)
+    })).catch(e => {})
+  },[textDate])
+
+
   const addAsset = async () => {
 
       let portfolioId = 0;
       await getAllPortfolio().then(res => {
         portfolioId = res[0].id;
-      });
+      }).catch(e => {});
 
       await addAssetToPortfolio({
         portfolioId: portfolioId,
@@ -49,7 +58,7 @@ const AddToPortfolioModal = (props) => {
         assetColor: getRandomColor()
       }).then((res) => {
         setShowModal(false)
-      });
+      }).catch(e => {});
 
   };
 

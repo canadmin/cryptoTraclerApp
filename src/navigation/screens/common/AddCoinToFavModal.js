@@ -38,18 +38,18 @@ const addCoinToFavModal = (props) => {
         });
         setCoins(currencies);
         setFiltered(currencies);
-      });
-    });
+      }).catch(e => {});
+    }).catch(e => {});
     return () => {
       setCoins([])
+      setFiltered([])
     };
   }, []);
 
   useEffect(() => {
     let filteredData = coins.filter(function (item) {
-      return item.name.includes(searchInput);
+      return item.name.toLowerCase().includes(searchInput.toLowerCase());
     });
-
     setFiltered(filteredData);
   },[searchInput])
 
@@ -58,13 +58,13 @@ const addCoinToFavModal = (props) => {
     insertFavorites({ symbol: coin.symbol, name: coin.name }).then((res) => {
     }).then(() => {
       dispatch(addWatchList(coin));
-    });
+    }).catch(e => {});
   };
 
   const deleteCurrencyFromFavorite = (coin) => {
     deleteFavorites(coin.symbol).then((res => {
       dispatch(removeWatchList(coin));
-    }));
+    })).catch(e => {});
   };
 
   const renderItem = ({ item, index }) => (

@@ -61,17 +61,6 @@ const AssetSummaryCard = (props) => {
         </View>
       </View>
 
-
-      <View
-        style={{
-          borderWidth: 0.4,
-          opacity: 0.2,
-          borderColor: "white",
-          marginLeft: 0,
-          marginRight: 0,
-          marginTop:3
-        }}
-      />
     </View>
   )
 

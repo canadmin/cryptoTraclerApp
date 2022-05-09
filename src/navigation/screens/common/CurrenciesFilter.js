@@ -1,13 +1,15 @@
 import React,{useState} from 'react';
 import {Text,View,TextInput} from 'react-native';
 
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const CurrenciesFilter = (props) => {
 
   const {searchInput,onchangeSearchInput} = props;
 
   return (
-    <View>
+    <View style={{flexDirection:"row"}}>
+
           <TextInput
             style={styles.input}
             onChangeText={onchangeSearchInput}
@@ -15,6 +17,8 @@ const CurrenciesFilter = (props) => {
             placeholder="search: bitcoin"
             placeholderTextColor="grey"
           />
+      <Ionicons style={{marginTop:15,marginRight:10}} name={"filter"} size={30} color={"#EFB90B"} />
+
     </View>
   )
 }
@@ -31,6 +35,7 @@ const styles = {
     fontWeight:'bold',
     color:'white',
     backgroundColor:'#353E48',
+    flex:2
 
   }
 

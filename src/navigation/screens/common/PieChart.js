@@ -60,7 +60,6 @@ const PieChart = (props) => {
           target:"data",
           eventHandlers:{
             onPressIn: () => {
-              console.log("qaa")
               return [{
                 target:"labels",
                 mutation :(props) => {

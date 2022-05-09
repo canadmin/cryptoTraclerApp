@@ -1,4 +1,5 @@
-import { request,externalApirequest,getOhlcHistoryRequest } from "../helper/apiClient";
+import { request,externalApirequest,getOhlcHistoryRequest
+,getHistoryPriceFromExternal} from "../helper/apiClient";
 
 // top 10 falan
 export const getCurrencies = (listType) => {
@@ -72,6 +73,16 @@ export const getChartValue = (currency_id,period) => {
   }
 
   return getOhlcHistoryRequest(options)
+}
+
+export const getHistoryPrice = (currency_id,date) => {
+  const options = {
+    method: "get",
+    path:date,
+    currency_name_id:currency_id
+  }
+
+  return getHistoryPriceFromExternal(options)
 }
 
 

@@ -66,9 +66,9 @@ const CoinDetailScreen = ({navigation,route}) => {
           } else {
             setPrice(round(item.price));
           }
-        });
+        }).catch(e => {});
       }
-    });
+    }).catch(e => {});
   };
 
   useEffect(() =>{
@@ -84,7 +84,10 @@ const CoinDetailScreen = ({navigation,route}) => {
         })
       }
       setCoinData(data);
-    })
+      return () => {
+        setPrice(null);
+      }
+    }).catch(e => {})
   },[period])
   useEffect(() => {
     ws.current = new WebSocket("wss://stream.binance.com:9443/ws/" + coin.symbol + "usdt@kline_1m");

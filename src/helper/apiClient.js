@@ -11,11 +11,16 @@ export const request = (options) => {
       return (url += par + "=" + options.values[index] + "&");
     });
   }
-  return axios({
+  try {
+    return axios({
       method: options.method,
       url: url,
       data: options.data,
     })
+  }catch (e){
+    return e;
+  }
+
 };
 
 export const externalApirequest = (options) => {
@@ -27,22 +32,47 @@ export const externalApirequest = (options) => {
       return (url += par + "=" + options.values[index] + "&");
     });
   }
-  return axios({
-    method: options.method,
-    url: url,
-    data: options.data,
-  })
+  try{
+    return axios({
+      method: options.method,
+      url: url,
+      data: options.data,
+    })
+  }catch (e){
+    return e;
+  }
+
 };
 
 
-//
 export const getOhlcHistoryRequest = (options) => {
   let url = `${"https://api.coingecko.com/api/v3/coins/"+options.currency_name_id+"/ohlc?vs_currency=usd&days="}${options.path}`
 
-  return axios({
-    method: options.method,
-    url: url,
-    data: options.data,
-  })
+  try{
+    return axios({
+      method: options.method,
+      url: url,
+      data: options.data,
+    })
+  }catch (e) {
+    return e;
+  }
+
 };
+
+
+export const getHistoryPriceFromExternal = (options) => {
+  let url = `${"https://api.coingecko.com/api/v3/coins/"+options.currency_name_id+"/history?date="}${options.path}`
+  try {
+    return axios({
+      method: options.method,
+      url: url,
+      data: options.data,
+    })
+  }catch (e){
+    return e;
+  }
+
+};
+
 

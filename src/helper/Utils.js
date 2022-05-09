@@ -47,6 +47,7 @@ export const priceFormat = (price) => {
 
 }
 
+
 export const getCoinGeckoId = (symbol) => {
   const ids2 = ids.find((element) => element.symbol === symbol);
   return ids2.id;

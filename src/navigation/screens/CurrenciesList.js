@@ -15,6 +15,9 @@ const CurrenciesList = ({navigation}) => {
 
   const [coins, setCoins] = useState([]);
   const [favorites, setFavorites] = useState([]);
+  const [filtered, setFiltered] = useState([]);
+
+
   const { containerStyle, textStyle } = styles;
   useEffect(() => {
     getAllFavorites().then(res => {
@@ -40,16 +43,25 @@ const CurrenciesList = ({navigation}) => {
           };
         });
         setCoins(currencies);
-      });
-    });
+        setFiltered(currencies)
+      }).catch(e => {});
+    }).catch(e => {});
 
     return () => {
       setFavorites([]);
       setCoins([])
+      setFiltered([])
+
     }
   }, []);
 
+  useEffect(() => {
+    let filteredData = coins.filter(function (item) {
+      return item.name.toLowerCase().includes(searchInput.toLowerCase());
+    });
 
+    setFiltered(filteredData);
+  },[searchInput])
 
   const addCurrencyToFavorite = (coin) => {
     insertFavorites({ symbol: coin.symbol, name: coin.name }).then((res) => {
@@ -88,7 +100,7 @@ const CurrenciesList = ({navigation}) => {
       <View style={{backgroundColor:'#2C3640'}}>
         <CurrenciesFilter searchInput={searchInput} onchangeSearchInput={onchangeSearchInput}></CurrenciesFilter>
       </View>
-      <FlatList data={coins}
+      <FlatList data={filtered}
                 initialNumToRender={5}
                 initialNumToRender={10}
                 windowSize={10}
