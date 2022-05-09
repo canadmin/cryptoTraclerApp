@@ -17,7 +17,7 @@ const PieChart = (props) => {
 
   useEffect(() => {
       let calculateChartData = assets.map((item => {
-      let percentage = (((item.price*item.amount).toFixed(0)/totalValue.toFixed(0)) *100).toFixed(0);
+      let percentage = (((item.price*item.amount).toFixed(2)/totalValue.toFixed(2)) *100).toFixed(2);
 
       if(percentage >= 1){
         return {

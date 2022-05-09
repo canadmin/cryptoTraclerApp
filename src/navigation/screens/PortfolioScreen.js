@@ -27,6 +27,7 @@ const PortfolioScreen = () => {
               portfolioId: item.portfolioId,
               id:item.id,
               amount: item.amount,
+              oldPrice: item.price,
               price: String(ss),
               isAddTransaction: item.isAddTransaction,
               createDate: item.createDate,
@@ -41,12 +42,13 @@ const PortfolioScreen = () => {
           })
         })
     })
+
+    return() => {
+        setAssets([]);
+        setCurrentTotalValue(0)
+    }
   },[]);
 
-
-  useEffect( () => {
-
-  },[tempAssets])
 
 
   const getCurrentPrice = async (item) => {
@@ -90,7 +92,7 @@ const PortfolioScreen = () => {
       <View style={{alignItems:'center',marginTop:20}}>
         <Text style={{marginTop: 5, color:"#70A800", fontSize:43, fontWeight:'bold',fontFamily:'Feather'}}>
           {priceFormat(calculateTotalValue(assets))}</Text>
-        <Text style={{marginTop: 5, color:"#70A800",fontSize:22, fontWeight:'bold',fontFamily:'Feather'}}>Change  : 8.33% </Text>
+        <Text style={{marginTop: 5, color:"#70A800",fontSize:22, fontWeight:'bold',fontFamily:'Feather'}}>Change: 8.33% </Text>
       </View>
       {assets.length > 0 &&
         <>
