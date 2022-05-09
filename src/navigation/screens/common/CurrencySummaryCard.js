@@ -115,11 +115,14 @@ const CurrencySummaryCard = (props) => {
 
 
   return (
-    <TouchableOpacity disabled={searchFromModal} onPress={() => navigateAndAddPageHistory("CoinDetailScreen", {
+    <View disabled={searchFromModal} onPress={() => navigateAndAddPageHistory("CoinDetailScreen", {
       name: item.name,
       coin: item,
     }, "Watchlist")}>
-      <View>
+      <TouchableOpacity disabled={searchFromModal} onPress={() => navigateAndAddPageHistory("CoinDetailScreen", {
+        name: item.name,
+        coin: item,
+      }, "Watchlist")}>
         <View style={containerStyle}>
           <View style={{ flex: 1 }}>
             <Image style={coinImage}
@@ -133,19 +136,19 @@ const CurrencySummaryCard = (props) => {
               {item.symbol.toUpperCase()}
             </Text>
           </View>
-          {!searchFromModal && <View style={{ flex: 1 }}>
+          {!searchFromModal && <View style={{ flex: 1 ,alignItems:'flex-start'}}>
             <Text style={isUp ? upPriceStyle : downPriceStyle}>
               {priceFormat(price)}$
             </Text>
           </View>}
-          <View style={{ alignItems: "flex-end", marginLeft: 10 }}>
-            <TouchableOpacity onPress={() => addFavorite({
-              symbol: item.symbol,
-              name: item.name,
-            })}>
-              <Ionicons name={isFavoriteCoin ? "md-star-sharp" : "md-star-outline"} size={30} color={"#EFB90B"} />
-            </TouchableOpacity>
-          </View>
+        </View>
+        <View style={{ marginLeft: 10 , position:"absolute",right:'2%',top:'25%'}}>
+          <TouchableOpacity onPress={() => addFavorite({
+            symbol: item.symbol,
+            name: item.name,
+          })}>
+            <Ionicons name={isFavoriteCoin ? "md-star-sharp" : "md-star-outline"} size={30} color={"#EFB90B"} />
+          </TouchableOpacity>
         </View>
         <View
           style={{
@@ -156,8 +159,8 @@ const CurrencySummaryCard = (props) => {
             marginRight: 25,
           }}
         />
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </View>
   );
 };
 
