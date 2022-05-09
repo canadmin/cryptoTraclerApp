@@ -12,7 +12,8 @@ const CurrenciesFilter = (props) => {
             style={styles.input}
             onChangeText={onchangeSearchInput}
             value={searchInput}
-            placeholder="Search Coins"
+            placeholder="search: bitcoin"
+            placeholderTextColor="grey"
           />
     </View>
   )

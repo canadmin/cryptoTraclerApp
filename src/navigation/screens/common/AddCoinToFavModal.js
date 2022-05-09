@@ -15,6 +15,7 @@ const addCoinToFavModal = (props) => {
 
 
   const [coins, setCoins] = useState([]);
+  const [filtered, setFiltered] = useState([]);
 
   const dispatch = useDispatch();
   const [favorites, setFavorites] = useState([]);
@@ -36,13 +37,23 @@ const addCoinToFavModal = (props) => {
           };
         });
         setCoins(currencies);
+        setFiltered(currencies);
       });
     });
     return () => {
-
       setCoins([])
     };
   }, []);
+
+  useEffect(() => {
+    let filteredData = coins.filter(function (item) {
+      return item.name.includes(searchInput);
+    });
+
+    setFiltered(filteredData);
+  },[searchInput])
+
+
   const addCurrencyToFavorite = (coin) => {
     insertFavorites({ symbol: coin.symbol, name: coin.name }).then((res) => {
     }).then(() => {
@@ -80,7 +91,7 @@ const addCoinToFavModal = (props) => {
 
         <View style={styles.modal}>
 
-          <FlatList data={coins} renderItem={renderItem} />
+          <FlatList data={filtered} renderItem={renderItem} />
         </View>
       </SafeAreaView>
 

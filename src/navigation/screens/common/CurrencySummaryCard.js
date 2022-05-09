@@ -140,13 +140,13 @@ const CurrencySummaryCard = (props) => {
               {item.symbol.toUpperCase()}
             </Text>
           </View>
-          {!searchFromModal && <View style={{ flex: 1 ,alignItems:'flex-start'}}>
+          {!searchFromModal && <View style={{ flex: 1 ,alignItems:'flex-end',marginRight:20}}>
             <Text style={isUp ? upPriceStyle : downPriceStyle}>
-              {priceFormat(price)}$
+              {priceFormat(price)}
             </Text>
           </View>}
         </View>
-        <View style={{ marginLeft: 10 , position:"absolute",right:'2%',top:'25%'}}>
+        <View style={{ marginLeft: 10 , position:"absolute",right:'2%',top:'20%'}}>
           <TouchableOpacity onPress={() => addFavorite({
             symbol: item.symbol,
             name: item.name,
