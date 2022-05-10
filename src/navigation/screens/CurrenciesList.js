@@ -7,6 +7,7 @@ import { insertFavorites, deleteFavorites, getAllFavorites, deleteAll } from "..
 import { useSelector, useDispatch } from "react-redux";
 import { addPageHistory, addWatchList, removeWatchList } from "../../redux/action";
 import CurrenciesFilter from "./common/CurrenciesFilter";
+import AppLoader from "./common/AppLoader";
 
 const CurrenciesList = ({navigation}) => {
   const {watchedCoins} = useSelector(state => state.userReducer)
@@ -16,10 +17,12 @@ const CurrenciesList = ({navigation}) => {
   const [coins, setCoins] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [filtered, setFiltered] = useState([]);
+  const [dataFetching,setDataFetching] = useState(false);
 
 
   const { containerStyle, textStyle } = styles;
   useEffect(() => {
+    setDataFetching(true)
     getAllFavorites().then(res => {
       if (res !== null) {
         setFavorites(res);
@@ -44,6 +47,7 @@ const CurrenciesList = ({navigation}) => {
         });
         setCoins(currencies);
         setFiltered(currencies)
+        setDataFetching(false)
       }).catch(e => {});
     }).catch(e => {});
 
@@ -109,6 +113,7 @@ const CurrenciesList = ({navigation}) => {
                 updateCellsBatchingPeriod={30}
                 renderItem={renderItem}
       />
+      {dataFetching && <AppLoader/>}
 
     </View>);
 };

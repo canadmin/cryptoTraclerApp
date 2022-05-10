@@ -39,9 +39,11 @@ const Header = (props) => {
           </Text>
         </View>}
         {isPortfolioScreen && <View style={headerRightComponent}>
-          <Text>
-            <Ionicons name={"md-add-outline"} size={30} color={'#EFB90B'} />
-          </Text>
+          <TouchableOpacity onPress={() => {props.showActionSheet()}}>
+            <View>
+              <Ionicons name={"md-add-outline"} size={30} color={'#EFB90B'} />
+            </View>
+          </TouchableOpacity>
         </View>}
       </View>
     </View>

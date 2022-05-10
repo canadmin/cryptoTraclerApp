@@ -4,8 +4,8 @@ const  {REACT_APP_CRYPTO_API_URL} = process.env;
 
 export const request = (options) => {
   let url = options.params
-    ? `${"http://3.67.172.12:4000/"}${options.path}?`
-    : `${"http://3.67.172.12:4000/"}${options.path}`;
+    ? `${"http://68.183.68.105:4000/"}${options.path}?`
+    : `${"http://68.183.68.105:4000/"}${options.path}`;
   if (options.params && options.params.length) {
     options.params.map((par, index) => {
       return (url += par + "=" + options.values[index] + "&");

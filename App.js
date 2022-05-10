@@ -5,7 +5,9 @@ import {
   SafeAreaView,
   StatusBar,
   useColorScheme,
+  LogBox
 } from 'react-native';
+LogBox.ignoreAllLogs(['Warning: ...']);
 
 import {Provider} from 'react-redux'
 import {Store as store} from './src/redux/store'

@@ -1,4 +1,4 @@
-import  React,{useEffect,useState} from 'react';
+import React, { useEffect, useRef, useState } from "react";
 import {View, Text,FlatList ,ScrollView} from 'react-native';
 import Header from "./common/Header";
 import { getAllPortfolio, getAssetsByPortfolio } from "../../storage/allSchema";
@@ -6,15 +6,31 @@ import AssetSummaryCard from "./common/AssetSummaryCard";
 import PieChart from "./common/PieChart";
 import { getRandomColor, priceFormat, round } from "../../helper/Utils";
 import { getCurrenciesFromExtarnalApi, getCurrencyPrice } from "../../reducers/CryptoApiService";
+import ActionSheetCustom from "react-native-actionsheet/lib/ActionSheetCustom";
+import { hairlineWidth } from "react-native-actionsheet/lib/styles";
+import AppLoader from "./common/AppLoader";
 const PortfolioScreen = () => {
+  const actionSheet = useRef();
+
   const {containerStyle,portfolioHeader,component1,totalValue} = styles;
-
-
   const [currentPortfolio,setCurrentPortfolio] = useState(null);
   const [assets,setAssets] = useState([])
   const [tempAssets,setTempAssets] = useState([])
   const [currentTotalValue,setCurrentTotalValue] = useState(0);
+  const [showPopUp,setShowPopUp] = useState(false);
+  const [dataFetching,setDataFetching] = useState(false);
+
+
+  let optionArray = [
+    'Asset', 'Portfolio','Close'
+  ]
+
+  const showActionSheet = () => {
+      actionSheet.current.show();
+  }
+
   useEffect(() => {
+    setDataFetching(true)
     let tempAssets = [];
     let portfolioId = 1;
       getAllPortfolio().then(res => {
@@ -39,6 +55,7 @@ const PortfolioScreen = () => {
             };
             await tempList.push(newData);
             setAssets(prevArray => [...prevArray, newData])
+            setDataFetching(false)
           })
         })
     })
@@ -88,7 +105,7 @@ const PortfolioScreen = () => {
   return (
 
     <ScrollView style={containerStyle}>
-      <Header headerText={"My Portfolio"} isPortfolioScreen={true}/>
+      <Header headerText={"My Portfolio"} isPortfolioScreen={true} showActionSheet={showActionSheet}/>
       <View style={{alignItems:'center',marginTop:20}}>
         <Text style={{marginTop: 5, color:"#70A800", fontSize:43, fontWeight:'bold',fontFamily:'Feather'}}>
           {priceFormat(calculateTotalValue(assets))}</Text>
@@ -127,11 +144,19 @@ const PortfolioScreen = () => {
         </>
       }
 
+      <ActionSheetCustom
+        ref={actionSheet}
+        title={'Add New'}
+        options={optionArray}
+        cancelButtonIndex={2}
+        styles={actionStyles}
+        useNativeDriver={true}
+        onPress={(index => {
+          alert(optionArray[index]);
+        })}/>
+      {dataFetching && <AppLoader/>}
 
-
-
-
-  </ScrollView>)
+    </ScrollView>)
 };
 //trending-up-sharp
 const styles = {
@@ -164,7 +189,68 @@ const styles = {
     flexDirection:'row',
   },
 }
+const actionStyles = {
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    opacity: 0.4,
+    backgroundColor: '#000'
+  },
+  wrapper: {
+    flex: 1,
+    flexDirection: 'row'
+  },
+  body: {
+    flex: 1,
+    alignSelf: 'flex-end',
+    backgroundColor: '#e5e5e5'
+  },
+  titleBox: {
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+    display:'none'
+  },
+  titleText: {
+    color: '#757575',
+    fontSize: 14
+  },
+  messageBox: {
+    height: 30,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingBottom: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff'
+  },
+  messageText: {
+    color: '#9a9a9a',
+    fontSize: 12
+  },
+  buttonBox: {
+    height: 50,
+    marginTop: hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff'
+  },
+  buttonText: {
+    fontSize: 18
+  },
+  cancelButtonBox: {
+    height: 50,
+    marginTop: -25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff'
+  }
 
+}
 //#041C32
 //#04293A
 //#ECB365

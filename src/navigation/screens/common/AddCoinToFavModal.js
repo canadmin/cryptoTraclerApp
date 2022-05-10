@@ -7,12 +7,14 @@ import { deleteFavorites, getAllFavorites, insertFavorites } from "../../../stor
 import { useDispatch, useSelector } from "react-redux";
 import { addWatchList, removeWatchList } from "../../../redux/action";
 import CurrenciesFilter from "./CurrenciesFilter";
+import AppLoader from "./AppLoader";
 
 const addCoinToFavModal = (props) => {
 
   const { showModal, setShowModal } = props;
   const [searchInput,onchangeSearchInput] = useState("");
 
+  const [dataFetching,setDataFetching] = useState(false);
 
   const [coins, setCoins] = useState([]);
   const [filtered, setFiltered] = useState([]);
@@ -22,6 +24,7 @@ const addCoinToFavModal = (props) => {
 
 
   useEffect(() => {
+    setDataFetching(true)
     getAllFavorites().then(res => {
       if (res !== null) {
         setFavorites(res);
@@ -38,6 +41,7 @@ const addCoinToFavModal = (props) => {
         });
         setCoins(currencies);
         setFiltered(currencies);
+        setDataFetching(false)
       }).catch(e => {});
     }).catch(e => {});
     return () => {
@@ -94,6 +98,7 @@ const addCoinToFavModal = (props) => {
           <FlatList data={filtered} renderItem={renderItem} />
         </View>
       </SafeAreaView>
+      {dataFetching && <AppLoader/>}
 
     </Modal>
 

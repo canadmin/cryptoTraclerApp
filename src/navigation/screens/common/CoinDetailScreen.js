@@ -9,6 +9,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { round, floorCalc, negativeRound, getCoinGeckoId, priceFormat } from "../../../helper/Utils";
 import { getCurrenciesFromExtarnalApi, getCurrencyPrice,getChartValue } from "../../../reducers/CryptoApiService";
 import AddToPortfolioModal from '../../screens/common/AddToPortfolioModal';
+import AppLoader from "./AppLoader";
 
 const CoinDetailScreen = ({navigation,route}) => {
   const coin = route.params.coin;
@@ -23,6 +24,7 @@ const CoinDetailScreen = ({navigation,route}) => {
   const [isUp, setIsUp] = useState(true);
   const [showModal,setShowModal] = useState(false);
   const [showLineChart,setShowLineChart] = useState(false);
+  const [dataFetching,setDataFetching] = useState(false);
 
   const [period,setPeriod] = useState();
 
@@ -73,6 +75,7 @@ const CoinDetailScreen = ({navigation,route}) => {
 
   useEffect(() =>{
     let data = []
+    setDataFetching(true)
     getChartValue(getCoinGeckoId(coin.symbol),period).then((res) => {
       if(res.data && res.data.length > 0){
         res.data.forEach(item => {
@@ -84,6 +87,7 @@ const CoinDetailScreen = ({navigation,route}) => {
         })
       }
       setCoinData(data);
+      setDataFetching(false)
       return () => {
         setPrice(null);
       }
@@ -250,6 +254,7 @@ const CoinDetailScreen = ({navigation,route}) => {
       </View>
 
       {showModal && <AddToPortfolioModal coin={coin} setShowModal={setShowModal} showModal={showModal}/>}
+      {dataFetching && <AppLoader/>}
 
     </ScrollView>)
 };

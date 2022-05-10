@@ -1,16 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import { Text, View, TouchableOpacity, SafeAreaView, Modal, Image, TextInput } from "react-native";
 import Header from "./Header";
 import DatePicker from "react-native-date-picker";
 import Moment from "moment";
 import { addAssetToPortfolio, getAllPortfolio, getAssetsByPortfolio } from "../../../storage/allSchema";
-import { getCoinGeckoId, getRandomColor, round, validatePriceAndAmount } from "../../../helper/Utils";
+import { getCoinGeckoId, getRandomColor, priceFormat, round, validatePriceAndAmount } from "../../../helper/Utils";
 import { getHistoryPrice } from "../../../reducers/CryptoApiService";
+import DropdownAlert from 'react-native-dropdownalert';
 
 const AddToPortfolioModal = (props) => {
-  const { showModal, setShowModal, coin } = props;
+  const { showModal, setShowModal, coin, isUpdate=true } = props;
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
+  let dropDownAlertRef = useRef();
 
   // data
   const [textDate, setTextDate] = useState(Moment(new Date()).format("DD-MM-yyyy"));
@@ -57,7 +59,8 @@ const AddToPortfolioModal = (props) => {
         coinId: coin.id,
         assetColor: getRandomColor()
       }).then((res) => {
-        setShowModal(false)
+        dropDownAlertRef.alertWithType('success', 'Transaction Successful',
+          `Successfully Added ${coin.name.toLowerCase()} To Your Portfolio`);
       }).catch(e => {});
 
   };
@@ -88,6 +91,7 @@ const AddToPortfolioModal = (props) => {
                  source={{ uri: "https://s2.coinmarketcap.com/static/img/coins/64x64/" + coin.id + ".png" }} />
 
           <Text style={styles.symbolStyle}>{coin.symbol.toUpperCase()}</Text>
+          <Text style={styles.convertDisclaimerText}>{amount} {coin.symbol.toUpperCase()} = {priceFormat(amount*coinPrice)}</Text>
           <View style={styles.rowStyle}>
             <View style={styles.rowItemStyle}>
               <Text style={styles.labelStyle}>Amount</Text>
@@ -157,24 +161,36 @@ const AddToPortfolioModal = (props) => {
           />
           <TouchableOpacity onPress={() => addAsset()} style={styles.rowStyle}>
             <View style={styles.addButtonStyle}>
-              <Text style={styles.addButtonTextStyle}>
-                Add/Update</Text>
+              <Text style={styles.addButtonTextStyle}> {isUpdate ? `Create new Assets`: `Update` }</Text>
             </View>
           </TouchableOpacity>
         </View>
 
       </SafeAreaView>
-
+      <DropdownAlert
+        ref={(ref) => {
+          if (ref) {
+            dropDownAlertRef = ref;
+          }
+        }}
+      />
     </Modal>
   );
 };
 
 const styles = {
   symbolStyle: {
-    color: "white",
+    color: "#FFF",
     fontSize: 35,
     fontWeight: "bold",
-    marginTop: 35,
+    marginTop: 10,
+    justifyContent: "center",
+  },
+  convertDisclaimerText: {
+    color: "#9a9a9a",
+    fontSize: 22,
+    fontWeight: "bold",
+    marginTop: 10,
     justifyContent: "center",
   },
   modal: {

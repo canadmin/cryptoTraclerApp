@@ -8,6 +8,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { useDispatch, useSelector, } from "react-redux";
 import { addPageHistory, removeWatchList } from "../../redux/action";
 import AddCoinToFavModal from '../screens/common/AddCoinToFavModal';
+import AppLoader from "./common/AppLoader";
 
 const WatchList = (props) => {
 
@@ -20,9 +21,14 @@ const WatchList = (props) => {
   const [favorites, setFavorites] = useState([]);
   const [showModal,setShowModal] = useState(false);
   const [refresh,setRefresh] = useState(false);
+  const [dataFetching,setDataFetching] = useState(false);
 
   useEffect(() => {
     createWatchlist()
+    return () => {
+      setFavorites([]);
+      setCoins([]);
+    };
   }, [watchedCoins]);
 
   useEffect(() => {
@@ -38,6 +44,7 @@ const WatchList = (props) => {
   }
 
   const createWatchlist = () => {
+    setDataFetching(true)
     let favorites = "";
     getAllFavorites().then(res => {
       setFavorites(res);
@@ -67,6 +74,7 @@ const WatchList = (props) => {
           });
           setRefresh(false)
           setCoins(currencies);
+          setDataFetching(false)
         })
     });
   }
@@ -86,6 +94,7 @@ const WatchList = (props) => {
   }
 
   return (
+    <>
     <View style={containerStyle}>
       <Header headerText={"Watch List"} />
       {coins.length > 0 && favorites.length > 0 &&
@@ -117,7 +126,12 @@ const WatchList = (props) => {
           </Text>
         </View>
       </TouchableOpacity>
-    </View>);
+    </View>
+      <>
+        {dataFetching && <AppLoader/>}
+      </>
+    </>
+  );
 };
 
 const styles = {
