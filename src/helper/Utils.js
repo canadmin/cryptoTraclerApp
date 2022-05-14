@@ -6,8 +6,10 @@ import "intl/locale-data/jsonp/en";
 
 export const round = (value) => {
   if (value > 1) {
+    console.log(Number(Math.round(value + "e" + 2) + "e-" + 2))
     return Number(Math.round(value + "e" + 2) + "e-" + 2);
   }else{
+    console.log(Number(Math.round(value + "e" + 8) + "e-" + 8))
     return Number(Math.round(value + "e" + 8) + "e-" + 8);
   }
 };

@@ -253,7 +253,8 @@ const CoinDetailScreen = ({navigation,route}) => {
 
       </View>
 
-      {showModal && <AddToPortfolioModal coin={coin} setShowModal={setShowModal} showModal={showModal}/>}
+      {showModal && <AddToPortfolioModal coin={coin} setShowModal={setShowModal} showModal={showModal}
+                                         showCoinSearch={true} />}
       {dataFetching && <AppLoader/>}
 
     </ScrollView>)

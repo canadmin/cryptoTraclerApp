@@ -9,9 +9,11 @@ import { getCurrenciesFromExtarnalApi, getCurrencyPrice } from "../../reducers/C
 import ActionSheetCustom from "react-native-actionsheet/lib/ActionSheetCustom";
 import { hairlineWidth } from "react-native-actionsheet/lib/styles";
 import AppLoader from "./common/AppLoader";
+import AddToPortfolioModal from "./common/AddToPortfolioModal";
 const PortfolioScreen = () => {
   const actionSheet = useRef();
 
+  const [showModal,setShowModal] = useState(false);
   const {containerStyle,portfolioHeader,component1,totalValue} = styles;
   const [currentPortfolio,setCurrentPortfolio] = useState(null);
   const [assets,setAssets] = useState([])
@@ -103,7 +105,7 @@ const PortfolioScreen = () => {
     return sum;
   }
   return (
-
+<>
     <ScrollView style={containerStyle}>
       <Header headerText={"My Portfolio"} isPortfolioScreen={true} showActionSheet={showActionSheet}/>
       <View style={{alignItems:'center',marginTop:20}}>
@@ -152,18 +154,21 @@ const PortfolioScreen = () => {
         styles={actionStyles}
         useNativeDriver={true}
         onPress={(index => {
-          alert(optionArray[index]);
+              if(index === 0){
+                  setShowModal(true)
+              }
         })}/>
-      {dataFetching && <AppLoader/>}
 
-    </ScrollView>)
+    </ScrollView>
+  {showModal && <AddToPortfolioModal setShowModal={setShowModal} showModal={showModal}
+                                     showCoinSearch={true} />}
+  {dataFetching && <AppLoader/>}
+</>)
 };
 //trending-up-sharp
 const styles = {
   containerStyle : {
-    flex :1,
     backgroundColor: "#11161D",
-
   },
   portfolioHeader:{
     fontSize:24,

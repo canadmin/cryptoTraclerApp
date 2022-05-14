@@ -1,10 +1,11 @@
-import {SET_USER_WATCHLIST,REMOVE_USER_WATCHLIST,ADD_PAGE_HISTORY} from "./action";
+import { SET_USER_WATCHLIST, REMOVE_USER_WATCHLIST, ADD_PAGE_HISTORY, ADD_ALL_COIN } from "./action";
 
 
 const initialState = {
    watchedCoins : [],
    pageHistory : '', // geri dönme butonunda tutulacak olan stack
-   activePortfolio: 0 // portfolio sayfasında gösterilecek olan porföy
+   activePortfolio: 0, // portfolio sayfasında gösterilecek olan porföy
+   allCoins : [] , // ilk başta 5000 coini bir state tutacağız
 }
 
 
@@ -16,6 +17,8 @@ const userReducer = (state = initialState, action) => {
         return {...state,watchedCoins: state.watchedCoins.filter(item => item.symbol !== action.payload.symbol)};
       case ADD_PAGE_HISTORY:
         return {...state, pageHistory:action.payload}
+      case ADD_ALL_COIN:
+        return {...state, allCoins:action.payload}
       default:
         return state;
     }

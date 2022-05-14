@@ -3,21 +3,40 @@ import { Text, View, TouchableOpacity, SafeAreaView, Modal, Image, TextInput } f
 import Header from "./Header";
 import DatePicker from "react-native-date-picker";
 import Moment from "moment";
-import { addAssetToPortfolio, getAllPortfolio, getAssetsByPortfolio } from "../../../storage/allSchema";
+import {
+  addAssetToPortfolio,
+  getAllFavorites,
+  getAllPortfolio,
+  getAssetsByPortfolio,
+} from "../../../storage/allSchema";
 import { getCoinGeckoId, getRandomColor, priceFormat, round, validatePriceAndAmount } from "../../../helper/Utils";
-import { getHistoryPrice } from "../../../reducers/CryptoApiService";
+import { getCurrencies, getHistoryPrice } from "../../../reducers/CryptoApiService";
 import DropdownAlert from 'react-native-dropdownalert';
+import AutocompleteInput from "react-native-autocomplete-input";
+import AppLoader from "./AppLoader";
+import CustomSearch from "./CustomSearch";
+import { useDispatch, useSelector } from "react-redux";
+import { addAllCoins } from "../../../redux/action";
 
 const AddToPortfolioModal = (props) => {
-  const { showModal, setShowModal, coin, isUpdate=true } = props;
+  const { showModal, setShowModal, coin=null, isUpdate=true,showCoinSearch } = props;
   const [date, setDate] = useState(new Date());
+  const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState(null);
   let dropDownAlertRef = useRef();
+  const [coins, setCoins] = useState([]);
+  const [data, setData] = useState([]);
+  const [dataFetching,setDataFetching] = useState(false);
+  const [selectedCoin,setSelectedCoin] = useState(coin);
+
+  const {allCoins} = useSelector(state => state.userReducer)
+
 
   // data
   const [textDate, setTextDate] = useState(Moment(new Date()).format("DD-MM-yyyy"));
   const [amount, setAmount] = useState(1);
-  const [coinPrice, setCoinPrice] = useState(coin.price);
+  const [coinPrice, setCoinPrice] = useState(selectedCoin !== null ? selectedCoin.price : 0);
 
 
   //ekleme sayfasındaki validatorler bunlar
@@ -25,6 +44,47 @@ const AddToPortfolioModal = (props) => {
   const [priceError,setPriceError] =useState(true);
 
 
+  useEffect(() => {
+    query !== null && query.length > 0 ? setData(coins.filter(elem => elem.name.includes(query))) :
+      setData(coins.filter(elem => elem.name.includes("?")));
+  },[query])
+
+  useEffect(() => {
+    setDataFetching(true);
+    if(allCoins.length === 0 && showCoinSearch){
+      getCurrencies("all").then(async res => {
+        let data = res.data;
+        let currencies = data.map((item,index) => {
+          return {
+            ...item,
+            symbol: item.symbol.toLowerCase(),
+            price: item.quote.USD.price,
+            key:index,
+            percent_change_1h:item.quote.USD.percent_change_24h,
+            percent_change_24h:item.quote.USD.percent_change_24h,
+            percent_change_7d:item.quote.USD.percent_change_7d,
+            percent_change_30d:item.quote.USD.percent_change_30d,
+            percent_change_60d:item.quote.USD.percent_change_60d,
+            percent_change_90d:item.quote.USD.percent_change_90d,
+            market_cap:item.quote.USD.market_cap,
+          };
+        });
+        setCoins(currencies);
+        setData(currencies)
+        await dispatch((addAllCoins(currencies)))
+        setDataFetching(false)
+      }).catch(e => {});
+    }else{
+      setCoins(allCoins);
+      setData(allCoins)
+      setDataFetching(false)
+    }
+
+    return () => {
+      setCoins([])
+      setData([])
+    }
+  }, []);
 
   const getDateFormat = () => {
     Moment.locale("en");
@@ -32,16 +92,23 @@ const AddToPortfolioModal = (props) => {
   };
 
 
-
   useEffect(() => {
-    getHistoryPrice(getCoinGeckoId(coin.symbol),textDate).then((res => {
-      setCoinPrice(res.data.market_data ? res.data.market_data.current_price.usd : coin.price)
-    })).catch(e => {})
+    if(coin !== null){
+      setDataFetching(true)
+      getHistoryPrice(getCoinGeckoId(selectedCoin.symbol),textDate).then((res => {
+        setCoinPrice(res.data.market_data ? res.data.market_data.current_price.usd : selectedCoin.price)
+        setDataFetching(false)
+      })).catch(e => {})
+    }
   },[textDate])
 
+  useEffect(() => {
+
+    selectedCoin !== null ?
+      setCoinPrice(selectedCoin.price): setCoinPrice(0);
+  },[selectedCoin])
 
   const addAsset = async () => {
-
       let portfolioId = 0;
       await getAllPortfolio().then(res => {
         portfolioId = res[0].id;
@@ -54,15 +121,14 @@ const AddToPortfolioModal = (props) => {
         isAddTransaction: true,
         createDate: new Date(),
         transactionDate: date,
-        symbol: coin.symbol,
-        name: coin.name,
-        coinId: coin.id,
+        symbol: selectedCoin.symbol,
+        name: selectedCoin.name,
+        coinId: selectedCoin.id,
         assetColor: getRandomColor()
       }).then((res) => {
         dropDownAlertRef.alertWithType('success', 'Transaction Successful',
-          `Successfully Added ${coin.name.toLowerCase()} To Your Portfolio`);
+          `Successfully Added ${selectedCoin.name.toLowerCase()} To Your Portfolio`)
       }).catch(e => {});
-
   };
 
 
@@ -87,11 +153,20 @@ const AddToPortfolioModal = (props) => {
       <SafeAreaView style={styles.safeAreaStyle}>
         <Header isModal={true} headerText={"Add to Portfolio"} setShowModal={setShowModal}> </Header>
         <View style={styles.modal}>
-          <Image style={styles.coinImage}
-                 source={{ uri: "https://s2.coinmarketcap.com/static/img/coins/64x64/" + coin.id + ".png" }} />
+          {showCoinSearch && <CustomSearch
+            setDataFetching={setDataFetching}
+            setSelectedCoin={setSelectedCoin}
+              data={coins}
+          />}
+          {selectedCoin !== null &&  <View style={{flexDirection:"row",marginTop:50}}>
+            <Image style={styles.coinImage}
+            source={{ uri: "https://s2.coinmarketcap.com/static/img/coins/64x64/" + selectedCoin.id + ".png" }} />
 
-          <Text style={styles.symbolStyle}>{coin.symbol.toUpperCase()}</Text>
-          <Text style={styles.convertDisclaimerText}>{amount} {coin.symbol.toUpperCase()} = {priceFormat(amount*coinPrice)}</Text>
+            <Text style={styles.symbolStyle}>{selectedCoin.symbol.toUpperCase()}</Text>
+            </View>}
+
+
+          <Text style={styles.convertDisclaimerText}>{amount} {selectedCoin !== null ? selectedCoin.symbol.toUpperCase():""} = {selectedCoin !== null ? priceFormat(amount*coinPrice) :""}</Text>
           <View style={styles.rowStyle}>
             <View style={styles.rowItemStyle}>
               <Text style={styles.labelStyle}>Amount</Text>
@@ -174,6 +249,7 @@ const AddToPortfolioModal = (props) => {
           }
         }}
       />
+      {dataFetching && <AppLoader/>}
     </Modal>
   );
 };
@@ -183,8 +259,9 @@ const styles = {
     color: "#FFF",
     fontSize: 35,
     fontWeight: "bold",
-    marginTop: 10,
+    marginTop: 30,
     justifyContent: "center",
+    marginLeft: 5,
   },
   convertDisclaimerText: {
     color: "#9a9a9a",
@@ -199,8 +276,8 @@ const styles = {
     alignItems: "center",
   },
   coinImage: {
-    marginTop: 35, marginRight: 0, marginBottom: 0,
-    justifyContent: "center", height: 80, width: 80, resizeMode: "contain",
+    marginTop:25, marginRight: 0, marginBottom: 0,
+    justifyContent: "center", height: 49, width: 49, resizeMode: "contain",
   },
   rowStyle: {
     flexDirection: "row",
@@ -209,11 +286,13 @@ const styles = {
     marginRight: 30,
     marginTop: 20,
   },
+
+
+
   labelStyle: {
     color: "#EFB90B",
     fontSize: 24,
     fontWeight: "bold",
-
   },
   input: {
     height: 40,

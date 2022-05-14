@@ -12,7 +12,7 @@ const AssetSummaryCard = (props) => {
 
   const {item,index} = props;
   return (
-    <View style={styles.containerStyle}>
+    <TouchableOpacity style={styles.containerStyle}>
         <View style={{flex:2}}>
           <Image style={styles.coinImage}
                  source={{ uri: "https://s2.coinmarketcap.com/static/img/coins/64x64/" + item.coinId + ".png" }} />
@@ -61,7 +61,7 @@ const AssetSummaryCard = (props) => {
         </View>
       </View>
 
-    </View>
+    </TouchableOpacity>
   )
 
 }

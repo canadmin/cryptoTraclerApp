@@ -78,6 +78,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start", // flex-end, flex-start
     //alignItems: flex-end , center, flex-start
     alignItems: "center",
+    position:'relative'
     //borderBottomLeftRadius:20,
     //borderBottomRightRadius:20,
     //shadowOffset:{width: 0, height: 2},

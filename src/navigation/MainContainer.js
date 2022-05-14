@@ -1,4 +1,4 @@
-import * as React from "react";
+import  React,{useState} from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -6,6 +6,11 @@ import PortfolioScreen from "./screens/PortfolioScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import AlertScreen from "./screens/AlertScreen";
 import {WatchListStackNavigator,CurrenciesListStackNavigator} from './../router/homeStacks';
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { getCurrencies } from "../reducers/CryptoApiService";
+import { addAllCoins } from "../redux/action";
+import AppLoader from "./screens/common/AppLoader";
 const Tab = createBottomTabNavigator();
 
 const currenciesList_screen = "Currency List";
@@ -15,6 +20,13 @@ const alert_screen = "Create Alarm";
 const settings_screen = "Preferences";
 
 const MainContainer = () => {
+  const dispatch = useDispatch();
+  const [dataFetching,setDataFetching] = useState(false);
+
+  useEffect(() => {
+    setDataFetching(false)
+
+  },[])
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -75,7 +87,10 @@ const MainContainer = () => {
         <Tab.Screen component={AlertScreen} name={alert_screen} />
         <Tab.Screen component={SettingsScreen} name={settings_screen} />
       </Tab.Navigator>
+      {dataFetching && <AppLoader/>}
+
     </NavigationContainer>
+
   );
 };
 

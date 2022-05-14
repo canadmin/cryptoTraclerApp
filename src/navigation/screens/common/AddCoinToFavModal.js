@@ -5,7 +5,7 @@ import { getCurrencies } from "../../../reducers/CryptoApiService";
 import CurrencySummaryCard from "./CurrencySummaryCard";
 import { deleteFavorites, getAllFavorites, insertFavorites } from "../../../storage/allSchema";
 import { useDispatch, useSelector } from "react-redux";
-import { addWatchList, removeWatchList } from "../../../redux/action";
+import { addAllCoins, addWatchList, removeWatchList } from "../../../redux/action";
 import CurrenciesFilter from "./CurrenciesFilter";
 import AppLoader from "./AppLoader";
 
@@ -13,6 +13,7 @@ const addCoinToFavModal = (props) => {
 
   const { showModal, setShowModal } = props;
   const [searchInput,onchangeSearchInput] = useState("");
+  const {allCoins} = useSelector(state => state.userReducer)
 
   const [dataFetching,setDataFetching] = useState(false);
 
@@ -30,19 +31,37 @@ const addCoinToFavModal = (props) => {
         setFavorites(res);
       }
     }).then((res) => {
-      getCurrencies("all").then(res => {
-        let data = res.data;
-        let currencies = data.map((item, index) => {
-          return {
-            ...item,
-            symbol: item.symbol.toLowerCase(),
-            key: index,
-          };
-        });
-        setCoins(currencies);
-        setFiltered(currencies);
+      if(allCoins.length < 1 ){
+        getCurrencies("all").then(async res => {
+          let data = res.data;
+          let currencies = data.map((item,index) => {
+            return {
+              ...item,
+              symbol: item.symbol.toLowerCase(),
+              price: item.quote.USD.price,
+              key:index,
+              percent_change_1h:item.quote.USD.percent_change_24h,
+              percent_change_24h:item.quote.USD.percent_change_24h,
+              percent_change_7d:item.quote.USD.percent_change_7d,
+              percent_change_30d:item.quote.USD.percent_change_30d,
+              percent_change_60d:item.quote.USD.percent_change_60d,
+              percent_change_90d:item.quote.USD.percent_change_90d,
+              market_cap:item.quote.USD.market_cap,
+            };
+          });
+          setCoins(currencies);
+          setFiltered(currencies);
+          await dispatch((addAllCoins(currencies)))
+          setDataFetching(false)
+
+        }).catch(e => {});
+      }else{
+        setCoins(allCoins);
+        setFiltered(allCoins);
         setDataFetching(false)
-      }).catch(e => {});
+      }
+
+
     }).catch(e => {});
     return () => {
       setCoins([])
