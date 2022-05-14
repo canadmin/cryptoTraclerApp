@@ -63,11 +63,12 @@ const CustomSearch = (props) => {
 
       </View>
       {query.length>0 && showResults && <FlatList data={filtered}
-                                   initialNumToRender={5}
-                                   windowSize={5}
-                                   maxToRenderPerBatch={5}
-                                   getItemLayout={getItemLayout}
-                                   updateCellsBatchingPeriod={10}
+                                                  initialNumToRender={5}
+                                                  initialNumToRender={10}
+                                                  windowSize={10}
+                                                  maxToRenderPerBatch={5}
+                                                  getItemLayout={getItemLayout}
+                                                  updateCellsBatchingPeriod={30}
                                    renderItem={renderItem}
       />}
 

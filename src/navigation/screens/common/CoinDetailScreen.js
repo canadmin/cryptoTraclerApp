@@ -13,6 +13,7 @@ import AppLoader from "./AppLoader";
 
 const CoinDetailScreen = ({navigation,route}) => {
   const coin = route.params.coin;
+  const isFavoriteCoin = route.params.isFavoriteCoin;
 
   const ws = useRef(null);
 

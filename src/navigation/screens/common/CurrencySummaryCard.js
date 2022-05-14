@@ -113,6 +113,7 @@ const CurrencySummaryCard = (props) => {
     <View disabled={searchFromModal} onPress={() => navigateAndAddPageHistory("CoinDetailScreen", {
       name: item.name,
       coin: item,
+      isFavoriteCoin:isFavoriteCoin
     }, "Watchlist")}>
       <TouchableOpacity disabled={searchFromModal} onPress={() => navigateAndAddPageHistory("CoinDetailScreen", {
         name: item.name,

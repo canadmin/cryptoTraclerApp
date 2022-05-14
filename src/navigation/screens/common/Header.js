@@ -3,7 +3,7 @@ import { Text, View,TouchableOpacity,StyleSheet } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 const Header = (props) => {
-  const { headerText,isDetailScreen, handleHeaderBackOnPress ,isModal,setShowModal,isPortfolioScreen} = props;
+  const { headerText,isDetailScreen, handleHeaderBackOnPress ,isModal,setShowModal,isPortfolioScreen,isFavoriteCoin=false} = props;
   const { textStyle, viewStyle,headerInsideStyle,headerTextStyle,headerRightComponent } = styles;
 
   const back = () => {

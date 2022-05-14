@@ -12,7 +12,6 @@ import {
 import { getCoinGeckoId, getRandomColor, priceFormat, round, validatePriceAndAmount } from "../../../helper/Utils";
 import { getCurrencies, getHistoryPrice } from "../../../reducers/CryptoApiService";
 import DropdownAlert from 'react-native-dropdownalert';
-import AutocompleteInput from "react-native-autocomplete-input";
 import AppLoader from "./AppLoader";
 import CustomSearch from "./CustomSearch";
 import { useDispatch, useSelector } from "react-redux";
@@ -127,7 +126,7 @@ const AddToPortfolioModal = (props) => {
         assetColor: getRandomColor()
       }).then((res) => {
         dropDownAlertRef.alertWithType('success', 'Transaction Successful',
-          `Successfully Added ${selectedCoin.name.toLowerCase()} To Your Portfolio`)
+          `Successfully Added ${selectedCoin.name.toLowerCase()} To Your Portfolio`,null,1000)
       }).catch(e => {});
   };
 

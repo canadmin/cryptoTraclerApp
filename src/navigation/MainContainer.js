@@ -84,7 +84,6 @@ const MainContainer = () => {
         <Tab.Screen component={WatchListStackNavigator} name={watchList_screen} />
         <Tab.Screen component={CurrenciesListStackNavigator} name={currenciesList_screen} />
         <Tab.Screen component={PortfolioScreen} name={portfolio_screen} />
-        <Tab.Screen component={AlertScreen} name={alert_screen} />
         <Tab.Screen component={SettingsScreen} name={settings_screen} />
       </Tab.Navigator>
       {dataFetching && <AppLoader/>}
