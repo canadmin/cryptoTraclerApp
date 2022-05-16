@@ -57,6 +57,7 @@ const CoinDetailScreen = ({navigation,route}) => {
   };
 
   const getRealTimeDataFromApi = () => {
+    console.log("fff",isFavoriteCoin,coin)
     getCurrenciesFromExtarnalApi(coin.symbol).then(response => {
       let externalData = response.data;
       if (externalData.last && externalData.last > 0) {
@@ -111,10 +112,13 @@ const CoinDetailScreen = ({navigation,route}) => {
       setPrice(null)
       setIsUp(null)
     }
-  },[])
+  },[]);
+
+
   return (
     <ScrollView style={{flex:1,backgroundColor:'#11161D'}}>
-      <Header headerText={route.params.name} isDetailScreen={true}  handleHeaderBackOnPress={handleHeaderBackOnPress}></Header>
+      <Header headerText={route.params.name} isDetailScreen={true}
+              isFavoriteCoin={isFavoriteCoin} handleHeaderBackOnPress={handleHeaderBackOnPress}></Header>
       <View style={{alignItems:'center'}}>
         <Text style={textStyle}>
           {priceFormat(price)}

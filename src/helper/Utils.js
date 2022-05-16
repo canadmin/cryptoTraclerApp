@@ -55,7 +55,7 @@ export const getCoinGeckoId = (symbol) => {
 
 
 export const getRandomColor = () => {
-  let letters = '0123456789ABCDEF';
+  let letters = '3F93E436789ABCDEF';
   let color = '#';
   for (let i = 0; i < 6; i++) {
     color += letters[Math.floor(Math.random() * 16)];

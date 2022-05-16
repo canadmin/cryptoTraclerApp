@@ -29,7 +29,7 @@ const CurrenciesList = ({navigation}) => {
         setFavorites(res);
       }
     }).then(() => {
-      if(allCoins.length < 1) {
+      if(allCoins.length > 0) {
         setCoins(allCoins);
         setFiltered(allCoins)
         setDataFetching(false)

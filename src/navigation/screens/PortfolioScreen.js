@@ -5,7 +5,7 @@ import { getAllPortfolio, getAssetsByPortfolio } from "../../storage/allSchema";
 import AssetSummaryCard from "./common/AssetSummaryCard";
 import PieChart from "./common/PieChart";
 import { getRandomColor, priceFormat, round } from "../../helper/Utils";
-import { getCurrenciesFromExtarnalApi, getCurrencyPrice } from "../../reducers/CryptoApiService";
+import { getCurrenciesFromExtarnalApi, getCurrencyPrice, getPortfolio } from "../../reducers/CryptoApiService";
 import ActionSheetCustom from "react-native-actionsheet/lib/ActionSheetCustom";
 import { hairlineWidth } from "react-native-actionsheet/lib/styles";
 import AppLoader from "./common/AppLoader";
@@ -33,32 +33,35 @@ const PortfolioScreen = () => {
 
   useEffect(() => {
     setDataFetching(true)
-    let tempAssets = [];
     let portfolioId = 1;
       getAllPortfolio().then(res => {
       setCurrentPortfolio(res);
         getAssetsByPortfolio(portfolioId).then(res => {
           let tempList = [];
-          res.forEach( async (item,index) => {
-            let ss = await getCurrentPrice(item)
-            const newData =  {
-              portfolioId: item.portfolioId,
-              id:item.id,
-              amount: item.amount,
-              oldPrice: item.price,
-              price: String(ss),
-              isAddTransaction: item.isAddTransaction,
-              createDate: item.createDate,
-              transactionDate: item.transactionDate,
-              symbol: item.symbol,
-              name: item.name,
-              coinId: item.coinId,
-              assetColor: item.assetColor
-            };
-            await tempList.push(newData);
-            setAssets(prevArray => [...prevArray, newData])
+          let  symbols = res.map(({ symbol }) => symbol);
+          getPortfolio(symbols).then(prices => {
+            res.forEach(  (item,index) => {
+              let ss = prices.data.filter(elem => elem.symbol.toUpperCase()
+                === item.symbol.toUpperCase())[0].value;
+              const newData =  {
+                portfolioId: item.portfolioId,
+                id:item.id,
+                amount: item.amount,
+                oldPrice: item.price,
+                price: String(ss),
+                isAddTransaction: item.isAddTransaction,
+                createDate: item.createDate,
+                transactionDate: item.transactionDate,
+                symbol: item.symbol,
+                name: item.name,
+                coinId: item.coinId,
+                assetColor: item.assetColor
+              };
+              tempList.push(newData);
+              setAssets(prevArray => [...prevArray, newData])
+            })
             setDataFetching(false)
-          })
+          }).catch(() => {})
         })
     })
 
@@ -68,29 +71,6 @@ const PortfolioScreen = () => {
     }
   },[]);
 
-
-
-  const getCurrentPrice = async (item) => {
-    let price = 0;
-     await getCurrenciesFromExtarnalApi(item.symbol).then(async response => {
-      let externalData = response.data;
-      if (externalData.last && externalData.last > 0) {
-        price = externalData.last;
-      } else {
-       await getCurrencyPrice(item.symbol).then(res => {
-          let resData = res.data;
-          if (resData.statusCode === 200) {
-            price = resData.value;
-          } else {
-            price = item.price;
-          }
-        });
-      }
-    })
-
-    return price;
-
-  };
   useEffect(() => {
     calculateTotalValue(assets)
   },[assets]);

@@ -32,6 +32,15 @@ export const getCryptoInfo = (symbol) => {
   };
   return request(options);
 }
+export const getPortfolio = (symbol) => {
+  const options = {
+    method: "get",
+    path: "getPortfolio",
+    params: ["symbol"],
+    values:[symbol]
+  };
+  return request(options);
+}
 
 //crypto compare tekli değer
 export const getCurrencyPrice = (symbol) => {

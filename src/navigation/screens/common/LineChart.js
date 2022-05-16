@@ -278,7 +278,7 @@ const LineChart = (props) => {
             strokeWidth={1}
             opacity={0.2}
           />}
-          {showXAxisText && <AnimatedSvgText key={"y-axis label" + index}
+          {index % 20 === 0 && <AnimatedSvgText key={"y-axis label" + index}
                    x={marginFor_x_fromLeft + x_axis_actual_width}
                    y={y_point}
                    textAnchor={"end"}
