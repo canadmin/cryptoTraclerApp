@@ -118,6 +118,7 @@ const CoinDetailScreen = ({navigation,route}) => {
   return (
     <ScrollView style={{flex:1,backgroundColor:'#11161D'}}>
       <Header headerText={route.params.name} isDetailScreen={true}
+              coin={coin}
               isFavoriteCoin={isFavoriteCoin} handleHeaderBackOnPress={handleHeaderBackOnPress}></Header>
       <View style={{alignItems:'center'}}>
         <Text style={textStyle}>

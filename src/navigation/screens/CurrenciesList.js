@@ -42,7 +42,7 @@ const CurrenciesList = ({navigation}) => {
               symbol: item.symbol.toLowerCase(),
               price: item.quote.USD.price,
               key:index,
-              percent_change_1h:item.quote.USD.percent_change_24h,
+              percent_change_1h:item.quote.USD.percent_change_1h,
               percent_change_24h:item.quote.USD.percent_change_24h,
               percent_change_7d:item.quote.USD.percent_change_7d,
               percent_change_30d:item.quote.USD.percent_change_30d,

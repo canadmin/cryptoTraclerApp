@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList,Alert,TouchableOpacity } from "react-native";
+import { View, Text, ScrollView,Alert,TouchableOpacity } from "react-native";
 import CurrencySummaryCard from "./common/CurrencySummaryCard";
 import Header from "./common/Header";
 import { getCryptoInfo } from "../../reducers/CryptoApiService";
@@ -9,6 +9,7 @@ import { useDispatch, useSelector, } from "react-redux";
 import { addPageHistory, removeWatchList } from "../../redux/action";
 import AddCoinToFavModal from '../screens/common/AddCoinToFavModal';
 import AppLoader from "./common/AppLoader";
+import TextTicker from 'react-native-text-ticker'
 
 const WatchList = (props) => {
 
@@ -63,7 +64,7 @@ const WatchList = (props) => {
               symbol: item.symbol.toLowerCase(),
               price: item.quote.USD.price,
               key:index,
-              percent_change_1h:item.quote.USD.percent_change_24h,
+              percent_change_1h:item.quote.USD.percent_change_1h,
               percent_change_24h:item.quote.USD.percent_change_24h,
               percent_change_7d:item.quote.USD.percent_change_7d,
               percent_change_30d:item.quote.USD.percent_change_30d,
@@ -94,31 +95,36 @@ const WatchList = (props) => {
   }
 
   return (
-    <>
-    <View style={containerStyle}>
+    <ScrollView style={{flex:1,backgroundColor:"#11161D"}}>
       <Header headerText={"Watch List"} />
+      <TextTicker
+        style={{ fontSize: 24,color:'white' }}
+        duration={7000}
+        loop
+        scrollSpeed={10000}
+        marqueeDelay={1000}
+      >
+        Super long piece of text is long. The quick brown fox jumps over the lazy dog.
+      </TextTicker>
+      <ScrollView style={containerStyle}>
       {coins.length > 0 && favorites.length > 0 &&
-      <FlatList data={coins}
-                initialNumToRender={5}
-                refreshing={refresh}
-                renderItem={({ item, index }) => {
-                    return <CurrencySummaryCard item={item}
-                                                index={index}
-                                                favorites={favorites}
-                                                initialNumToRender={10}
-                                                windowSize={5}
-                                                keyExtractor={item => item.id}
-                                                maxToRenderPerBatch={5}
-                                                updateCellsBatchingPeriod={30}
-                                                deleteCurrencyFromFavorite={deleteCurrencyFromFavorite}
-                                                navigation={navigation}
-                                                navigateAndAddPageHistory={navigateAndAddPageHistory}
-                                                getRealTimeData={true} />;
-                  }
-          }
-      />}
+        coins.map((item,index) => (
+          <CurrencySummaryCard item={item}
+                               index={index}
+                               favorites={favorites}
+                               keyExtractor={item => item.id}
+                               deleteCurrencyFromFavorite={deleteCurrencyFromFavorite}
+                               navigation={navigation}
+                               navigateAndAddPageHistory={navigateAndAddPageHistory}
+                               getRealTimeData={true} />
+        ))
+      }
       {showModal && <AddCoinToFavModal setShowModal={setShowModal} showModal={showModal}/>}
-      <TouchableOpacity onPress={() => setShowModal(true)}>
+    </ScrollView>
+      <View style={{  borderBottomColor:"#9a9a9a",
+        borderBottomWidth:1,marginTop:20,width:"95%",alignSelf:'center'}}></View>
+        {dataFetching && <AppLoader/>}
+      <TouchableOpacity style={{marginTop:30}} onPress={() => setShowModal(true)}>
         <View style={addWatchListButton}>
           <Ionicons name={"add-sharp"} size={30} color={'#EFB90B'} />
           <Text style={{ color: "white" }}>
@@ -126,18 +132,14 @@ const WatchList = (props) => {
           </Text>
         </View>
       </TouchableOpacity>
-    </View>
-      <>
-        {dataFetching && <AppLoader/>}
-      </>
-    </>
+    </ScrollView>
   );
 };
 
 const styles = {
   containerStyle: {
-    flex: 1,
     backgroundColor: "#11161D",
+    marginTop:20
   },
   textStyle: {
     fontWeight: "bold",
@@ -147,7 +149,6 @@ const styles = {
     height: 50,
     flexDirection:'row',
     backgroundColor: '#1C2834',
-    marginTop:10,
     marginLeft:50,
     marginRight: 50,
     marginBottom: 50,

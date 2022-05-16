@@ -1,11 +1,16 @@
-import React from "react";
+import React,{useState} from "react";
 import { Text, View,TouchableOpacity,StyleSheet } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { deleteFavorites, insertFavorites } from "../../../storage/allSchema";
+import { addWatchList, removeWatchList } from "../../../redux/action";
+import { useDispatch } from "react-redux";
 
 const Header = (props) => {
   const { headerText,isDetailScreen, handleHeaderBackOnPress ,isModal,setShowModal,isPortfolioScreen,isFavoriteCoin} = props;
   const { textStyle, viewStyle,headerInsideStyle,headerTextStyle,headerRightComponent } = styles;
+  const dispatch = useDispatch();
 
+  const [isFavCoin,setIsFavCoin] = useState(isFavoriteCoin);
   const back = () => {
     if(isModal){
       setShowModal(false)
@@ -14,7 +19,27 @@ const Header = (props) => {
     }
   }
 
+  const addCurrencyToFavorite = (coin) => {
+    insertFavorites({ symbol: coin.symbol, name: coin.name }).then((res) => {
+    }).then(() => {
+      dispatch(addWatchList(coin))
+    });
+  };
+  const deleteCurrencyFromFavorite = (coin) => {
+    deleteFavorites(coin.symbol).then((res => {
+      dispatch(removeWatchList(coin))
+    }));
+  };
 
+  const addFavorite = (coin) => {
+    if (isFavoriteCoin) {
+      setIsFavCoin(false);
+      deleteCurrencyFromFavorite(coin);
+    } else {
+      setIsFavCoin(true);
+      addCurrencyToFavorite(coin);
+    }
+  };
 
   return (
     <View style={viewStyle}>
@@ -36,9 +61,9 @@ const Header = (props) => {
           </Text>
         </View>
         {isDetailScreen && <View style={headerRightComponent}>
-          <Text>
-            <Ionicons name={isFavoriteCoin ? "md-star-sharp" : "md-star-outline"} size={30} color={'#EFB90B'} />
-          </Text>
+          <TouchableOpacity onPress={() => addFavorite(props.coin)}>
+            <Ionicons name={isFavCoin ? "md-star-sharp" : "md-star-outline"} size={30} color={'#EFB90B'} />
+          </TouchableOpacity>
         </View>}
         {isPortfolioScreen && <View style={headerRightComponent}>
           <TouchableOpacity onPress={() => {props.showActionSheet()}}>
