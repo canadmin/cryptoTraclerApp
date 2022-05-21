@@ -72,7 +72,19 @@ export const getHistoryPriceFromExternal = (options) => {
   }catch (e){
     return e;
   }
+};
 
+export const getGlobal = (options) => {
+  let url = `${"https://api.coingecko.com/api/v3/global"}`;
+  try {
+    return axios({
+      method: options.method,
+      url: url,
+      data: options.data,
+    })
+  }catch (e){
+    return e;
+  }
 };
 
 

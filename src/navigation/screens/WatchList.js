@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView,Alert,TouchableOpacity } from "react-native";
 import CurrencySummaryCard from "./common/CurrencySummaryCard";
 import Header from "./common/Header";
-import { getCryptoInfo } from "../../reducers/CryptoApiService";
+import { getCryptoInfo, getMarketGlobalData } from "../../reducers/CryptoApiService";
 import { deleteFavorites, getAllFavorites } from "../../storage/allSchema";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useDispatch, useSelector, } from "react-redux";
@@ -10,6 +10,7 @@ import { addPageHistory, removeWatchList } from "../../redux/action";
 import AddCoinToFavModal from '../screens/common/AddCoinToFavModal';
 import AppLoader from "./common/AppLoader";
 import TextTicker from 'react-native-text-ticker'
+import { floorCalc, round } from "../../helper/Utils";
 
 const WatchList = (props) => {
 
@@ -23,6 +24,7 @@ const WatchList = (props) => {
   const [showModal,setShowModal] = useState(false);
   const [refresh,setRefresh] = useState(false);
   const [dataFetching,setDataFetching] = useState(false);
+  const [global,setGlobal] = useState(null);
 
   useEffect(() => {
     createWatchlist()
@@ -36,6 +38,7 @@ const WatchList = (props) => {
     return () => {
       setFavorites([]);
       setCoins([]);
+      setGlobal(null);
     };
   }, []);
 
@@ -75,7 +78,10 @@ const WatchList = (props) => {
           });
           setRefresh(false)
           setCoins(currencies);
-          setDataFetching(false)
+          getMarketGlobalData().then((res) => {
+            setGlobal(res.data.data);
+            setDataFetching(false);
+          })
         })
     });
   }
@@ -92,20 +98,19 @@ const WatchList = (props) => {
   const navigateAndAddPageHistory = (route,param) => {
     navigation.navigate(route,param);
     dispatch(addPageHistory("WatchList"))
+  };
+
+  const createPercentage = (items) => {
+    let str = " ";
+    Object.keys(items).forEach(item => {
+      str += item.toUpperCase() + "= " + round(items[item]) + "% ";
+    });
+    return str;
   }
 
   return (
     <ScrollView style={{flex:1,backgroundColor:"#11161D"}}>
       <Header headerText={"Watch List"} />
-      <TextTicker
-        style={{ fontSize: 24,color:'white' }}
-        duration={7000}
-        loop
-        scrollSpeed={10000}
-        marqueeDelay={1000}
-      >
-        Super long piece of text is long. The quick brown fox jumps over the lazy dog.
-      </TextTicker>
       <ScrollView style={containerStyle}>
       {coins.length > 0 && favorites.length > 0 &&
         coins.map((item,index) => (
@@ -119,10 +124,19 @@ const WatchList = (props) => {
                                getRealTimeData={true} />
         ))
       }
+
+        {global && <TextTicker
+          style={{ fontSize: 22,color:'#9a9a9a',fontWeight:'bold',marginTop:10}}
+          duration={10000}
+          loop
+          scrollSpeed={100200}
+          marqueeDelay={1000}
+        >
+          {`Total Market Cap : $`+floorCalc(global.total_market_cap.usd) + ` | Market Cap Percentage :`+createPercentage(global.market_cap_percentage)}
+        </TextTicker>}
       {showModal && <AddCoinToFavModal setShowModal={setShowModal} showModal={showModal}/>}
     </ScrollView>
-      <View style={{  borderBottomColor:"#9a9a9a",
-        borderBottomWidth:1,marginTop:20,width:"95%",alignSelf:'center'}}></View>
+
         {dataFetching && <AppLoader/>}
       <TouchableOpacity style={{marginTop:30}} onPress={() => setShowModal(true)}>
         <View style={addWatchListButton}>
