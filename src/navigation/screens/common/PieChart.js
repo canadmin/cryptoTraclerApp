@@ -7,11 +7,11 @@ import { priceFormat } from "../../../helper/Utils";
 
 const PieChart = (props) => {
 
-  const {assets,totalValue} = props;
+  const {assets,totalValue,bottomSelectCoin} = props;
   const [chartData,setChartData] = useState([]);
 
 
-  let [selectedCoin,setSelectedCoin] = useState();
+  let [selectedCoin,setSelectedCoin] = useState(null);
   let [coinDetail,setCoinDetail] = useState(null);
   let colorScales = assets.map((item) => item.assetColor);
 
@@ -43,6 +43,9 @@ const PieChart = (props) => {
   useEffect(() => {
     setCoinDetail(assets.filter(elm => elm.name === selectedCoin)[0]);
   },[selectedCoin])
+  useEffect(() => {
+    setSelectedCoin(bottomSelectCoin);
+  },[bottomSelectCoin])
 
     return(<View style={{height:300}}>
       <VictoryPie
@@ -81,7 +84,6 @@ const PieChart = (props) => {
               {coinDetail.symbol.toUpperCase()}
             </Text>
           </View>
-
           <View style={{marginTop:-20}}>
             <Text style={{textAlign:'center',color:coinDetail.assetColor,fontWeight:"bold",fontSize:22}}>
               {(((coinDetail.price*coinDetail.amount).toFixed(0)/totalValue.toFixed(0)) *100).toFixed(0)} %

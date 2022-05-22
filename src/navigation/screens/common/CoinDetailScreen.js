@@ -57,7 +57,6 @@ const CoinDetailScreen = ({navigation,route}) => {
   };
 
   const getRealTimeDataFromApi = () => {
-    console.log("fff",isFavoriteCoin,coin)
     getCurrenciesFromExtarnalApi(coin.symbol).then(response => {
       let externalData = response.data;
       if (externalData.last && externalData.last > 0) {
@@ -340,7 +339,7 @@ const styles = {
     marginTop:10
   },
   parser : {
-    borderWidth: 0.4,
+    borderWidth: 0.5,
     opacity: 0.4,
     borderColor: "white",
     marginTop:10,

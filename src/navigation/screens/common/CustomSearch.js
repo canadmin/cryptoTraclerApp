@@ -35,9 +35,10 @@ const CustomSearch = (props) => {
     setFiltered([])
   }
   const renderItem = ({ item,index}) => (
-    <TouchableOpacity onPress={() => setCoin(item)} style={{height:40,justifyContent:'flex-start',flexDirection:'row'}}>
+    <TouchableOpacity onPress={() => setCoin(item)} style={{height:40,justifyContent:'flex-start',flexDirection:'row'}}
+    key={index}>
       <Text style={{fontSize:16,marginLeft:20,marginTop:10,marginBottom:10,color:'#ffffff'}}>{item.name}</Text>
-      <Text style={{fontSize:11,marginLeft:5,marginTop:15,marginBottom:10,color:'#ffffff'}}>({item.symbol.toUpperCase()})</Text>
+      <Text style={{fontSize:11,marginLeft:5,marginTop:12,marginBottom:10,color:'#ffffff'}}>({item.symbol.toUpperCase()})</Text>
     </TouchableOpacity>
   );
   const getItemLayout = (data, index) => (
@@ -63,7 +64,6 @@ const CustomSearch = (props) => {
 
       </View>
       {query.length>0 && showResults && <FlatList data={filtered}
-                                                  initialNumToRender={5}
                                                   initialNumToRender={10}
                                                   windowSize={10}
                                                   maxToRenderPerBatch={5}

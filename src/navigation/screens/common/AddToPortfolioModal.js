@@ -92,7 +92,7 @@ const AddToPortfolioModal = (props) => {
 
 
   useEffect(() => {
-    if(coin !== null){
+    if(selectedCoin !== null){
       setDataFetching(true)
       getHistoryPrice(getCoinGeckoId(selectedCoin.symbol),textDate).then((res => {
         setCoinPrice(res.data.market_data ? res.data.market_data.current_price.usd : selectedCoin.price)
@@ -102,7 +102,6 @@ const AddToPortfolioModal = (props) => {
   },[textDate])
 
   useEffect(() => {
-
     selectedCoin !== null ?
       setCoinPrice(selectedCoin.price): setCoinPrice(0);
   },[selectedCoin])

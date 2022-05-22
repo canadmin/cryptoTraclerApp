@@ -149,7 +149,7 @@ const CurrencySummaryCard = (props) => {
         </View>
         <View
           style={{
-            borderWidth: 0.4,
+            borderWidth: 0.5,
             opacity: 0.1,
             borderColor: "white",
             marginLeft: 25,

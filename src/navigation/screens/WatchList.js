@@ -126,7 +126,8 @@ const WatchList = (props) => {
       }
 
         {global && <TextTicker
-          style={{ fontSize: 22,color:'#9a9a9a',fontWeight:'bold',marginTop:10}}
+          style={{ fontSize: 22,color:'#9a9a9a',fontWeight:'bold',marginTop:10
+          ,marginLeft:20}}
           duration={10000}
           loop
           scrollSpeed={100200}

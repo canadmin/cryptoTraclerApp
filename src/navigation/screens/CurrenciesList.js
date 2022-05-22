@@ -115,7 +115,6 @@ const CurrenciesList = ({navigation}) => {
         <CurrenciesFilter searchInput={searchInput} onchangeSearchInput={onchangeSearchInput}></CurrenciesFilter>
       </View>
       <FlatList data={filtered}
-                initialNumToRender={5}
                 initialNumToRender={10}
                 windowSize={10}
                 maxToRenderPerBatch={5}

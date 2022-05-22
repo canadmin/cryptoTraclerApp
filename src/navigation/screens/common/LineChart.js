@@ -5,7 +5,7 @@ import * as path  from "svg-path-properties";
 import { styles } from "./styles";
 import { scaleLinear } from "d3-scale";
 const window_width = Dimensions.get("window").width;
-
+import {round} from "../../../helper/Utils";
 
 const AnimatedSvg = Animated.createAnimatedComponent(Svg);
 const AnimatedLine = Animated.createAnimatedComponent(Line);
@@ -38,14 +38,6 @@ const LineChart = (props) => {
   const marginFor_y_fromBottom = 50;
   const padding_from_screenBorder = 20;
 
-
-  const round = (value) => {
-    if (value > 1) {
-      return Number(Math.round(value + "e" + 2) + "e-" + 2);
-    }else{
-      return Number(Math.round(value + "e" + 8) + "e-" + 8);
-    }
-  };
 
 
 
@@ -268,7 +260,7 @@ const LineChart = (props) => {
       let y_point = y_axis_y2_point - gap_between_y_axis_ticks * index;
       return (
         <G key={"y-axis labels and ticks" + index}>
-          {showXAxisText && <AnimatedLine
+          {index % 13 === 0 && <AnimatedLine
             key={"y-axis tick" + index}
             x1={marginFor_x_fromLeft}
             y1={y_point}

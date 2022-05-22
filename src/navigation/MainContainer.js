@@ -31,17 +31,14 @@ const MainContainer = () => {
   const CustomBottomBarIcon = ({children,onPress}) => {
    return( <TouchableOpacity
     style={{
-      top:-25,
       justifyContent:'center',
       alignItems:'center',
     }}
     onPress={onPress}>
       <View style={{
-        borderRadius:50,
         width:70,
-        height: 70,
+        height: 50,
         backgroundColor: '#1C2834',
-        borderWidth:1,
         borderColor:"#EFB90B",
       }}>
         {children}
@@ -95,13 +92,12 @@ const MainContainer = () => {
         <Tab.Screen component={WatchListStackNavigator} name={watchList_screen} />
         <Tab.Screen component={CurrenciesListStackNavigator} name={currenciesList_screen} />
         <Tab.Screen options={{
-          tabBarButton:(props => (
-            <CustomBottomBarIcon {...props}></CustomBottomBarIcon>
-          )),
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
               iconName = focused ? "wallet" : "wallet-outline";
               color = focused ? '#EFB90B' : color;
+
+
             return <Ionicons name={iconName} size={size} color={color} />;
 
           },

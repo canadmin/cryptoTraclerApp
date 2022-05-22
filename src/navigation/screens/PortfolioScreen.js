@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import {View, Text,FlatList ,ScrollView} from 'react-native';
+import {View, Text,TouchableOpacity ,ScrollView} from 'react-native';
 import Header from "./common/Header";
 import { getAllPortfolio, getAssetsByPortfolio } from "../../storage/allSchema";
 import AssetSummaryCard from "./common/AssetSummaryCard";
@@ -21,7 +21,7 @@ const PortfolioScreen = () => {
   const [currentTotalValue,setCurrentTotalValue] = useState(0);
   const [showPopUp,setShowPopUp] = useState(false);
   const [dataFetching,setDataFetching] = useState(false);
-
+  const [bottomSelectCoin,setBottomSelectCoin] = useState();
 
   let optionArray = [
     'Asset', 'Portfolio','Close'
@@ -29,6 +29,10 @@ const PortfolioScreen = () => {
 
   const showActionSheet = () => {
       actionSheet.current.show();
+  }
+
+  const selectCoinFromBottom = (name) => {
+   setBottomSelectCoin(name);
   }
 
   useEffect(() => {
@@ -95,7 +99,21 @@ const PortfolioScreen = () => {
       </View>
       {assets.length > 0 &&
         <>
-          <PieChart assets={assets} totalValue={calculateTotalValue(assets)}/>
+
+          <PieChart assets={assets}  totalValue={calculateTotalValue(assets)} bottomSelectCoin={bottomSelectCoin}/>
+          <ScrollView horizontal style={{flexDirection:'row',height:50,marginTop :20,alignSelf:'center'}}>
+            {assets.length > 0 && assets.map((item,index) => (
+              <TouchableOpacity onPress={() => setBottomSelectCoin(item.name)} style={{justifyContent:'center',flexDirection:'row'}}>
+                <View style={{justifyContent:'center',marginLeft:10}}>
+                  <View style={{width:10,height:10,backgroundColor:`${item.assetColor}`,borderRadius:100}}></View>
+                </View>
+                <View style={{marginLeft:5,justifyContent:'center'}}>
+                  <Text style={{color:`${item.assetColor}`}}>{item.symbol.toUpperCase()}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+
+          </ScrollView>
           <View style={styles.filter}>
             <View style={styles.topRow}>
               <View style={{flex:2}}>
@@ -164,7 +182,7 @@ const styles = {
   filter: {
     marginLeft: 10,
     marginRight: 10,
-    marginTop: 60,
+    marginTop: 20,
     marginBottom:-15,
     borderRadius: 5,
     height:20

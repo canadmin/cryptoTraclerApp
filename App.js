@@ -53,7 +53,6 @@ const App = () => {
            color : '#FFF'
          },
        ).then((res) => {
-         console.log(res)
        });
      }
 
