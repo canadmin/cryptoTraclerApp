@@ -5,7 +5,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import PortfolioScreen from "./screens/PortfolioScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import AlertScreen from "./screens/AlertScreen";
-import {WatchListStackNavigator,CurrenciesListStackNavigator} from './../router/homeStacks';
+import {WatchListStackNavigator,CurrenciesListStackNavigator,PortfolioStackNavigator} from './../router/homeStacks';
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { getCurrencies } from "../reducers/CryptoApiService";
@@ -101,7 +101,7 @@ const MainContainer = () => {
             return <Ionicons name={iconName} size={size} color={color} />;
 
           },
-        }} component={PortfolioScreen} name={portfolio_screen} />
+        }} component={PortfolioStackNavigator} name={portfolio_screen} />
         <Tab.Screen component={AlertScreen} name={alert_screen} />
 
         <Tab.Screen component={SettingsScreen} name={settings_screen} />

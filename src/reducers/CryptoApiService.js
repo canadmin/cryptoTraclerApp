@@ -34,7 +34,7 @@ export const getCryptoInfo = (symbol) => {
   };
   return request(options);
 }
-export const getPortfolio = (symbol) => {
+export const getPortfolioPrices = (symbol) => {
   const options = {
     method: "get",
     path: "getPortfolio",

@@ -5,12 +5,17 @@ import { getAllPortfolio, getAssetsByPortfolio } from "../../storage/allSchema";
 import AssetSummaryCard from "./common/AssetSummaryCard";
 import PieChart from "./common/PieChart";
 import { getRandomColor, priceFormat, round } from "../../helper/Utils";
-import { getCurrenciesFromExtarnalApi, getCurrencyPrice, getPortfolio } from "../../reducers/CryptoApiService";
+import { getCurrenciesFromExtarnalApi, getCurrencyPrice, getPortfolioPrices } from "../../reducers/CryptoApiService";
 import ActionSheetCustom from "react-native-actionsheet/lib/ActionSheetCustom";
 import { hairlineWidth } from "react-native-actionsheet/lib/styles";
 import AppLoader from "./common/AppLoader";
 import AddToPortfolioModal from "./common/AddToPortfolioModal";
-const PortfolioScreen = () => {
+import { addPageHistory } from "../../redux/action";
+import { useDispatch } from "react-redux";
+const PortfolioScreen = (props) => {
+
+  const {navigation} = props;
+  const dispatch = useDispatch();
   const actionSheet = useRef();
 
   const [showModal,setShowModal] = useState(false);
@@ -35,6 +40,11 @@ const PortfolioScreen = () => {
    setBottomSelectCoin(name);
   }
 
+  const navigateAndAddPageHistory = (route,param) => {
+    navigation.navigate(route,param);
+    dispatch(addPageHistory("PortfolioScreen"))
+  }
+
   useEffect(() => {
     setDataFetching(true)
     let portfolioId = 1;
@@ -43,7 +53,7 @@ const PortfolioScreen = () => {
         getAssetsByPortfolio(portfolioId).then(res => {
           let tempList = [];
           let  symbols = res.map(({ symbol }) => symbol);
-          getPortfolio(symbols).then(prices => {
+          getPortfolioPrices(symbols).then(prices => {
             res.forEach(  (item,index) => {
               let ss = prices.data.filter(elem => elem.symbol.toUpperCase()
                 === item.symbol.toUpperCase())[0].value;
@@ -99,7 +109,6 @@ const PortfolioScreen = () => {
       </View>
       {assets.length > 0 &&
         <>
-
           <PieChart assets={assets}  totalValue={calculateTotalValue(assets)} bottomSelectCoin={bottomSelectCoin}/>
           <ScrollView horizontal style={{flexDirection:'row',height:50,marginTop :20,alignSelf:'center'}}>
             {assets.length > 0 && assets.map((item,index) => (
@@ -136,8 +145,10 @@ const PortfolioScreen = () => {
                               windowSize={5}
                               key={`asset +${index}`}
                               keyExtractor={item => item.id}
+                              navigation={navigation}
                               maxToRenderPerBatch={5}
                               updateCellsBatchingPeriod={30}
+                              navigateAndAddPageHistory={navigateAndAddPageHistory}
                               getRealTimeData={true} />
           ))
           }

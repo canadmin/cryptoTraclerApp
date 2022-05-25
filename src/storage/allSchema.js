@@ -127,6 +127,8 @@ export const addAssetToPortfolio = (asset) => new Promise((resolve, reject) => {
     });
   }).catch((error => reject(error)));
 });
+
+
 export const getAssetsByPortfolio = (portfolioId) => new Promise((resolve, reject) => {
   Realm.open(dataBaseOptions).then(realm => {
     let assets = realm.objects(PORTFOLIO_ASSETS_SCHEMA).filtered("portfolioId ="+portfolioId+"");

@@ -10,9 +10,12 @@ const AssetSummaryCard = (props) => {
 
 
 
-  const {item,index} = props;
+  const {item,index,navigation,navigateAndAddPageHistory} = props;
   return (
-    <TouchableOpacity style={styles.containerStyle}>
+    <TouchableOpacity  onPress={() => navigateAndAddPageHistory("TransactionDetail", {
+      name: item.name,
+      coin: item,
+    }, "Watchlist")}style={styles.containerStyle}>
         <View style={{flex:2}}>
           <Image style={styles.coinImage}
                  source={{ uri: "https://s2.coinmarketcap.com/static/img/coins/64x64/" + item.coinId + ".png" }} />

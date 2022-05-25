@@ -53,7 +53,7 @@ const styles = {
     width: 45,
     height:30,
     backgroundColor:'transparent',
-    borderWidth: 0.2,
+    borderWidth: 1,
     borderColor: "#daa520",
     justifyContent:'center',
     alignItems:'center',

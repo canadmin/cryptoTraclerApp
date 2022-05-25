@@ -11,6 +11,7 @@ import AddCoinToFavModal from '../screens/common/AddCoinToFavModal';
 import AppLoader from "./common/AppLoader";
 import TextTicker from 'react-native-text-ticker'
 import { floorCalc, round } from "../../helper/Utils";
+import AssetSummaryCard from "./common/AssetSummaryCard";
 
 const WatchList = (props) => {
 
@@ -117,6 +118,7 @@ const WatchList = (props) => {
           <CurrencySummaryCard item={item}
                                index={index}
                                favorites={favorites}
+                               key={`asset +${index*2}`}
                                keyExtractor={item => item.id}
                                deleteCurrencyFromFavorite={deleteCurrencyFromFavorite}
                                navigation={navigation}
