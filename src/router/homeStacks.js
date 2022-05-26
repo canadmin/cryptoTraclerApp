@@ -3,8 +3,10 @@ import {Animated,Easing} from 'react-native'
 import WatchList from "../navigation/screens/WatchList";
 import CurrenciesList from "../navigation/screens/CurrenciesList";
 import CoinDetailScreen from "../navigation/screens/common/CoinDetailScreen";
+import PortfolioScreen from "../navigation/screens/PortfolioScreen";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { createStackNavigator,CardStyleInterpolators } from '@react-navigation/stack';
+import TransactionDetail from "../navigation/screens/common/TransactionDetail";
 
 const Stack = createStackNavigator();
 
@@ -14,7 +16,7 @@ const config = {
   config: {
     stiffness: 1000,
     damping: 50,
-    mass: 3,
+    mass: 1,
     overshootClamping: false,
     restDisplacementThreshold: 0.01,
     restSpeedThreshold: 0.01,
@@ -26,6 +28,7 @@ const closeConfig = {
   config: {
     duration: 200,
     easing: Easing.linear,
+    useNativeDriver:true,
   }
 }
 export const WatchListStackNavigator = () => {
@@ -66,6 +69,28 @@ export const CurrenciesListStackNavigator = () => {
                     component={CurrenciesList}/>
       <Stack.Screen name={"CoinDetailScreen"}
                     component={CoinDetailScreen}/>
+    </Stack.Navigator>
+  )
+}
+
+
+export const PortfolioStackNavigator = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={({ route }) => ({
+        tabBarShowLabel: false,
+        headerShown: false,
+        gestureDirection: 'horizontal',
+        transitionSpec: {
+          open: config,
+          close: closeConfig,
+        },
+        cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS,
+      })}>
+      <Stack.Screen name={"PortfolioScreen"}
+                    component={PortfolioScreen}/>
+      <Stack.Screen name={"TransactionDetail"}
+                    component={TransactionDetail}/>
     </Stack.Navigator>
   )
 }

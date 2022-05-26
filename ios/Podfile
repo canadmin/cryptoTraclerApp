@@ -20,6 +20,11 @@ target 'cryptoTrackerApp' do
   )
 
 
+
+
+
+  pod 'lottie-react-native', :path => '../node_modules/lottie-react-native'
+
   target 'cryptoTrackerAppTests' do
     inherit! :complete
     # Pods for testing

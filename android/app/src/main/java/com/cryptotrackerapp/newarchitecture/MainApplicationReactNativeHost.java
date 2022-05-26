@@ -1,4 +1,4 @@
-package com.cryptotrackerapp.newarchitecture;
+package com.crypto.portfolio.tracker.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -19,9 +19,9 @@ import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.EmptyReactNativeConfig;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.cryptotrackerapp.BuildConfig;
-import com.cryptotrackerapp.newarchitecture.components.MainComponentsRegistry;
-import com.cryptotrackerapp.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import com.crypto.portfolio.tracker.BuildConfig;
+import com.crypto.portfolio.tracker.newarchitecture.components.MainComponentsRegistry;
+import com.crypto.portfolio.tracker.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList,Alert,TouchableOpacity } from "react-native";
+import { View, Text, ScrollView,Alert,TouchableOpacity } from "react-native";
 import CurrencySummaryCard from "./common/CurrencySummaryCard";
 import Header from "./common/Header";
-import { getCryptoInfo } from "../../reducers/CryptoApiService";
+import { getCryptoInfo, getMarketGlobalData } from "../../reducers/CryptoApiService";
 import { deleteFavorites, getAllFavorites } from "../../storage/allSchema";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useDispatch, useSelector, } from "react-redux";
 import { addPageHistory, removeWatchList } from "../../redux/action";
 import AddCoinToFavModal from '../screens/common/AddCoinToFavModal';
+import AppLoader from "./common/AppLoader";
+import TextTicker from 'react-native-text-ticker'
+import { floorCalc, round } from "../../helper/Utils";
+import AssetSummaryCard from "./common/AssetSummaryCard";
 
 const WatchList = (props) => {
 
@@ -19,8 +23,33 @@ const WatchList = (props) => {
   const [coins, setCoins] = useState(watchedCoins);
   const [favorites, setFavorites] = useState([]);
   const [showModal,setShowModal] = useState(false);
+  const [refresh,setRefresh] = useState(false);
+  const [dataFetching,setDataFetching] = useState(false);
+  const [global,setGlobal] = useState(null);
 
   useEffect(() => {
+    createWatchlist()
+    return () => {
+      setFavorites([]);
+      setCoins([]);
+    };
+  }, [watchedCoins]);
+
+  useEffect(() => {
+    return () => {
+      setFavorites([]);
+      setCoins([]);
+      setGlobal(null);
+    };
+  }, []);
+
+  const onRefresh = () => {
+
+    setRefresh(true);
+  }
+
+  const createWatchlist = () => {
+    setDataFetching(true)
     let favorites = "";
     getAllFavorites().then(res => {
       setFavorites(res);
@@ -39,23 +68,28 @@ const WatchList = (props) => {
               symbol: item.symbol.toLowerCase(),
               price: item.quote.USD.price,
               key:index,
-              percent_change_1h:item.quote.USD.percent_change_24h,
+              percent_change_1h:item.quote.USD.percent_change_1h,
               percent_change_24h:item.quote.USD.percent_change_24h,
               percent_change_7d:item.quote.USD.percent_change_7d,
               percent_change_30d:item.quote.USD.percent_change_30d,
               percent_change_60d:item.quote.USD.percent_change_60d,
               percent_change_90d:item.quote.USD.percent_change_90d,
               market_cap:item.quote.USD.market_cap,
-
             };
           });
+          setRefresh(false)
           setCoins(currencies);
+          getMarketGlobalData().then((res) => {
+            setGlobal(res.data.data);
+            setDataFetching(false);
+          })
         })
     });
-  }, [watchedCoins]);
-
+  }
 
   const deleteCurrencyFromFavorite = (coin) => {
+    const filteredData = coins.filter(item => item.symbol !== coin.symbol);
+    setCoins(filteredData)
     deleteFavorites(coin.symbol).then(() => {
       dispatch(removeWatchList(coin))
     });
@@ -65,53 +99,64 @@ const WatchList = (props) => {
   const navigateAndAddPageHistory = (route,param) => {
     navigation.navigate(route,param);
     dispatch(addPageHistory("WatchList"))
+  };
+
+  const createPercentage = (items) => {
+    let str = " ";
+    Object.keys(items).forEach(item => {
+      str += item.toUpperCase() + "= " + round(items[item]) + "% ";
+    });
+    return str;
   }
 
-
-
   return (
-    <View style={containerStyle}>
+    <ScrollView style={{flex:1,backgroundColor:"#11161D"}}>
       <Header headerText={"Watch List"} />
-      {coins.length > 0 &&
-      <FlatList data={[...coins, { add: true }]}
-                initialNumToRender={5}
+      <ScrollView style={containerStyle}>
+      {coins.length > 0 && favorites.length > 0 &&
+        coins.map((item,index) => (
+          <CurrencySummaryCard item={item}
+                               index={index}
+                               favorites={favorites}
+                               key={`asset +${index*2}`}
+                               keyExtractor={item => item.id}
+                               deleteCurrencyFromFavorite={deleteCurrencyFromFavorite}
+                               navigation={navigation}
+                               navigateAndAddPageHistory={navigateAndAddPageHistory}
+                               getRealTimeData={true} />
+        ))
+      }
 
-                renderItem={({ item, index }) => {
-                  if (item.add) {
-                    return(
-                      <TouchableOpacity onPress={() => setShowModal(true)}>
-                        <View style={addWatchListButton}>
-                          <Ionicons name={"add-sharp"} size={30} color={'#EFB90B'} />
-                          <Text style={{ color: "white" }}>
-                            Add coins to Watchlist
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
-                      ) ;
-                  } else {
-                    return <CurrencySummaryCard item={item}
-                                                index={index}
-                                                favorites={favorites}
-                                                initialNumToRender={10}
-                                                windowSize={5}
-                                                maxToRenderPerBatch={5}
-                                                updateCellsBatchingPeriod={30}
-                                                deleteCurrencyFromFavorite={deleteCurrencyFromFavorite}
-                                                navigation={navigation}
-                                                navigateAndAddPageHistory={navigateAndAddPageHistory}
-                                                getRealTimeData={true} />;
-                  }
-                }
-                }
-      />}
+        {global && <TextTicker
+          style={{ fontSize: 22,color:'#9a9a9a',fontWeight:'bold',marginTop:10
+          ,marginLeft:20}}
+          duration={10000}
+          loop
+          scrollSpeed={100200}
+          marqueeDelay={1000}
+        >
+          {`Total Market Cap : $`+floorCalc(global.total_market_cap.usd) + ` | Market Cap Percentage :`+createPercentage(global.market_cap_percentage)}
+        </TextTicker>}
       {showModal && <AddCoinToFavModal setShowModal={setShowModal} showModal={showModal}/>}
-    </View>);
+    </ScrollView>
+
+        {dataFetching && <AppLoader/>}
+      <TouchableOpacity style={{marginTop:30}} onPress={() => setShowModal(true)}>
+        <View style={addWatchListButton}>
+          <Ionicons name={"add-sharp"} size={30} color={'#EFB90B'} />
+          <Text style={{ color: "white" }}>
+            Add coins to Watchlist
+          </Text>
+        </View>
+      </TouchableOpacity>
+    </ScrollView>
+  );
 };
 
 const styles = {
   containerStyle: {
-    flex: 1,
     backgroundColor: "#11161D",
+    marginTop:20
   },
   textStyle: {
     fontWeight: "bold",
@@ -121,9 +166,9 @@ const styles = {
     height: 50,
     flexDirection:'row',
     backgroundColor: '#1C2834',
-    marginTop:10,
     marginLeft:50,
     marginRight: 50,
+    marginBottom: 50,
     justifyContent:'center',
     alignItems:'center'
   }

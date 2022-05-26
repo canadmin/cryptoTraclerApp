@@ -1,4 +1,7 @@
-import { request,externalApirequest,getOhlcHistoryRequest } from "../helper/apiClient";
+import {
+  request, externalApirequest, getOhlcHistoryRequest
+  , getHistoryPriceFromExternal, getGlobal,
+} from "../helper/apiClient";
 
 // top 10 falan
 export const getCurrencies = (listType) => {
@@ -26,6 +29,15 @@ export const getCryptoInfo = (symbol) => {
   const options = {
     method: "get",
     path: "cryptoInfo",
+    params: ["symbol"],
+    values:[symbol]
+  };
+  return request(options);
+}
+export const getPortfolioPrices = (symbol) => {
+  const options = {
+    method: "get",
+    path: "getPortfolio",
     params: ["symbol"],
     values:[symbol]
   };
@@ -62,6 +74,35 @@ export const getCurrenciesFromExtarnalApi = (symbol) => {
   return externalApirequest(options);
 }
 
+
+export const getChartValue = (currency_id,period) => {
+
+  const options = {
+    method: "get",
+    path:period,
+    currency_name_id:currency_id
+  }
+
+  return getOhlcHistoryRequest(options)
+}
+
+export const getHistoryPrice = (currency_id,date) => {
+  const options = {
+    method: "get",
+    path:date,
+    currency_name_id:currency_id
+  }
+
+  return getHistoryPriceFromExternal(options)
+}
+
+export const getMarketGlobalData = () => {
+  const options = {
+    method: "get",
+  }
+
+  return getGlobal(options);
+}
 
 
 

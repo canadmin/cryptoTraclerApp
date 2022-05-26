@@ -17,8 +17,5 @@ export const request = (options) => {
     data: options.data,
     responseType: options.responseType,
     headers: options.headers,
-  })
-    .then((response) => {
-    })
-
+  });
 };

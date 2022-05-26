@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "716501189817",
+    "project_id": "testtt-57542",
+    "storage_bucket": "testtt-57542.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:716501189817:android:6d27264d95aeba0ac60768",
+        "android_client_info": {
+          "package_name": "com.crypto.portfolio.tracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "716501189817-rs5dsn0oukg9k9lvghha1r6n5a06r3i2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEnJ1-3iRaWq8LpLbcO7ik6hzMVTw1Qf0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "716501189817-rs5dsn0oukg9k9lvghha1r6n5a06r3i2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

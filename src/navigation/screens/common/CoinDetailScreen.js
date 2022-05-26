@@ -1,29 +1,42 @@
-import React,{useEffect,useState} from "react";
+import React, { useEffect, useRef, useState,useCallback } from "react";
 import {View,Text,Image,TouchableOpacity,Alert,ScrollView} from 'react-native';
 import Header from "./Header";
 import { useDispatch, useSelector } from "react-redux";
 import { addPageHistory } from "../../../redux/action";
+import TimePeriod from "./TimePeriod";
 import LineChart from "./LineChart";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import {round,floorCalc,negativeRound} from "../../../helper/Utils";
-import { getCurrenciesFromExtarnalApi } from "../../../reducers/CryptoApiService";
+import { round, floorCalc, negativeRound, getCoinGeckoId, priceFormat } from "../../../helper/Utils";
+import { getCurrenciesFromExtarnalApi, getCurrencyPrice,getChartValue } from "../../../reducers/CryptoApiService";
+import AddToPortfolioModal from '../../screens/common/AddToPortfolioModal';
+import AppLoader from "./AppLoader";
 
 const CoinDetailScreen = ({navigation,route}) => {
   const coin = route.params.coin;
+  const isFavoriteCoin = route.params.isFavoriteCoin;
 
+  const ws = useRef(null);
 
   const dispatch = useDispatch();
   const {pageHistory} = useSelector(state => state.userReducer)
   const {coinImage,coinPriceAndLogoView,textStyle,addToPortfolioButton} = styles;
-
   //state
   const [price,setPrice] = useState(coin.price)
   const [isUp, setIsUp] = useState(true);
+  const [showModal,setShowModal] = useState(false);
+  const [showLineChart,setShowLineChart] = useState(false);
+  const [dataFetching,setDataFetching] = useState(false);
+
+  const [period,setPeriod] = useState();
+
+  const [coinData,setCoinData] = useState([])
+  const forceUpdate = useCallback(() => setCoinData([]), []);
 
   const handleHeaderBackOnPress = () => {
     //burada bağlı olan soketleri kapatacağız.
     navigation.navigate(pageHistory)
   }
+
 
   const modifyStyle = (value) => {
     if(value < 0){
@@ -42,57 +55,93 @@ const CoinDetailScreen = ({navigation,route}) => {
       }
     };
   };
+
+  const getRealTimeDataFromApi = () => {
+    getCurrenciesFromExtarnalApi(coin.symbol).then(response => {
+      let externalData = response.data;
+      if (externalData.last && externalData.last > 0) {
+        setPrice(round(externalData.last));
+      } else {
+        getCurrencyPrice(coin.symbol).then(res => {
+          let resData = res.data;
+          if (resData.statusCode === 200) {
+            setPrice(round(resData.value));
+          } else {
+            setPrice(round(item.price));
+          }
+        }).catch(e => {});
+      }
+    }).catch(e => {});
+  };
+
+  useEffect(() =>{
+    let data = []
+    setDataFetching(true)
+    getChartValue(getCoinGeckoId(coin.symbol),period).then((res) => {
+      if(res.data && res.data.length > 0){
+        res.data.forEach(item => {
+          let tempOBj = {
+            time : item[0],
+            value: item[2],
+          }
+          data.push(tempOBj);
+        })
+      }
+      setCoinData(data);
+      setDataFetching(false)
+      return () => {
+        setPrice(null);
+      }
+    }).catch(e => {})
+  },[period])
   useEffect(() => {
-    let wss = new WebSocket("wss://stream.binance.com:9443/ws/" + coin.symbol + "usdt@kline_1m");
+    ws.current = new WebSocket("wss://stream.binance.com:9443/ws/" + coin.symbol + "usdt@kline_1m");
+    const wss = ws.current;
     wssConnection(wss);
 
+    getRealTimeDataFromApi();
     let interval = null;
       interval = setInterval(() => {
-        getCurrenciesFromExtarnalApi(coin.symbol).then(response => {
-          let externalData = response.data;
-          if(externalData.last && externalData.last > 0 ){
-            setPrice(round(externalData.last))
-          }
-        });
-      }, 5000);
+        getRealTimeDataFromApi();
+      }, 15000);
 
     return () => {
-      // clear func
-
-      wss.close();
+      //wss.close();
       clearInterval(interval);
       setPrice(null)
+      setIsUp(null)
     }
-  },[])
+  },[]);
+
+
   return (
     <ScrollView style={{flex:1,backgroundColor:'#11161D'}}>
-      <Header headerText={route.params.name} isDetailScreen={true}  handleHeaderBackOnPress={handleHeaderBackOnPress}></Header>
-      <View style={{flexDirection:'row'}}>
+      <Header headerText={route.params.name} isDetailScreen={true}
+              coin={coin}
+              isFavoriteCoin={isFavoriteCoin} handleHeaderBackOnPress={handleHeaderBackOnPress}></Header>
+      <View style={{alignItems:'center'}}>
         <Text style={textStyle}>
-          $ {round(price)}
+          {priceFormat(price)}
         </Text>
       </View>
       <LineChart
-        line_chart_data={[{time:'11 Feb', value:3422},
-          {time:'12 Feb', value:3035.17},
-          {time:'14 Feb', value:3033.27},
-          {time:'15 Feb', value:2399.27},
-          {time:'16 Feb', value:3033.27},
-          {time:'17 Feb', value:933.27},
-          {time:'18 Feb', value:2222.27},
-        ]}
+        line_chart_data={coinData}
         circleColor={"#70A800"}
         axisColor={"#9dd"}
         axisLabelFontSize={9}
-        showGradient={false}
+        showGradient={true}
         containerHeight={300}
         lineChartColor={'#70A800'}
         renderCircleAndRect={false}
+        key={coinData.length < 1 ? 222 : coinData[0].time}
+        setPeriod={setPeriod}
       />
-        < TouchableOpacity onPress={() => Alert.alert(`Portfolio ekleme modalı açılacak`)} style={addToPortfolioButton}>
+      <TimePeriod setPeriod={setPeriod}/>
+
+      < TouchableOpacity onPress={() => setShowModal(true)} style={addToPortfolioButton}>
           <Ionicons name={"add-sharp"} size={30} color={'#EFB90B'} />
           <Text style={{ color: "white" }}>
-            Add To Portfolio
+            Add Transaction
           </Text>
         </TouchableOpacity>
       <View style={{marginTop:50,marginRight:30,marginLeft:45}}>
@@ -208,7 +257,12 @@ const CoinDetailScreen = ({navigation,route}) => {
         <View style={styles.parser}/>
 
       </View>
-  </ScrollView>)
+
+      {showModal && <AddToPortfolioModal coin={coin} setShowModal={setShowModal} showModal={showModal}
+                                         showCoinSearch={true} />}
+      {dataFetching && <AppLoader/>}
+
+    </ScrollView>)
 };
 
 const styles = {
@@ -285,7 +339,7 @@ const styles = {
     marginTop:10
   },
   parser : {
-    borderWidth: 0.4,
+    borderWidth: 0.5,
     opacity: 0.4,
     borderColor: "white",
     marginTop:10,

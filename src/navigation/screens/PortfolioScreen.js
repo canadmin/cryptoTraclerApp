@@ -1,42 +1,183 @@
-import * as React from 'react';
-import {View, Text} from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import React, { useEffect, useRef, useState } from "react";
+import {View, Text,TouchableOpacity ,ScrollView} from 'react-native';
 import Header from "./common/Header";
-import ChartCustomThemes from "../../styles/ChartCustomThemes";
-import LineChart from '../screens/common/LineChart'
-const PortfolioScreen = () => {
-  const {containerStyle,portfolioHeader,component1,totalValue} = styles;
+import { getAllPortfolio, getAssetsByPortfolio } from "../../storage/allSchema";
+import AssetSummaryCard from "./common/AssetSummaryCard";
+import PieChart from "./common/PieChart";
+import { getRandomColor, priceFormat, round } from "../../helper/Utils";
+import { getCurrenciesFromExtarnalApi, getCurrencyPrice, getPortfolioPrices } from "../../reducers/CryptoApiService";
+import ActionSheetCustom from "react-native-actionsheet/lib/ActionSheetCustom";
+import { hairlineWidth } from "react-native-actionsheet/lib/styles";
+import AppLoader from "./common/AppLoader";
+import AddToPortfolioModal from "./common/AddToPortfolioModal";
+import { addPageHistory } from "../../redux/action";
+import { useDispatch } from "react-redux";
+const PortfolioScreen = (props) => {
 
+  const {navigation} = props;
+  const dispatch = useDispatch();
+  const actionSheet = useRef();
+
+  const [showModal,setShowModal] = useState(false);
+  const {containerStyle,portfolioHeader,component1,totalValue} = styles;
+  const [currentPortfolio,setCurrentPortfolio] = useState(null);
+  const [assets,setAssets] = useState([])
+  const [tempAssets,setTempAssets] = useState([])
+  const [currentTotalValue,setCurrentTotalValue] = useState(0);
+  const [showPopUp,setShowPopUp] = useState(false);
+  const [dataFetching,setDataFetching] = useState(false);
+  const [bottomSelectCoin,setBottomSelectCoin] = useState();
+
+  let optionArray = [
+    'Asset', 'Portfolio','Close'
+  ]
+
+  const showActionSheet = () => {
+      actionSheet.current.show();
+  }
+
+  const selectCoinFromBottom = (name) => {
+   setBottomSelectCoin(name);
+  }
+
+  const navigateAndAddPageHistory = (route,param) => {
+    navigation.navigate(route,param);
+    dispatch(addPageHistory("PortfolioScreen"))
+  }
+
+  useEffect(() => {
+    setDataFetching(true)
+    let portfolioId = 1;
+      getAllPortfolio().then(res => {
+      setCurrentPortfolio(res);
+        getAssetsByPortfolio(portfolioId).then(res => {
+          let tempList = [];
+          let  symbols = res.map(({ symbol }) => symbol);
+          getPortfolioPrices(symbols).then(prices => {
+            res.forEach(  (item,index) => {
+              let ss = prices.data.filter(elem => elem.symbol.toUpperCase()
+                === item.symbol.toUpperCase())[0].value;
+              const newData =  {
+                portfolioId: item.portfolioId,
+                id:item.id,
+                amount: item.amount,
+                oldPrice: item.price,
+                price: String(ss),
+                isAddTransaction: item.isAddTransaction,
+                createDate: item.createDate,
+                transactionDate: item.transactionDate,
+                symbol: item.symbol,
+                name: item.name,
+                coinId: item.coinId,
+                assetColor: item.assetColor
+              };
+              tempList.push(newData);
+              setAssets(prevArray => [...prevArray, newData])
+            })
+            setDataFetching(false)
+          }).catch(() => {})
+        })
+    })
+
+    return() => {
+        setAssets([]);
+        setCurrentTotalValue(0)
+    }
+  },[]);
+
+  useEffect(() => {
+    calculateTotalValue(assets)
+  },[assets]);
+
+
+
+  const calculateTotalValue = (res) => {
+    let sum = 0;
+    assets.forEach(item => {
+      sum+= item.price*item.amount;
+    })
+    return sum;
+  }
   return (
-    <View style={containerStyle}>
-      <Header headerText={"My Portfolio"}></Header>
-      <View>
-        <Text style={{marginTop: 5, color:"white"}}>Total Value : 124,534.34 $ </Text>
-        <Text style={{marginTop: 5, color:"white"}}>Change  : 8.33 % </Text>
+<>
+    <ScrollView style={containerStyle}>
+      <Header headerText={"My Portfolio"} isPortfolioScreen={true} showActionSheet={showActionSheet}/>
+      <View style={{alignItems:'center',marginTop:20}}>
+        <Text style={{marginTop: 5, color:"#70A800", fontSize:43, fontWeight:'bold',fontFamily:'Feather'}}>
+          {priceFormat(calculateTotalValue(assets))}</Text>
+        <Text style={{marginTop: 5, color:"#70A800",fontSize:22, fontWeight:'bold',fontFamily:'Feather'}}>Change: 8.33% </Text>
       </View>
-            <LineChart
-            line_chart_data={[{time:'11 Feb', value:3422},
-              {time:'12 Feb', value:3035.17},
-              {time:'14 Feb', value:3033.27},
-              {time:'15 Feb', value:2399.27},
-              {time:'16 Feb', value:3033.27},
-              {time:'17 Feb', value:933.27},
-              {time:'18 Feb', value:2222.27},
-            ]}
-            circleColor={"#daa520"}
-            axisColor={"#9dd"}
-            axisLabelFontSize={9}
-            renderCircleAndRect={false}
-            showGradient={true}
-            />
-  </View>)
+      {assets.length > 0 &&
+        <>
+          <PieChart assets={assets}  totalValue={calculateTotalValue(assets)} bottomSelectCoin={bottomSelectCoin}/>
+          <ScrollView horizontal style={{flexDirection:'row',height:50,marginTop :20,alignSelf:'center'}}>
+            {assets.length > 0 && assets.map((item,index) => (
+              <TouchableOpacity onPress={() => setBottomSelectCoin(item.name)} style={{justifyContent:'center',flexDirection:'row'}}>
+                <View style={{justifyContent:'center',marginLeft:10}}>
+                  <View style={{width:10,height:10,backgroundColor:`${item.assetColor}`,borderRadius:100}}></View>
+                </View>
+                <View style={{marginLeft:5,justifyContent:'center'}}>
+                  <Text style={{color:`${item.assetColor}`}}>{item.symbol.toUpperCase()}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+
+          </ScrollView>
+          <View style={styles.filter}>
+            <View style={styles.topRow}>
+              <View style={{flex:2}}>
+              </View>
+              <View style={{flex:3}}>
+              </View>
+              <View style={{flex:5}}>
+                <Text style={{color:'#9a9a9a',alignSelf:'flex-end',fontSize:15,fontWeight:'bold',marginRight:5}}>Price</Text>
+              </View>
+              <View style={{flex:6}}>
+                <Text style={{color:'#9a9a9a',alignSelf:'flex-end',fontSize:15,fontWeight:'bold',marginRight:15}}>Total</Text>
+              </View>
+            </View>
+
+          </View>
+          {assets.length > 0 && assets.map((item,index) => (
+            <AssetSummaryCard item={item}
+                              index={index}
+                              initialNumToRender={10}
+                              windowSize={5}
+                              key={`asset +${index}`}
+                              keyExtractor={item => item.id}
+                              navigation={navigation}
+                              maxToRenderPerBatch={5}
+                              updateCellsBatchingPeriod={30}
+                              navigateAndAddPageHistory={navigateAndAddPageHistory}
+                              getRealTimeData={true} />
+          ))
+          }
+        </>
+      }
+
+      <ActionSheetCustom
+        ref={actionSheet}
+        title={'Add New'}
+        options={optionArray}
+        cancelButtonIndex={2}
+        styles={actionStyles}
+        useNativeDriver={true}
+        onPress={(index => {
+              if(index === 0){
+                  setShowModal(true)
+              }
+        })}/>
+
+    </ScrollView>
+  {showModal && <AddToPortfolioModal setShowModal={setShowModal} showModal={showModal}
+                                     showCoinSearch={true} />}
+  {dataFetching && <AppLoader/>}
+</>)
 };
 //trending-up-sharp
 const styles = {
   containerStyle : {
-    flex :1,
     backgroundColor: "#11161D",
-
   },
   portfolioHeader:{
     fontSize:24,
@@ -45,9 +186,85 @@ const styles = {
     fontSize: 35,
     justifyContent: 'flex-start',
   },
+  assetCardStyle: {
+    marginTop :30,
+    alignSelf :'center'
+  },
+  filter: {
+    marginLeft: 10,
+    marginRight: 10,
+    marginTop: 20,
+    marginBottom:-15,
+    borderRadius: 5,
+    height:20
+  },
+  topRow:{
+    marginLeft: 5,
+    flexDirection:'row',
+  },
+}
+const actionStyles = {
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    opacity: 0.4,
+    backgroundColor: '#000'
+  },
+  wrapper: {
+    flex: 1,
+    flexDirection: 'row'
+  },
+  body: {
+    flex: 1,
+    alignSelf: 'flex-end',
+    backgroundColor: '#e5e5e5'
+  },
+  titleBox: {
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+    display:'none'
+  },
+  titleText: {
+    color: '#757575',
+    fontSize: 14
+  },
+  messageBox: {
+    height: 30,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingBottom: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff'
+  },
+  messageText: {
+    color: '#9a9a9a',
+    fontSize: 12
+  },
+  buttonBox: {
+    height: 50,
+    marginTop: hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff'
+  },
+  buttonText: {
+    fontSize: 18
+  },
+  cancelButtonBox: {
+    height: 50,
+    marginTop: -25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff'
+  }
 
 }
-
 //#041C32
 //#04293A
 //#ECB365

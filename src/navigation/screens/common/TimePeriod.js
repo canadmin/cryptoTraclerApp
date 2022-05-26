@@ -4,16 +4,16 @@ import {View,Text,StyleSheet,TouchableOpacity} from 'react-native';
 const TimePeriod = (props) => {
 
   const [toggleGroup,setToggleGroup] = useState([
-    {id:1,periodName: '1d',isActive:true,days:1},
+    {id:1,periodName: '1d',isActive:false,days:1},
     {id:2,periodName: '7d',isActive:false,days:7},
-    {id:3,periodName: '1m',isActive:false,days:31},
-    {id:4,periodName: '3m',isActive:false,days:90},
-    {id:5,periodName: '6m',isActive:false,days:180},
-    {id:6,periodName: '1y',isActive:false,days:365}
+    {id:3,periodName: '1m',isActive:false,days:30},
+    // {id:4,periodName: '3m',isActive:false,days:90},
+    //{id:5,periodName: '6m',isActive:false,days:180},
+    {id:6,periodName: '1y',isActive:true,days:365}
   ]);
 
 
-  const [toggle,setToggle] = useState(0);
+  const [toggle,setToggle] = useState(3);
 
 
   useEffect(()=> {
@@ -26,10 +26,10 @@ const TimePeriod = (props) => {
 
     }
     tGroup[toggle].isActive = true;
-
     setToggleGroup(tGroup)
-
+    props.setPeriod(tGroup[toggle].days)
   },[toggle])
+
 
   return(
     <View>
@@ -53,7 +53,7 @@ const styles = {
     width: 45,
     height:30,
     backgroundColor:'transparent',
-    borderWidth: 0.2,
+    borderWidth: 1,
     borderColor: "#daa520",
     justifyContent:'center',
     alignItems:'center',
