@@ -42,6 +42,7 @@ const AddToPortfolioModal = (props) => {
   const [amountError,setAmountError] =useState(true);
   const [priceError,setPriceError] =useState(true);
 
+  const [transactionType,setTransactionType] = useState("buy");
 
   useEffect(() => {
     query !== null && query.length > 0 ? setData(coins.filter(elem => elem.name.includes(query))) :
@@ -114,9 +115,9 @@ const AddToPortfolioModal = (props) => {
 
       await addAssetToPortfolio({
         portfolioId: portfolioId,
-        amount: amount.toString(),
+        amount: transactionType==='buy'?""+amount.toString():"-"+amount.toString(),
         price: coinPrice.toString(),
-        isAddTransaction: true,
+        isAddTransaction: transactionType === "buy",
         createDate: new Date(),
         transactionDate: date,
         symbol: selectedCoin.symbol,
@@ -141,6 +142,12 @@ const AddToPortfolioModal = (props) => {
     setDate(date);
     setTextDate(Moment(date).format("DD-MM-yyyy"));
   };
+
+  const changeTransactionType = (type) => {
+      setTransactionType(type);
+  }
+
+
   return (
     <Modal
       animationType={"slide"}
@@ -167,6 +174,32 @@ const AddToPortfolioModal = (props) => {
           <Text style={styles.convertDisclaimerText}>{amount} {selectedCoin !== null ? selectedCoin.symbol.toUpperCase():""} = {selectedCoin !== null ? priceFormat(amount*coinPrice) :""}</Text>
           <View style={styles.rowStyle}>
             <View style={styles.rowItemStyle}>
+              <Text style={styles.labelStyle}>Transaction Type</Text>
+            </View>
+            <TouchableOpacity onPress={() => {
+              setTransactionType("buy")
+            }} style={{alignSelf:'center',marginRight:10}}>
+              <View style={transactionType === 'buy' ?
+                styles.checkedStyle:styles.checkStyle}>
+                <Text style={transactionType === 'buy'?
+                  {color:'#11161D',fontWeight:'bold'}:{color:'#EFB90B',fontWeight:'bold'}}>Buy</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => {
+              setTransactionType("sell")
+            }} style={{alignSelf:'center',marginRight:15}}>
+              <View style={transactionType === 'sell' ?
+                styles.checkedStyle:styles.checkStyle}>
+                <Text style={transactionType === 'sell'?
+                  {color:'#11161D',fontWeight:'bold'}:{color:'#EFB90B',fontWeight:'bold'}}>Sell</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+          <View
+            style={styles.separator}
+          />
+          <View style={styles.rowStyle}>
+            <View style={styles.rowItemStyle}>
               <Text style={styles.labelStyle}>Amount</Text>
             </View>
             <View style={styles.rowItemStyle}>
@@ -179,6 +212,12 @@ const AddToPortfolioModal = (props) => {
                 keyboardType="numeric"
               />
             </View>
+
+            {transactionType === 'sell' &&
+            <TouchableOpacity style={{position:"absolute", right:-20,top:25}}>
+              <Text style={{color:'white',fontSize:15,fontWeight:'bold'}}>Total</Text>
+            </TouchableOpacity>
+            }
           </View>
           <View
             style={styles.separator}
@@ -234,7 +273,7 @@ const AddToPortfolioModal = (props) => {
           />
           <TouchableOpacity onPress={() => addAsset()} style={styles.rowStyle}>
             <View style={styles.addButtonStyle}>
-              <Text style={styles.addButtonTextStyle}> {isUpdate ? `Create new Assets`: `Update` }</Text>
+              <Text style={styles.addButtonTextStyle}> {isUpdate ? `Add Transaction`: `Update` }</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -282,7 +321,7 @@ const styles = {
     alignSelf: "center",
     marginLeft: 30,
     marginRight: 30,
-    marginTop: 20,
+    marginTop: 10,
   },
 
 
@@ -321,11 +360,11 @@ const styles = {
     justifyContent: "center",
   },
   separator: {
-    borderWidth: 0.4,
+    borderWidth: 0.5,
     opacity: 0.3,
     borderColor: "#EFB90B",
     width: "90%",
-    marginTop: 20,
+    marginTop: 10,
   },
   safeAreaStyle: {
     flex: 1,
@@ -344,8 +383,26 @@ const styles = {
     color: "#EFB90B",
     padding: 20,
     fontSize: 20,
-
   },
+  checkStyle : {
+    width:70,
+    height:40,
+    borderWidth:1,
+    borderColor:'#EFB90B',
+    justifyContent:'center',
+    alignItems:'center',
+    borderRadius:5
+  },
+  checkedStyle : {
+    width:70,
+    height:40,
+    borderWidth:1,
+    backgroundColor:'#EFB90B',
+    borderColor:'#EFB90B',
+    justifyContent:'center',
+    alignItems:'center',
+    borderRadius:5
+  }
 
 };
 

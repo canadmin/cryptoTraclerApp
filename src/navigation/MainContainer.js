@@ -94,11 +94,10 @@ const MainContainer = () => {
         <Tab.Screen options={{
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
-              iconName = focused ? "wallet" : "wallet-outline";
+              iconName = focused ? "pie-chart" : "pie-chart-outline";
               color = focused ? '#EFB90B' : color;
 
-
-            return <Ionicons name={iconName} size={size} color={color} />;
+            return <Ionicons name={iconName} size={50} color={color} />;
 
           },
         }} component={PortfolioStackNavigator} name={portfolio_screen} />

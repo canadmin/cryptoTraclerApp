@@ -6,7 +6,7 @@ import { addWatchList, removeWatchList } from "../../../redux/action";
 import { useDispatch } from "react-redux";
 
 const Header = (props) => {
-  const { headerText,isDetailScreen, handleHeaderBackOnPress ,isModal,setShowModal,isPortfolioScreen,isFavoriteCoin} = props;
+  const { headerText,isDetailScreen, handleHeaderBackOnPress ,isModal,setShowModal,isPortfolioScreen,isFavoriteCoin,isTransactionDetial} = props;
   const { textStyle, viewStyle,headerInsideStyle,headerTextStyle,headerRightComponent } = styles;
   const dispatch = useDispatch();
 
@@ -44,7 +44,7 @@ const Header = (props) => {
   return (
     <View style={viewStyle}>
       <View style={headerInsideStyle}>
-        { (isDetailScreen || isModal) &&
+        { (isDetailScreen || isModal || isTransactionDetial) &&
         <TouchableOpacity onPress={() => back("pageHistory")}>
 
         <View style={styles.headerBackButtonStyle}>
@@ -69,6 +69,13 @@ const Header = (props) => {
           <TouchableOpacity onPress={() => {props.showActionSheet()}}>
             <View>
               <Ionicons name={"md-add-outline"} size={30} color={'#EFB90B'} />
+            </View>
+          </TouchableOpacity>
+        </View>}
+        {isTransactionDetial && <View style={headerRightComponent}>
+          <TouchableOpacity onPress={() => {}}>
+            <View>
+              <Ionicons name={"ellipsis-vertical-sharp"} size={25} color={'#EFB90B'} />
             </View>
           </TouchableOpacity>
         </View>}

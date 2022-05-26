@@ -49,10 +49,10 @@ const PieChart = (props) => {
 
     return(<View style={{height:300}}>
       <VictoryPie
-        radius={({ datum }) => (selectedCoin && selectedCoin === datum.name) ? 110: 105}
+        radius={({ datum }) => (selectedCoin && selectedCoin === datum.name) ? 140: 130}
         labelRadius={110}
         labels={(datum) => `${datum.y} `}
-        innerRadius={70}
+        innerRadius={100}
         height={300}
         data={chartData}
         colorScale={colorScales}
@@ -84,7 +84,7 @@ const PieChart = (props) => {
               {coinDetail.symbol.toUpperCase()}
             </Text>
           </View>
-          <View style={{marginTop:-20}}>
+          <View style={{marginTop:-10}}>
             <Text style={{textAlign:'center',color:coinDetail.assetColor,fontWeight:"bold",fontSize:22}}>
               {(((coinDetail.price*coinDetail.amount).toFixed(0)/totalValue.toFixed(0)) *100).toFixed(0)} %
             </Text>

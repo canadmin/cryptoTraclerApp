@@ -40,11 +40,11 @@ const AssetSummaryCard = (props) => {
           <Text style={{color:'white',fontSize:12,alignSelf:'flex-start',fontWeight:"bold", marginTop:5}}>{item.symbol.toUpperCase()}</Text>
         </View>
         <View style={{flex:5}}>
-          <Text style={{color:'#70A822',fontSize:12,alignSelf:'flex-end',fontWeight:"bold", marginTop:5}}>0.22%</Text>
+          <Text style={{color:'#70A822',fontSize:12,alignSelf:'flex-end',fontWeight:"bold", marginTop:5}}>{round(item.changePercentage)}</Text>
         </View>
         <View style={{flex:6}}>
           <Text style={{color:'#A9A9A9',fontSize:12,alignSelf:'flex-end',marginRight:5,marginTop:4,fontWeight:"bold"}}>
-            {item.amount.toUpperCase()} {item.symbol.toUpperCase()}</Text>
+            {item.amount} {item.symbol.toUpperCase()}</Text>
         </View>
       </View>
       <View style={styles.rowBottom}>

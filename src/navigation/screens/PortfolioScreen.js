@@ -51,31 +51,44 @@ const PortfolioScreen = (props) => {
       getAllPortfolio().then(res => {
       setCurrentPortfolio(res);
         getAssetsByPortfolio(portfolioId).then(res => {
-          let tempList = [];
-          let  symbols = res.map(({ symbol }) => symbol);
-          getPortfolioPrices(symbols).then(prices => {
-            res.forEach(  (item,index) => {
-              let ss = prices.data.filter(elem => elem.symbol.toUpperCase()
-                === item.symbol.toUpperCase())[0].value;
-              const newData =  {
-                portfolioId: item.portfolioId,
-                id:item.id,
-                amount: item.amount,
-                oldPrice: item.price,
-                price: String(ss),
-                isAddTransaction: item.isAddTransaction,
-                createDate: item.createDate,
-                transactionDate: item.transactionDate,
-                symbol: item.symbol,
-                name: item.name,
-                coinId: item.coinId,
-                assetColor: item.assetColor
-              };
-              tempList.push(newData);
-              setAssets(prevArray => [...prevArray, newData])
-            })
+          let uniqueArray = [];
+          res.forEach((item,index) => {
+            if(!uniqueArray.includes(item.symbol)){
+              uniqueArray.push(item.symbol)
+            }
+          });
+          getPortfolioPrices(uniqueArray).then(prices => { // fiyatları aldık
+            prices.data.forEach(async (item,index)=> { //btc
+                  let currentCoin = res.filter(elem => elem.symbol.includes(item.symbol.toLowerCase()))[0];
+                  let totalMoneySpent = 0;
+                  let totalAmount = 0;
+                  let changePercentage = 0;
+                  let uniqueSymbol = res.filter(elem => elem.symbol.includes(item.symbol.toLowerCase()))
+                  await uniqueSymbol.forEach((it,idx) => {
+                    totalMoneySpent += Number(it.amount) * it.price;
+                    totalAmount += Number(it.amount);
+                  });
+                  changePercentage = (((totalAmount * item.value) / totalMoneySpent) - 1 ) * 100;
+
+                  if(totalAmount>1){
+                    const newData =  {
+                      portfolioId: currentCoin.portfolioId,
+                      id:currentCoin.id,
+                      amount: totalAmount,
+                      price: item.value,
+                      isAddTransaction: currentCoin.isAddTransaction,
+                      symbol: currentCoin.symbol,
+                      name: currentCoin.name,
+                      coinId: currentCoin.coinId,
+                      assetColor: getRandomColor(),
+                      changePercentage:changePercentage,
+                    };
+                    setAssets(prevArray => [...prevArray, newData])
+                  }
+            });
+          }).then(()=> {
             setDataFetching(false)
-          }).catch(() => {})
+          });
         })
     })
 
@@ -102,8 +115,11 @@ const PortfolioScreen = (props) => {
 <>
     <ScrollView style={containerStyle}>
       <Header headerText={"My Portfolio"} isPortfolioScreen={true} showActionSheet={showActionSheet}/>
-      <View style={{alignItems:'center',marginTop:20}}>
-        <Text style={{marginTop: 5, color:"#70A800", fontSize:43, fontWeight:'bold',fontFamily:'Feather'}}>
+      <View style={{alignItems:'flex-start',marginTop:20,marginLeft:10}}>
+        <Text style={{color:'white',fontSize:19,fontWeight:"bold"}}>
+          Current Balance
+        </Text>
+        <Text style={{marginTop: 5, color:"#FFF", fontSize:36, fontWeight:'bold',fontFamily:'Feather'}}>
           {priceFormat(calculateTotalValue(assets))}</Text>
         <Text style={{marginTop: 5, color:"#70A800",fontSize:22, fontWeight:'bold',fontFamily:'Feather'}}>Change: 8.33% </Text>
       </View>
