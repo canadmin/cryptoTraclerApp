@@ -22,11 +22,6 @@ const settings_screen = "Preferences";
 
 const MainContainer = () => {
   const dispatch = useDispatch();
-  const [dataFetching,setDataFetching] = useState(false);
-  useEffect(() => {
-    setDataFetching(false)
-
-  },[])
 
   const CustomBottomBarIcon = ({children,onPress}) => {
    return( <TouchableOpacity
@@ -105,7 +100,6 @@ const MainContainer = () => {
 
         <Tab.Screen component={SettingsScreen} name={settings_screen} />
       </Tab.Navigator>
-      {dataFetching && <AppLoader/>}
 
     </NavigationContainer>
 

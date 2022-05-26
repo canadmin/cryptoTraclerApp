@@ -104,7 +104,7 @@ const WatchList = (props) => {
   const createPercentage = (items) => {
     let str = " ";
     Object.keys(items).forEach(item => {
-      str += item.toUpperCase() + "= " + round(items[item]) + "% ";
+      str += item.toUpperCase() + "= " + round(items[item]) + "% / ";
     });
     return str;
   }
@@ -112,12 +112,25 @@ const WatchList = (props) => {
   return (
     <ScrollView style={{flex:1,backgroundColor:"#11161D"}}>
       <Header headerText={"Watch List"} />
+      {global &&
+      <View style={{backgroundColor:'#EFB90B', borderTopRightRadius:10,borderTopLeftRadius:10,marginTop:5}}>
+      <TextTicker
+        style={{ fontSize: 22,color:'11161D',fontWeight:'bold',marginTop:5}}
+        duration={10000}
+        loop
+        scrollSpeed={100200}
+        marqueeDelay={1000}
+      >
+        {`Total Market Cap : $`+floorCalc(global.total_market_cap.usd) + ` | Market Cap Percentage :`+createPercentage(global.market_cap_percentage)}
+      </TextTicker>
+      </View>}
       <ScrollView style={containerStyle}>
       {coins.length > 0 && favorites.length > 0 &&
         coins.map((item,index) => (
           <CurrencySummaryCard item={item}
                                index={index}
                                favorites={favorites}
+                               isWatchList={true}
                                key={`asset +${index*2}`}
                                keyExtractor={item => item.id}
                                deleteCurrencyFromFavorite={deleteCurrencyFromFavorite}
@@ -127,19 +140,9 @@ const WatchList = (props) => {
         ))
       }
 
-        {global && <TextTicker
-          style={{ fontSize: 22,color:'#9a9a9a',fontWeight:'bold',marginTop:10
-          ,marginLeft:20}}
-          duration={10000}
-          loop
-          scrollSpeed={100200}
-          marqueeDelay={1000}
-        >
-          {`Total Market Cap : $`+floorCalc(global.total_market_cap.usd) + ` | Market Cap Percentage :`+createPercentage(global.market_cap_percentage)}
-        </TextTicker>}
+
       {showModal && <AddCoinToFavModal setShowModal={setShowModal} showModal={showModal}/>}
     </ScrollView>
-
         {dataFetching && <AppLoader/>}
       <TouchableOpacity style={{marginTop:30}} onPress={() => setShowModal(true)}>
         <View style={addWatchListButton}>

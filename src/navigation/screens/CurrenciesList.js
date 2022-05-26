@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import { View, Text, FlatList } from "react-native";
 import CurrencySummaryCard from "./common/CurrencySummaryCard";
 import Header from "./common/Header";
@@ -78,10 +78,10 @@ const CurrenciesList = ({navigation}) => {
   },[searchInput])
 
   const addCurrencyToFavorite = (coin) => {
-    insertFavorites({ symbol: coin.symbol, name: coin.name }).then((res) => {
-    }).then(() => {
-      dispatch(addWatchList(coin))
-    });
+      insertFavorites({ symbol: coin.symbol, name: coin.name }).then((res) => {
+      }).then(() => {
+        dispatch(addWatchList(coin))
+      });
   };
 
   const deleteCurrencyFromFavorite = (coin) => {
@@ -123,7 +123,6 @@ const CurrenciesList = ({navigation}) => {
                 renderItem={renderItem}
       />
       {dataFetching && <AppLoader/>}
-
     </View>);
 };
 

@@ -4,6 +4,7 @@ import Colors from "../../../Colors";
 import { getCurrenciesFromExtarnalApi, getCurrencyPrice } from "../../../reducers/CryptoApiService";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { priceFormat, round } from "../../../helper/Utils";
+import DropdownAlert from 'react-native-dropdownalert';
 
 const CurrencySummaryCard = (props) => {
   const {
@@ -15,6 +16,7 @@ const CurrencySummaryCard = (props) => {
     searchFromModal,
     searchFromCurrencyList,
     index,
+    isWatchList
   } = props;
 
   const { containerStyle, textStyle, upPriceStyle, downPriceStyle, coinImage } = styles;
@@ -23,6 +25,7 @@ const CurrencySummaryCard = (props) => {
   const [isFavoriteCoin, setIsFavoriteCoin] = useState(false);
   const ws = useRef(null);
 
+  let dropDownAlertRef = useRef();
 
   const getRealTimeDataFromApi = () => {
     getCurrenciesFromExtarnalApi(item.symbol).then(response => {
@@ -99,13 +102,19 @@ const CurrencySummaryCard = (props) => {
 
 
   const addFavorite = (coin) => {
-    if (isFavoriteCoin) {
-      setIsFavoriteCoin(false);
-      deleteCurrencyFromFavorite(coin);
-    } else {
-      setIsFavoriteCoin(true);
-      addCurrencyToFavorite(coin);
-    }
+      if (isFavoriteCoin) {
+        setIsFavoriteCoin(false);
+        deleteCurrencyFromFavorite(coin);
+      } else {
+        if(favorites.length > 9){
+          dropDownAlertRef.alertWithType('warn', 'MAX_WATCHED_COIN_LIMIT',
+            `10'dan fazla ekleyemezsin`,null,500)
+        }else {
+          setIsFavoriteCoin(true);
+          addCurrencyToFavorite(coin);
+        }
+      }
+
   };
 
 
@@ -144,7 +153,7 @@ const CurrencySummaryCard = (props) => {
             symbol: item.symbol,
             name: item.name,
           })}>
-            <Ionicons name={isFavoriteCoin ? "md-star-sharp" : "md-star-outline"} size={30} color={"#EFB90B"} />
+            <Ionicons name={isFavoriteCoin ? isWatchList ?"remove-circle" : "md-star-sharp" : "md-star-outline"} size={30} color={isWatchList ? "red":"#EFB90B"} />
           </TouchableOpacity>
         </View>
         <View
@@ -154,6 +163,13 @@ const CurrencySummaryCard = (props) => {
             borderColor: "white",
             marginLeft: 25,
             marginRight: 25,
+          }}
+        />
+        <DropdownAlert
+          ref={(ref) => {
+            if (ref) {
+              dropDownAlertRef = ref;
+            }
           }}
         />
       </TouchableOpacity>
