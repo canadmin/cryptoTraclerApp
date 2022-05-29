@@ -2,15 +2,12 @@ import  React,{useState} from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import PortfolioScreen from "./screens/PortfolioScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import AlertScreen from "./screens/AlertScreen";
-import {WatchListStackNavigator,CurrenciesListStackNavigator,PortfolioStackNavigator} from './../router/homeStacks';
-import { useEffect } from "react";
+import { WatchListStackNavigator,
+  CurrenciesListStackNavigator,
+  PortfolioStackNavigator } from './../router/homeStacks';
 import { useDispatch } from "react-redux";
-import { getCurrencies } from "../reducers/CryptoApiService";
-import { addAllCoins } from "../redux/action";
-import AppLoader from "./screens/common/AppLoader";
 import { TouchableOpacity,View } from "react-native";
 const Tab = createBottomTabNavigator();
 

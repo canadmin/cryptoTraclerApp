@@ -119,6 +119,11 @@ const CoinDetailScreen = ({navigation,route}) => {
       <Header headerText={route.params.name} isDetailScreen={true}
               coin={coin}
               isFavoriteCoin={isFavoriteCoin} handleHeaderBackOnPress={handleHeaderBackOnPress}></Header>
+      <TouchableOpacity onPress={() => {console.log("aaaaa")}} style={{position:"absolute",right:20,top:40,zIndex:10}}>
+        <View>
+          <Ionicons name={"ios-calculator-outline"} size={40} color={'#EFB90B'}></Ionicons>
+        </View>
+      </TouchableOpacity>
       <View style={{alignItems:'center'}}>
         <Text style={textStyle}>
           {priceFormat(price)}
@@ -176,7 +181,7 @@ const CoinDetailScreen = ({navigation,route}) => {
               <Text style={styles.tableHeader}>Price</Text>
             </View>
             <View style={{alignContent:'flex-end',flex:3}}>
-              <Text style={styles.tableValue}>${round(coin.price)}</Text>
+              <Text style={styles.tableValue}>${priceFormat(coin.price)}</Text>
             </View>
           </View>
         </View>
@@ -326,7 +331,7 @@ const styles = {
 
   },
   tableValue : {
-    fontSize:16,
+    fontSize:11,
     color:'white',
     marginLeft: 15,
     fontWeight:'bold'

@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import {View, Text,TouchableOpacity ,ScrollView} from 'react-native';
 import Header from "./common/Header";
-import { getAllPortfolio, getAssetsByPortfolio } from "../../storage/allSchema";
+import { getAllPortfolio,
+  getAssetsByPortfolio } from "../../storage/allSchema";
 import AssetSummaryCard from "./common/AssetSummaryCard";
 import PieChart from "./common/PieChart";
-import { getRandomColor, priceFormat, round } from "../../helper/Utils";
+import { getRandomColor, priceFormat } from "../../helper/Utils";
 import { getCurrenciesFromExtarnalApi, getCurrencyPrice, getPortfolioPrices } from "../../reducers/CryptoApiService";
 import ActionSheetCustom from "react-native-actionsheet/lib/ActionSheetCustom";
 import { hairlineWidth } from "react-native-actionsheet/lib/styles";
@@ -28,6 +29,8 @@ const PortfolioScreen = (props) => {
   const [dataFetching,setDataFetching] = useState(false);
   const [bottomSelectCoin,setBottomSelectCoin] = useState();
 
+  const [portfolioUpdateDetectionFlag,setPortfolioUpdateDetectionFlag] = useState(false);
+
   let optionArray = [
     'Asset', 'Portfolio','Close'
   ]
@@ -45,53 +48,10 @@ const PortfolioScreen = (props) => {
     dispatch(addPageHistory("PortfolioScreen"))
   }
 
+
+
   useEffect(() => {
-    setDataFetching(true)
-    let portfolioId = 1;
-      getAllPortfolio().then(res => {
-      setCurrentPortfolio(res);
-        getAssetsByPortfolio(portfolioId).then(res => {
-          let uniqueArray = [];
-          res.forEach((item,index) => {
-            if(!uniqueArray.includes(item.symbol)){
-              uniqueArray.push(item.symbol)
-            }
-          });
-          getPortfolioPrices(uniqueArray).then(prices => { // fiyatları aldık
-            prices.data.forEach(async (item,index)=> { //btc
-                  let currentCoin = res.filter(elem => elem.symbol.includes(item.symbol.toLowerCase()))[0];
-                  let totalMoneySpent = 0;
-                  let totalAmount = 0;
-                  let changePercentage = 0;
-                  let uniqueSymbol = res.filter(elem => elem.symbol.includes(item.symbol.toLowerCase()))
-                  await uniqueSymbol.forEach((it,idx) => {
-                    totalMoneySpent += Number(it.amount) * it.price;
-                    totalAmount += Number(it.amount);
-                  });
-                  changePercentage = (((totalAmount * item.value) / totalMoneySpent) - 1 ) * 100;
-
-                  if(totalAmount>1){
-                    const newData =  {
-                      portfolioId: currentCoin.portfolioId,
-                      id:currentCoin.id,
-                      amount: totalAmount,
-                      price: item.value,
-                      isAddTransaction: currentCoin.isAddTransaction,
-                      symbol: currentCoin.symbol,
-                      name: currentCoin.name,
-                      coinId: currentCoin.coinId,
-                      assetColor: getRandomColor(),
-                      changePercentage:changePercentage,
-                    };
-                    setAssets(prevArray => [...prevArray, newData])
-                  }
-            });
-          }).then(()=> {
-            setDataFetching(false)
-          });
-        })
-    })
-
+    getAssets();
     return() => {
         setAssets([]);
         setCurrentTotalValue(0)
@@ -101,8 +61,63 @@ const PortfolioScreen = (props) => {
   useEffect(() => {
     calculateTotalValue(assets)
   },[assets]);
+  useEffect(() => {
+    if(portfolioUpdateDetectionFlag){
+      setAssets([]);
+      getAssets()
+      setPortfolioUpdateDetectionFlag(false);
+    }
+  },[portfolioUpdateDetectionFlag]);
 
 
+  const getAssets = () => {
+    setDataFetching(true);
+    let portfolioId = 1;
+    getAllPortfolio().then(res => {
+      setCurrentPortfolio(res);
+      getAssetsByPortfolio(portfolioId).then(res => {
+        let uniqueArray = [];
+        res.forEach((item,index) => {
+          if(!uniqueArray.includes(item.symbol)){
+            uniqueArray.push(item.symbol)
+          }
+        });
+        getPortfolioPrices(uniqueArray).then(prices => { // fiyatları aldık
+          prices.data.forEach(async (item,index)=> { //btc
+            let currentCoin = res.filter(elem => elem.symbol.includes(item.symbol.toLowerCase()))[0];
+            let totalMoneySpent = 0;
+            let totalAmount = 0;
+            let changePercentage = 0;
+            let uniqueSymbol = res.filter(elem => elem.symbol.includes(item.symbol.toLowerCase()))
+            await uniqueSymbol.forEach((it,idx) => {
+              totalMoneySpent += Number(it.amount) * it.price;
+              totalAmount += Number(it.amount);
+            });
+            changePercentage = (((totalAmount * item.value) / totalMoneySpent) - 1 ) * 100;
+
+            if(totalAmount>0){
+              const newData =  {
+                portfolioId: currentCoin.portfolioId,
+                id:currentCoin.id,
+                amount: totalAmount,
+                price: item.value,
+                isAddTransaction: currentCoin.isAddTransaction,
+                symbol: currentCoin.symbol,
+                name: currentCoin.name,
+                coinId: currentCoin.coinId,
+                assetColor: getRandomColor(),
+                changePercentage:changePercentage,
+              };
+              setAssets(prevArray => [...prevArray, newData])
+            }
+          });
+        }).then(()=> {
+          setDataFetching(false)
+        });
+      })
+    })
+
+  }
 
   const calculateTotalValue = (res) => {
     let sum = 0;
@@ -115,16 +130,19 @@ const PortfolioScreen = (props) => {
 <>
     <ScrollView style={containerStyle}>
       <Header headerText={"My Portfolio"} isPortfolioScreen={true} showActionSheet={showActionSheet}/>
-      <View style={{alignItems:'flex-start',marginTop:20,marginLeft:10}}>
-        <Text style={{color:'white',fontSize:19,fontWeight:"bold"}}>
+      {assets.length > 0 &&
+      <>
+      <View style={{ alignItems: 'flex-start', marginTop: 20, marginLeft: 10 }}>
+        <Text style={{ color: 'white', fontSize: 19, fontWeight: "bold" }}>
           Current Balance
         </Text>
-        <Text style={{marginTop: 5, color:"#FFF", fontSize:36, fontWeight:'bold',fontFamily:'Feather'}}>
+        <Text style={{ marginTop: 5, color: "#FFF", fontSize: 36, fontWeight: 'bold', fontFamily: 'Feather' }}>
           {priceFormat(calculateTotalValue(assets))}</Text>
-        <Text style={{marginTop: 5, color:"#70A800",fontSize:22, fontWeight:'bold',fontFamily:'Feather'}}>Change: 8.33% </Text>
+        <Text style={{ marginTop: 5, color: "#70A800", fontSize: 22, fontWeight: 'bold', fontFamily: 'Feather' }}>Change:
+          8.33% </Text>
       </View>
-      {assets.length > 0 &&
-        <>
+
+
           <PieChart assets={assets}  totalValue={calculateTotalValue(assets)} bottomSelectCoin={bottomSelectCoin}/>
           <ScrollView horizontal style={{flexDirection:'row',height:50,marginTop :20,alignSelf:'center'}}>
             {assets.length > 0 && assets.map((item,index) => (
@@ -171,6 +189,11 @@ const PortfolioScreen = (props) => {
         </>
       }
 
+      {assets.length < 1 &&
+      <View style={{alignSelf:'center',alignContent:'center',alignItems:'center', width:300,marginTop :200}}>
+        <Text style={{color:'#9a9a9a',fontSize:22}}>Your Portfolio is Empty. Begin Recording a transaction by tapping one the + button</Text>
+      </View>}
+
       <ActionSheetCustom
         ref={actionSheet}
         title={'Add New'}
@@ -185,7 +208,8 @@ const PortfolioScreen = (props) => {
         })}/>
 
     </ScrollView>
-  {showModal && <AddToPortfolioModal setShowModal={setShowModal} showModal={showModal}
+  {showModal && <AddToPortfolioModal setPortfolioUpdateDetectionFlag={setPortfolioUpdateDetectionFlag} setShowModal={setShowModal} showModal={showModal}
+                                     modalInModal={true}
                                      showCoinSearch={true} />}
   {dataFetching && <AppLoader/>}
 </>)
@@ -281,11 +305,6 @@ const actionStyles = {
   }
 
 }
-//#041C32
-//#04293A
-//#ECB365
-//#064663
-//#141E27
 
 export default PortfolioScreen;
 

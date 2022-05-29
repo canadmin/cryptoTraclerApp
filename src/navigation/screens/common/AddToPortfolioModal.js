@@ -3,12 +3,7 @@ import { Text, View, TouchableOpacity, SafeAreaView, Modal, Image, TextInput } f
 import Header from "./Header";
 import DatePicker from "react-native-date-picker";
 import Moment from "moment";
-import {
-  addAssetToPortfolio,
-  getAllFavorites,
-  getAllPortfolio,
-  getAssetsByPortfolio,
-} from "../../../storage/allSchema";
+import { addAssetToPortfolio,getAllPortfolio } from "../../../storage/allSchema";
 import { getCoinGeckoId, getRandomColor, priceFormat, round, validatePriceAndAmount } from "../../../helper/Utils";
 import { getCurrencies, getHistoryPrice } from "../../../reducers/CryptoApiService";
 import DropdownAlert from 'react-native-dropdownalert';
@@ -16,9 +11,10 @@ import AppLoader from "./AppLoader";
 import CustomSearch from "./CustomSearch";
 import { useDispatch, useSelector } from "react-redux";
 import { addAllCoins } from "../../../redux/action";
+import SelectDropdown from 'react-native-select-dropdown'
 
 const AddToPortfolioModal = (props) => {
-  const { showModal, setShowModal, coin=null, isUpdate=true,showCoinSearch } = props;
+  const { showModal,setShowModal,coin=null,isUpdate=true,showCoinSearch,setPortfolioUpdateDetectionFlag,modalInModal } = props;
   const [date, setDate] = useState(new Date());
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
@@ -28,6 +24,8 @@ const AddToPortfolioModal = (props) => {
   const [data, setData] = useState([]);
   const [dataFetching,setDataFetching] = useState(false);
   const [selectedCoin,setSelectedCoin] = useState(coin);
+  const [portfolios,setPortfolio] = useState(null);
+  const [selectedPortfolio,setSelectedPortfolio] = useState(null);
 
   const {allCoins} = useSelector(state => state.userReducer)
 
@@ -51,6 +49,10 @@ const AddToPortfolioModal = (props) => {
 
   useEffect(() => {
     setDataFetching(true);
+    getAllPortfolio().then((res) => {
+      setPortfolio(res);
+      setSelectedPortfolio(res[0])
+    })
     if(allCoins.length === 0 && showCoinSearch){
       getCurrencies("all").then(async res => {
         let data = res.data;
@@ -108,13 +110,8 @@ const AddToPortfolioModal = (props) => {
   },[selectedCoin])
 
   const addAsset = async () => {
-      let portfolioId = 0;
-      await getAllPortfolio().then(res => {
-        portfolioId = res[0].id;
-      }).catch(e => {});
-
       await addAssetToPortfolio({
-        portfolioId: portfolioId,
+        portfolioId: selectedPortfolio.id,
         amount: transactionType==='buy'?""+amount.toString():"-"+amount.toString(),
         price: coinPrice.toString(),
         isAddTransaction: transactionType === "buy",
@@ -126,7 +123,10 @@ const AddToPortfolioModal = (props) => {
         assetColor: getRandomColor()
       }).then((res) => {
         dropDownAlertRef.alertWithType('success', 'Transaction Successful',
-          `Successfully Added ${selectedCoin.name.toLowerCase()} To Your Portfolio`,null,1000)
+          `Successfully Added ${selectedCoin.name.toLowerCase()} To Your Portfolio`,null,1000);
+        if(modalInModal){
+          setPortfolioUpdateDetectionFlag(true);
+        }
       }).catch(e => {});
   };
 
@@ -173,6 +173,27 @@ const AddToPortfolioModal = (props) => {
 
           <Text style={styles.convertDisclaimerText}>{amount} {selectedCoin !== null ? selectedCoin.symbol.toUpperCase():""} = {selectedCoin !== null ? priceFormat(amount*coinPrice) :""}</Text>
           <View style={styles.rowStyle}>
+            {portfolios && <SelectDropdown
+              data={portfolios.map(elem => elem.name)}
+              onSelect={(selectedItem, index) => {
+                setSelectedPortfolio(portfolios[index])
+                console.log(selectedItem, index)
+              }}
+              buttonTextAfterSelection={(selectedItem, index) => {
+                return selectedItem
+              }}
+              rowTextForSelection={(item, index) => {
+                return item
+              }}
+              defaultValueByIndex={0}
+              buttonStyle={{width:"100%",backgroundColor:'#353E48'}}
+              buttonTextStyle={{color:'white'}}
+            />}
+          </View>
+          <View
+            style={styles.separator}
+          />
+          <View style={styles.rowStyle}>
             <View style={styles.rowItemStyle}>
               <Text style={styles.labelStyle}>Transaction Type</Text>
             </View>
@@ -215,7 +236,7 @@ const AddToPortfolioModal = (props) => {
 
             {transactionType === 'sell' &&
             <TouchableOpacity style={{position:"absolute", right:-20,top:25}}>
-              <Text style={{color:'white',fontSize:15,fontWeight:'bold'}}>Total</Text>
+              <Text style={{color:'white',fontSize:15,fontWeight:'bold'}}>ALL</Text>
             </TouchableOpacity>
             }
           </View>
@@ -328,7 +349,7 @@ const styles = {
 
   labelStyle: {
     color: "#EFB90B",
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: "bold",
   },
   input: {

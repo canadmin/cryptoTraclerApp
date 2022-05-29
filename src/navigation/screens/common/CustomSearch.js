@@ -13,25 +13,17 @@ const CustomSearch = (props) => {
   const [showResults,setShowResult] = useState(true)
 
   useEffect(() => {
-    if(query === "") {
-      setFiltered([])
-      setShowResult(false)
-    }else {
-      setShowResult(true)
       setDataFetching(true)
       let filteredData = data.filter( (item) => {
-        return item.name.toLowerCase().includes(query.toLowerCase()) || item.symbol.toLowerCase().includes(query.toLowerCase());
+         return item.name.toLowerCase().includes(query.toLowerCase())
       });
-      setDataFetching(false)
       setFiltered(filteredData);
-    }
-
+      setDataFetching(false)
   },[query])
 
   const setCoin = (item) => {
     setShowResult(false)
     setSelectedCoin(item)
-    setQuery("")
     setFiltered([])
   }
   const renderItem = ({ item,index}) => (
@@ -63,7 +55,7 @@ const CustomSearch = (props) => {
 
 
       </View>
-      {query.length>0 && showResults && <FlatList data={filtered}
+      {query.length>0 && <FlatList data={filtered}
                                                   initialNumToRender={10}
                                                   windowSize={10}
                                                   maxToRenderPerBatch={5}

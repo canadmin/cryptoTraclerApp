@@ -87,4 +87,29 @@ export const getGlobal = (options) => {
   }
 };
 
+export const getTrending = (options) => {
+  let url = `${"https://api.coingecko.com/api/v3/search/trending"}`;
+  try {
+    return axios({
+      method: options.method,
+      url: url,
+      data: options.data,
+    })
+  }catch (e){
+    return e;
+  }
+};
 
+
+export const getTrendingPrice = (options) => {
+  let url = `${"https://api.coingecko.com/api/v3/simple/price?ids="+options.ids+"&vs_currencies=usd"}`;
+  try {
+    return axios({
+      method: options.method,
+      url: url,
+      data: options.data,
+    })
+  }catch (e){
+    return e;
+  }
+};

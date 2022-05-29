@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView,Alert,TouchableOpacity } from "react-native";
+import { View, Text, ScrollView,Alert,TouchableOpacity,Image } from "react-native";
 import CurrencySummaryCard from "./common/CurrencySummaryCard";
 import Header from "./common/Header";
-import { getCryptoInfo, getMarketGlobalData } from "../../reducers/CryptoApiService";
+import { getCryptoInfo, getMarketGlobalData, getMarketPrice, getMarketTrending } from "../../reducers/CryptoApiService";
 import { deleteFavorites, getAllFavorites } from "../../storage/allSchema";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useDispatch, useSelector, } from "react-redux";
@@ -26,6 +26,8 @@ const WatchList = (props) => {
   const [refresh,setRefresh] = useState(false);
   const [dataFetching,setDataFetching] = useState(false);
   const [global,setGlobal] = useState(null);
+  const [trending,setTrending] = useState(null);
+  const [trendingPrice,setTrendingPrice] = useState([]);
 
   useEffect(() => {
     createWatchlist()
@@ -81,12 +83,27 @@ const WatchList = (props) => {
           setCoins(currencies);
           getMarketGlobalData().then((res) => {
             setGlobal(res.data.data);
-            setDataFetching(false);
+            setDataFetching(false)
           })
         })
     });
   }
 
+  useEffect(() => {
+    let trending = "";
+    getMarketTrending().then((res) => {
+      if(res.data.coins){
+        res.data.coins.forEach((item,idx) => {
+          trending += item.item.id+","
+        });
+        getMarketPrice(trending).then((res2) => {
+          setTrendingPrice(res2.data)
+          setTrending(res.data.coins)
+        })
+      }
+
+    })
+  },[])
   const deleteCurrencyFromFavorite = (coin) => {
     const filteredData = coins.filter(item => item.symbol !== coin.symbol);
     setCoins(filteredData)
@@ -104,7 +121,7 @@ const WatchList = (props) => {
   const createPercentage = (items) => {
     let str = " ";
     Object.keys(items).forEach(item => {
-      str += item.toUpperCase() + "= " + round(items[item]) + "% / ";
+      str += item.toUpperCase() + "= " + round(items[item]) + "% ✫ ";
     });
     return str;
   }
@@ -113,7 +130,7 @@ const WatchList = (props) => {
     <ScrollView style={{flex:1,backgroundColor:"#11161D"}}>
       <Header headerText={"Watch List"} />
       {global &&
-      <View style={{backgroundColor:'#EFB90B', borderTopRightRadius:10,borderTopLeftRadius:10,marginTop:5}}>
+      <View style={{backgroundColor:'#EFB90B',marginTop:5}}>
       <TextTicker
         style={{ fontSize: 22,color:'11161D',fontWeight:'bold',marginTop:5}}
         duration={10000}
@@ -143,6 +160,34 @@ const WatchList = (props) => {
 
       {showModal && <AddCoinToFavModal setShowModal={setShowModal} showModal={showModal}/>}
     </ScrollView>
+
+      <View>
+        <Text style={{color:'white',fontSize:20,marginTop:10,fontWeight:'bold',marginLeft:10}}>Search Trending</Text>
+      </View>
+      <ScrollView horizontal>
+        {trending && trendingPrice && trending.map((item,index) => (
+          <View style={{backgroundColor:"#2C3640" ,margin:10 ,width:100,height:100,borderRadius:10}}>
+            <View style={{padding:10,flexDirection:'row'}}>
+              <View>
+              <Image style={styles.coinImage}
+                     source={{ uri: item.item.large}} />
+            </View>
+            <View style={{position:"absolute",right:5,top:10}}>
+              <Text style={{fontSize:14,fontWeight:'bold',color:'white'}}>{item.item.score + 1}</Text>
+            </View>
+            </View>
+
+            <View style={{marginLeft:10}}>
+              <Text style={{color:'white',fontWeight:'bold',alignSelf:'center'}}>{item.item.symbol}</Text>
+            </View>
+            <View style={{position:"absolute",bottom:5,alignSelf:'center'}}>
+              <Text style={{fontSize:14,color:"#D5FA50"}}>{round(trendingPrice[item.item.id].usd)}</Text>
+            </View>
+
+          </View>
+        ))}
+
+      </ScrollView>
         {dataFetching && <AppLoader/>}
       <TouchableOpacity style={{marginTop:30}} onPress={() => setShowModal(true)}>
         <View style={addWatchListButton}>
@@ -174,7 +219,11 @@ const styles = {
     marginBottom: 50,
     justifyContent:'center',
     alignItems:'center'
-  }
+  },
+  coinImage: {
+     marginRight: 0, marginBottom: 0,
+    justifyContent: "center", height: 30, width: 30, resizeMode: "contain",
+  },
 };
 
 

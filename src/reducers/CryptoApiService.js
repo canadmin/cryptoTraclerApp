@@ -1,6 +1,6 @@
 import {
   request, externalApirequest, getOhlcHistoryRequest
-  , getHistoryPriceFromExternal, getGlobal,
+  , getHistoryPriceFromExternal, getGlobal, getTrending, getTrendingPrice,
 } from "../helper/apiClient";
 
 // top 10 falan
@@ -102,6 +102,20 @@ export const getMarketGlobalData = () => {
   }
 
   return getGlobal(options);
+}
+
+export const getMarketTrending = () => {
+  const options = {
+    method: "get",
+  }
+  return getTrending(options);
+}
+export const getMarketPrice = (ids) => {
+  const options = {
+    method: "get",
+    ids:ids
+  }
+  return getTrendingPrice(options);
 }
 
 
