@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import {View, Text,TouchableOpacity ,ScrollView} from 'react-native';
+import {View, Text,TouchableOpacity ,ScrollView,BackHandler} from 'react-native';
 import Header from "./common/Header";
 import { getAllPortfolio,
   getAssetsByPortfolio } from "../../storage/allSchema";
@@ -208,8 +208,10 @@ const PortfolioScreen = (props) => {
         })}/>
 
     </ScrollView>
-  {showModal && <AddToPortfolioModal setPortfolioUpdateDetectionFlag={setPortfolioUpdateDetectionFlag} setShowModal={setShowModal} showModal={showModal}
-                                     modalInModal={true}
+  {showModal && <AddToPortfolioModal headerText={"Create Transaction"}
+    setPortfolioUpdateDetectionFlag={setPortfolioUpdateDetectionFlag}
+                                     setShowModal={setShowModal} showModal={showModal}
+                                     modalInPortfolio={true}
                                      showCoinSearch={true} />}
   {dataFetching && <AppLoader/>}
 </>)

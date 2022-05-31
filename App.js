@@ -11,9 +11,11 @@ LogBox.ignoreLogs([
   "ViewPropTypes will be removed",
   "ColorPropType will be removed",
 ])
-import {Provider} from 'react-redux'
+import { Provider } from "react-redux";
 import {Store as store} from './src/redux/store'
+
 import { createPortfolio, getAllPortfolio } from "./src/storage/allSchema";
+
 const STYLES = ['default', 'dark-content', 'light-content'];
 const TRANSITIONS = ['fade', 'slide', 'none'];
 

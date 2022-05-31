@@ -2,6 +2,7 @@ export const SET_USER_WATCHLIST = 'SET_USER_WATCHLIST';
 export const REMOVE_USER_WATCHLIST = 'REMOVE_USER_WATCHLIST';
 export const ADD_PAGE_HISTORY = "ADD_PAGE_HISTORY"
 export const ADD_ALL_COIN = "ADD_ALL_COIN"
+export const SWITCH_THEME = "SWITCH_THEME"
 
 export const addWatchList = coin => dispatch => {
   dispatch({
@@ -33,4 +34,11 @@ export const addPageHistory = route => dispatch => {
   })
 }
 
+
+export const switchTheme = theme => dispatch=> {
+  dispatch({
+      type:SWITCH_THEME,
+      payload:theme
+  })
+}
 

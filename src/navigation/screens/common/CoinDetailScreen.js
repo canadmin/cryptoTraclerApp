@@ -264,7 +264,9 @@ const CoinDetailScreen = ({navigation,route}) => {
       </View>
 
       {showModal && <AddToPortfolioModal coin={coin} setShowModal={setShowModal} showModal={showModal}
-                                         showCoinSearch={true} />}
+                                         navigation={navigation}
+                                         showCoinSearch={true}
+                                         headerText={"Create Transaction"}/>}
       {dataFetching && <AppLoader/>}
 
     </ScrollView>)

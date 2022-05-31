@@ -7,8 +7,11 @@ import AlertScreen from "./screens/AlertScreen";
 import { WatchListStackNavigator,
   CurrenciesListStackNavigator,
   PortfolioStackNavigator } from './../router/homeStacks';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { TouchableOpacity,View } from "react-native";
+import ThemeProvider from "@react-navigation/native/src/theming/ThemeProvider";
+import {switchTheme} from "../redux/action";
+import {lightTheme,darkTheme} from "../Theme"
 const Tab = createBottomTabNavigator();
 
 const currenciesList_screen = "Currency List";

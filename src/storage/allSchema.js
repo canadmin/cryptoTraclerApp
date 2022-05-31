@@ -119,12 +119,22 @@ export const getAllPortfolio = () => new Promise((resolve, reject) => {
 // porfolio assets
 export const addAssetToPortfolio = (asset) => new Promise((resolve, reject) => {
   Realm.open(dataBaseOptions).then(realm => {
-    const results = realm.objects(PORTFOLIO_ASSETS_SCHEMA).sorted('id');
-    const id = results.length > 0 ? results[results.length - 1].id + 1 : 1;
-    realm.write(() => {
-      realm.create(PORTFOLIO_ASSETS_SCHEMA, { ...asset,id });
-      resolve(asset);
-    });
+    console.log("aaa",asset)
+    if(asset.id){
+      const result = realm.objects(PORTFOLIO_ASSETS_SCHEMA).filtered("id =="+asset.id)[0];
+    console.log(result)
+      realm.write(() => {
+        Object.assign(result, asset)
+      });
+    }else {
+      const results = realm.objects(PORTFOLIO_ASSETS_SCHEMA).sorted('id');
+      const id = results.length > 0 ? results[results.length - 1].id + 1 : 1;
+      realm.write(() => {
+        realm.create(PORTFOLIO_ASSETS_SCHEMA, { ...asset,id });
+        resolve(asset);
+      });
+    }
+
   }).catch((error => reject(error)));
 });
 
@@ -132,6 +142,31 @@ export const addAssetToPortfolio = (asset) => new Promise((resolve, reject) => {
 export const getAssetsByPortfolio = (portfolioId) => new Promise((resolve, reject) => {
   Realm.open(dataBaseOptions).then(realm => {
     let assets = realm.objects(PORTFOLIO_ASSETS_SCHEMA).filtered("portfolioId ="+portfolioId+"");
+    resolve(assets)
+  }).catch((error => reject(error)));
+});
+
+export const deleteAllTransaction = (coinId,portfolioId) => new Promise((resolve, reject) => {
+  Realm.open(dataBaseOptions).then(realm => {
+    realm.write(() => {
+
+      let transactions = realm.objects(PORTFOLIO_ASSETS_SCHEMA).filtered(`portfolioId ==`+portfolioId+" AND coinId =="+coinId);
+     realm.delete(transactions);
+      resolve();
+    });
+  });
+});
+
+export const getAssetTransactionDetail = (portfolioId,coinId) => new Promise((resolve, reject) => {
+  Realm.open(dataBaseOptions).then(realm => {
+    let assets = realm.objects(PORTFOLIO_ASSETS_SCHEMA).filtered(`portfolioId ==`+portfolioId+" AND coinId =="+coinId);
+    resolve(assets)
+  }).catch((error => reject(error)));
+});
+
+export const getTransaction = (id) => new Promise((resolve, reject) => {
+  Realm.open(dataBaseOptions).then(realm => {
+    let assets = realm.objects(PORTFOLIO_ASSETS_SCHEMA).filtered(`id ==`+id);
     resolve(assets)
   }).catch((error => reject(error)));
 });

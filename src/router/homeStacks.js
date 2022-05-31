@@ -50,6 +50,8 @@ export const WatchListStackNavigator = () => {
                       component={CoinDetailScreen}/>
        <Stack.Screen name={"PortfolioScreen"}
                      component={PortfolioScreen}/>
+       <Stack.Screen name={"TransactionDetail"}
+                     component={TransactionDetail}/>
      </Stack.Navigator>
    )
 }
@@ -71,6 +73,10 @@ export const CurrenciesListStackNavigator = () => {
                     component={CurrenciesList}/>
       <Stack.Screen name={"CoinDetailScreen"}
                     component={CoinDetailScreen}/>
+      <Stack.Screen name={"PortfolioScreen"}
+                    component={PortfolioScreen}/>
+      <Stack.Screen name={"TransactionDetail"}
+                    component={TransactionDetail}/>
     </Stack.Navigator>
   )
 }
